@@ -24,14 +24,14 @@ export const env = {
   /** Base URL for the Medplum FHIR server (public, used in browser) */
   medplumBaseUrl: optionalEnv(
     'NEXT_PUBLIC_MEDPLUM_BASE_URL',
-    'http://localhost:8103/'
+    'https://api.medplum.com/'
   ),
 
   /** OAuth2 client ID for the web app (public) */
   medplumClientId: optionalEnv('NEXT_PUBLIC_MEDPLUM_CLIENT_ID'),
 
   /** Server-side: internal Medplum URL (not exposed to browser) */
-  medplumServerUrl: optionalEnv('MEDPLUM_BASE_URL', 'http://localhost:8103/'),
+  medplumServerUrl: optionalEnv('MEDPLUM_BASE_URL', 'https://api.medplum.com/'),
 
   /** Current Node environment */
   nodeEnv: optionalEnv('NODE_ENV', 'development'),

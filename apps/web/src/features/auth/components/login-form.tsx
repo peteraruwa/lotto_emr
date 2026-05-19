@@ -38,8 +38,11 @@ export function LoginForm() {
   async function onSubmit(data: LoginFormData) {
     setServerError(null);
     try {
-      await medplum.signIn(data.email, data.password, undefined, undefined);
-      router.replace('/dashboard');
+      const loginResponse = await medplum.startLogin({ email: data.email, password: data.password });
+      if (loginResponse.code) {
+        await medplum.processCode(loginResponse.code);
+      }
+      router.replace('/');
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Login failed. Please check your credentials.';
       setServerError(message);

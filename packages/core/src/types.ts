@@ -28,6 +28,7 @@ export interface PatientSummary {
   age: number;
   gender: 'male' | 'female' | 'other' | 'unknown';
   phone?: string;
+  email?: string;
   activeConditionsCount: number;
   allergiesCount: number;
   lastEncounterDate?: string;

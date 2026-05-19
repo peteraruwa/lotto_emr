@@ -14,7 +14,7 @@ export function useCreateEncounter() {
 
   return useMutation({
     mutationFn: async (data: EncounterFormData): Promise<Encounter> => {
-      const encounter: Encounter = {
+      const encounter = {
         resourceType: 'Encounter',
         status: 'arrived',
         class: {
@@ -28,26 +28,16 @@ export function useCreateEncounter() {
               : 'Ambulatory',
         },
         subject: { reference: `Patient/${data.patientId}` },
-        reasonCode: [
-          {
-            text: data.reason,
-          },
-        ],
-        period: {
-          start: new Date().toISOString(),
-        },
+        reasonCode: [{ text: data.reason }],
+        period: { start: new Date().toISOString() },
         participant: data.practitionerId
-          ? [
-              {
-                individual: { reference: `Practitioner/${data.practitionerId}` },
-              },
-            ]
+          ? [{ individual: { reference: `Practitioner/${data.practitionerId}` } }]
           : undefined,
         location: data.locationId
           ? [{ location: { reference: `Location/${data.locationId}` } }]
           : undefined,
         note: data.notes ? [{ text: data.notes }] : undefined,
-      };
+      } as Encounter;
 
       return medplum.createResource(encounter);
     },
