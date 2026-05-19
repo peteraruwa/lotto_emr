@@ -1,0 +1,15 @@
+{
+  "resourceType": "AccessPolicy",
+  "name": "Lab Technician Access Policy",
+  "description": "Write Observations and DiagnosticReports. Read ServiceRequests (lab orders). Minimal patient demographics.",
+  "resource": [
+    { "resourceType": "Patient", "readonly": true, "hiddenFields": ["address", "telecom", "contact"] },
+    { "resourceType": "ServiceRequest", "readonly": true },
+    { "resourceType": "Observation", "readonly": false },
+    { "resourceType": "DiagnosticReport", "readonly": false },
+    { "resourceType": "Specimen", "readonly": false },
+    { "resourceType": "Substance", "readonly": true },
+    { "resourceType": "Practitioner", "readonly": true },
+    { "resourceType": "Organization", "readonly": true }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "_comment": "NON-PROD seed data only. Never import to production.",
+  "users": [
+    { "email": "dr.okonkwo@test.lotto", "role": "doctor", "name": "Dr. Emeka Okonkwo", "specialty": "Internal Medicine" },
+    { "email": "nurse.adaeze@test.lotto", "role": "nurse", "name": "Adaeze Nwosu" },
+    { "email": "pharm.ibrahim@test.lotto", "role": "pharmacist", "name": "Ibrahim Musa" },
+    { "email": "lab.chika@test.lotto", "role": "lab", "name": "Chikaodili Eze" },
+    { "email": "rad.fatima@test.lotto", "role": "radiologist", "name": "Fatima Al-Hassan" },
+    { "email": "admin.blessing@test.lotto", "role": "admin", "name": "Blessing Okafor" }
+  ]
+}

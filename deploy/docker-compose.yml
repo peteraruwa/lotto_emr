@@ -1,0 +1,189 @@
+version: "3.9"
+
+# Lotto Central Hospital EMR — Local / On-Premises Docker Compose Stack
+# Services: Medplum Server, PostgreSQL 16, Redis 7, MinIO (S3-compatible), Web App
+
+networks:
+  emr-internal:
+    driver: bridge
+
+volumes:
+  postgres-data:
+  redis-data:
+  minio-data:
+  medplum-server-logs:
+
+services:
+  # ─────────────────────────────────────────────────────────────────────────────
+  # PostgreSQL 16 — Primary database for Medplum FHIR server
+  # ─────────────────────────────────────────────────────────────────────────────
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    networks:
+      - emr-internal
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    env_file:
+      - env/.env.medplum
+    environment:
+      POSTGRES_DB: ${DATABASE_NAME:-medplum}
+      POSTGRES_USER: ${DATABASE_USERNAME:-medplum}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+      PGDATA: /var/lib/postgresql/data/pgdata
+    ports:
+      - "127.0.0.1:5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DATABASE_USERNAME:-medplum} -d ${DATABASE_NAME:-medplum}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # Redis 7 — Cache and pub/sub for Medplum subscriptions
+  # ─────────────────────────────────────────────────────────────────────────────
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    networks:
+      - emr-internal
+    volumes:
+      - redis-data:/data
+    command: >
+      redis-server
+      --appendonly yes
+      --requirepass ${REDIS_PASSWORD:-changeme}
+      --maxmemory 256mb
+      --maxmemory-policy allkeys-lru
+    ports:
+      - "127.0.0.1:6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "--no-auth-warning", "-a", "${REDIS_PASSWORD:-changeme}", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # MinIO — S3-compatible object storage for FHIR binary/document storage
+  # ─────────────────────────────────────────────────────────────────────────────
+  minio:
+    image: minio/minio:latest
+    restart: unless-stopped
+    networks:
+      - emr-internal
+    volumes:
+      - minio-data:/data
+    env_file:
+      - env/.env.medplum
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ACCESS_KEY:-minioadmin}
+      MINIO_ROOT_PASSWORD: ${MINIO_SECRET_KEY:-minioadmin}
+    command: server /data --console-address ":9001"
+    ports:
+      - "127.0.0.1:9000:9000"
+      - "127.0.0.1:9001:9001"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # MinIO bucket initializer — creates the storage bucket on first start
+  # ─────────────────────────────────────────────────────────────────────────────
+  minio-init:
+    image: minio/mc:latest
+    networks:
+      - emr-internal
+    depends_on:
+      minio:
+        condition: service_healthy
+    env_file:
+      - env/.env.medplum
+    entrypoint: >
+      /bin/sh -c "
+        mc alias set local http://minio:9000 $${MINIO_ACCESS_KEY:-minioadmin} $${MINIO_SECRET_KEY:-minioadmin};
+        mc mb --ignore-existing local/lotto-hospital-medplum-storage;
+        mc anonymous set download local/lotto-hospital-medplum-storage;
+        echo 'MinIO bucket initialized.';
+      "
+    restart: "no"
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # Medplum Server 3.2.0 — FHIR R4 server
+  # ─────────────────────────────────────────────────────────────────────────────
+  medplum-server:
+    image: medplum/medplum-server:3.2.0
+    restart: unless-stopped
+    networks:
+      - emr-internal
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+    volumes:
+      - medplum-server-logs:/var/log/medplum
+    env_file:
+      - env/.env.medplum
+    environment:
+      NODE_ENV: production
+      MEDPLUM_DATABASE_HOST: postgres
+      MEDPLUM_DATABASE_PORT: "5432"
+      MEDPLUM_DATABASE_DBNAME: ${DATABASE_NAME:-medplum}
+      MEDPLUM_DATABASE_USERNAME: ${DATABASE_USERNAME:-medplum}
+      MEDPLUM_DATABASE_PASSWORD: ${DATABASE_PASSWORD}
+      MEDPLUM_REDIS_HOST: redis
+      MEDPLUM_REDIS_PORT: "6379"
+      MEDPLUM_REDIS_PASSWORD: ${REDIS_PASSWORD:-changeme}
+      MEDPLUM_BASE_URL: ${MEDPLUM_BASE_URL:-http://localhost:8103/}
+      MEDPLUM_ALLOWED_ORIGINS: ${MEDPLUM_ALLOWED_ORIGINS:-http://localhost:3000}
+      MEDPLUM_STORAGE_BUCKET: lotto-hospital-medplum-storage
+      MEDPLUM_STORAGE_ENDPOINT: http://minio:9000
+      MEDPLUM_STORAGE_ACCESS_KEY: ${MINIO_ACCESS_KEY:-minioadmin}
+      MEDPLUM_STORAGE_SECRET_KEY: ${MINIO_SECRET_KEY:-minioadmin}
+      MEDPLUM_JWT_SECRET: ${JWT_SECRET}
+      MEDPLUM_SMTP_HOST: ${SMTP_HOST:-localhost}
+      MEDPLUM_SMTP_PORT: "587"
+    ports:
+      - "8103:8103"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8103/healthcheck"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 45s
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # Web App — Next.js 14 EMR frontend
+  # ─────────────────────────────────────────────────────────────────────────────
+  web:
+    image: lotto-emr-web:latest
+    build:
+      context: ..
+      dockerfile: apps/web/Dockerfile
+    restart: unless-stopped
+    networks:
+      - emr-internal
+    depends_on:
+      medplum-server:
+        condition: service_healthy
+    env_file:
+      - env/.env.web
+    environment:
+      MEDPLUM_BASE_URL: ${MEDPLUM_BASE_URL:-http://medplum-server:8103/}
+      NEXT_PUBLIC_MEDPLUM_BASE_URL: ${NEXT_PUBLIC_MEDPLUM_BASE_URL:-http://localhost:8103/}
+      NEXT_PUBLIC_MEDPLUM_CLIENT_ID: ${MEDPLUM_CLIENT_ID}
+      NODE_ENV: production
+    ports:
+      - "3000:3000"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s

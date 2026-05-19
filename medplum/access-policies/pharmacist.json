@@ -1,0 +1,16 @@
+{
+  "resourceType": "AccessPolicy",
+  "name": "Pharmacist Access Policy",
+  "description": "Read prescriptions, write dispense events. No access to full clinical chart.",
+  "resource": [
+    { "resourceType": "Patient", "readonly": true, "hiddenFields": ["address", "contact", "communication"] },
+    { "resourceType": "MedicationRequest", "readonly": true },
+    { "resourceType": "MedicationDispense", "readonly": false },
+    { "resourceType": "MedicationStatement", "readonly": true },
+    { "resourceType": "AllergyIntolerance", "readonly": true },
+    { "resourceType": "Medication", "readonly": false },
+    { "resourceType": "Substance", "readonly": true },
+    { "resourceType": "Practitioner", "readonly": true },
+    { "resourceType": "Organization", "readonly": true }
+  ]
+}

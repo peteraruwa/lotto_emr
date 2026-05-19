@@ -1,0 +1,21 @@
+{
+  "resourceType": "AccessPolicy",
+  "name": "Nurse Access Policy",
+  "description": "Clinical read/write scoped to nursing tasks: vitals, observations, care plans. Cannot write prescriptions or diagnostic reports.",
+  "resource": [
+    { "resourceType": "Patient", "readonly": true },
+    { "resourceType": "Encounter", "readonly": false },
+    { "resourceType": "Observation", "readonly": false },
+    { "resourceType": "Condition", "readonly": true },
+    { "resourceType": "AllergyIntolerance", "readonly": true },
+    { "resourceType": "MedicationRequest", "readonly": true },
+    { "resourceType": "MedicationAdministration", "readonly": false },
+    { "resourceType": "CarePlan", "readonly": false },
+    { "resourceType": "ServiceRequest", "readonly": true },
+    { "resourceType": "DocumentReference", "readonly": false },
+    { "resourceType": "Appointment", "readonly": false },
+    { "resourceType": "Slot", "readonly": false },
+    { "resourceType": "Practitioner", "readonly": true },
+    { "resourceType": "Organization", "readonly": true }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "resourceType": "AccessPolicy",
+  "name": "Radiologist Access Policy",
+  "description": "Read imaging orders, write DiagnosticReports and ImagingStudy references.",
+  "resource": [
+    { "resourceType": "Patient", "readonly": true, "hiddenFields": ["address", "telecom", "contact"] },
+    { "resourceType": "ServiceRequest", "readonly": true },
+    { "resourceType": "ImagingStudy", "readonly": false },
+    { "resourceType": "DiagnosticReport", "readonly": false },
+    { "resourceType": "Observation", "readonly": false },
+    { "resourceType": "DocumentReference", "readonly": false },
+    { "resourceType": "Practitioner", "readonly": true },
+    { "resourceType": "Organization", "readonly": true }
+  ]
+}

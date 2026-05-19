@@ -1,0 +1,10 @@
+{
+  "roles": [
+    { "name": "doctor", "accessPolicy": "AccessPolicy/doctor", "userType": "practitioner" },
+    { "name": "nurse", "accessPolicy": "AccessPolicy/nurse", "userType": "practitioner" },
+    { "name": "pharmacist", "accessPolicy": "AccessPolicy/pharmacist", "userType": "practitioner" },
+    { "name": "lab", "accessPolicy": "AccessPolicy/lab", "userType": "practitioner" },
+    { "name": "radiologist", "accessPolicy": "AccessPolicy/radiologist", "userType": "practitioner" },
+    { "name": "admin", "accessPolicy": "AccessPolicy/admin", "userType": "patient" }
+  ]
+}

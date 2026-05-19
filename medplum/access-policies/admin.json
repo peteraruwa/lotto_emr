@@ -1,0 +1,19 @@
+{
+  "resourceType": "AccessPolicy",
+  "name": "Administrative Staff Access Policy",
+  "description": "Patient registration, scheduling, billing references. Deliberately excludes clinical data (chart, notes, results).",
+  "resource": [
+    { "resourceType": "Patient", "readonly": false },
+    { "resourceType": "RelatedPerson", "readonly": false },
+    { "resourceType": "Coverage", "readonly": false },
+    { "resourceType": "Claim", "readonly": false },
+    { "resourceType": "ClaimResponse", "readonly": true },
+    { "resourceType": "Appointment", "readonly": false },
+    { "resourceType": "Slot", "readonly": false },
+    { "resourceType": "Schedule", "readonly": false },
+    { "resourceType": "Organization", "readonly": false },
+    { "resourceType": "Location", "readonly": false },
+    { "resourceType": "Practitioner", "readonly": true },
+    { "resourceType": "PractitionerRole", "readonly": true }
+  ]
+}

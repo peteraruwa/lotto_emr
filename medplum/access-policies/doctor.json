@@ -1,0 +1,26 @@
+{
+  "resourceType": "AccessPolicy",
+  "name": "Doctor Access Policy",
+  "description": "Full clinical read/write for assigned patients. Cannot access admin or billing resources.",
+  "resource": [
+    { "resourceType": "Patient", "readonly": false },
+    { "resourceType": "Encounter", "readonly": false },
+    { "resourceType": "Observation", "readonly": false },
+    { "resourceType": "DiagnosticReport", "readonly": false },
+    { "resourceType": "ServiceRequest", "readonly": false },
+    { "resourceType": "MedicationRequest", "readonly": false },
+    { "resourceType": "MedicationStatement", "readonly": false },
+    { "resourceType": "AllergyIntolerance", "readonly": false },
+    { "resourceType": "Condition", "readonly": false },
+    { "resourceType": "Procedure", "readonly": false },
+    { "resourceType": "DocumentReference", "readonly": false },
+    { "resourceType": "Composition", "readonly": false },
+    { "resourceType": "Appointment", "readonly": false },
+    { "resourceType": "Slot", "readonly": true },
+    { "resourceType": "Practitioner", "readonly": true },
+    { "resourceType": "PractitionerRole", "readonly": true },
+    { "resourceType": "Organization", "readonly": true },
+    { "resourceType": "ValueSet", "readonly": true },
+    { "resourceType": "CodeSystem", "readonly": true }
+  ]
+}

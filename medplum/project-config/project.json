@@ -1,0 +1,12 @@
+{
+  "resourceType": "Project",
+  "name": "Lotto Central Hospital EMR",
+  "strictMode": true,
+  "features": ["bots", "crons", "terminology", "webhooks", "subscription-rest-hook"],
+  "defaultPatientAccessPolicy": {
+    "reference": "AccessPolicy/patient-self-access"
+  },
+  "setting": [
+    { "name": "allowedOrigins", "valueString": "http://localhost:3000,https://emr.lotto-hospital.local" }
+  ]
+}

@@ -1,0 +1,134 @@
+#!/usr/sbin/nft -f
+# ============================================================
+# Lotto Central Hospital EMR — nftables Firewall Rules
+#
+# Security model:
+#   - Default-DENY egress (allowlist-only outbound)
+#   - Allow inbound on 3000 (web), 8103 (Medplum API) from LAN only
+#   - Allow outbound HTTPS only to generativelanguage.googleapis.com
+#   - All other egress is dropped
+#
+# Apply: nft -f /etc/nftables/emr.rules
+# Check: nft list ruleset
+# ============================================================
+
+flush ruleset
+
+table inet filter {
+
+  # ──────────────────────────────────────────────────────────
+  # Sets: pre-defined address groups
+  # ──────────────────────────────────────────────────────────
+  set LAN_RANGES {
+    type ipv4_addr
+    flags interval
+    elements = {
+      10.0.0.0/8,
+      172.16.0.0/12,
+      192.168.0.0/16
+    }
+  }
+
+  # Resolved IP range for generativelanguage.googleapis.com
+  # Update periodically: dig +short generativelanguage.googleapis.com
+  set GEMINI_ALLOWED {
+    type ipv4_addr
+    flags interval
+    # Google API IP ranges (these may change — use a cron to refresh)
+    elements = {
+      142.250.0.0/15,
+      172.217.0.0/16,
+      216.58.192.0/19,
+      34.120.0.0/14
+    }
+  }
+
+  # ──────────────────────────────────────────────────────────
+  # INPUT chain
+  # ──────────────────────────────────────────────────────────
+  chain input {
+    type filter hook input priority 0; policy drop;
+
+    # Always allow loopback
+    iif lo accept
+
+    # Allow established and related connections
+    ct state established,related accept
+
+    # Drop invalid connections
+    ct state invalid drop
+
+    # Allow SSH from LAN only (port 22)
+    tcp dport 22 ip saddr @LAN_RANGES accept
+
+    # Allow Medplum API from LAN only
+    tcp dport 8103 ip saddr @LAN_RANGES accept
+
+    # Allow Web App from LAN only
+    tcp dport 3000 ip saddr @LAN_RANGES accept
+
+    # Allow PostgreSQL from loopback/Docker internal only
+    tcp dport 5432 ip saddr { 127.0.0.1, 172.16.0.0/12 } accept
+
+    # Allow Redis from loopback/Docker internal only
+    tcp dport 6379 ip saddr { 127.0.0.1, 172.16.0.0/12 } accept
+
+    # Allow MinIO from loopback/Docker internal only
+    tcp dport { 9000, 9001 } ip saddr { 127.0.0.1, 172.16.0.0/12 } accept
+
+    # ICMP (ping) from LAN
+    icmp type echo-request ip saddr @LAN_RANGES accept
+
+    # Log and drop everything else inbound
+    log prefix "[nft-input-drop] " drop
+  }
+
+  # ──────────────────────────────────────────────────────────
+  # FORWARD chain — disabled (not a router)
+  # ──────────────────────────────────────────────────────────
+  chain forward {
+    type filter hook forward priority 0; policy drop;
+  }
+
+  # ──────────────────────────────────────────────────────────
+  # OUTPUT chain — default DENY egress (allowlist only)
+  # ──────────────────────────────────────────────────────────
+  chain output {
+    type filter hook output priority 0; policy drop;
+
+    # Always allow loopback
+    oif lo accept
+
+    # Allow established and related
+    ct state established,related accept
+
+    # Allow DNS (UDP+TCP) — required for hostname resolution
+    udp dport 53 accept
+    tcp dport 53 accept
+
+    # Allow NTP — required for clock sync / JWT validity
+    udp dport 123 accept
+
+    # Allow outbound to LAN ranges (internal services, Docker networking)
+    ip daddr @LAN_RANGES accept
+
+    # Allow HTTPS outbound ONLY to Gemini API (Gemini note-draft bot)
+    tcp dport 443 ip daddr @GEMINI_ALLOWED accept
+
+    # Allow SMTP (port 587/465) for email notifications — restrict to known relay
+    tcp dport { 587, 465 } accept
+
+    # Log and drop all other egress
+    log prefix "[nft-output-drop] " drop
+  }
+}
+
+# ──────────────────────────────────────────────────────────────
+# NAT table — Docker masquerade (required for container networking)
+# ──────────────────────────────────────────────────────────────
+table ip nat {
+  chain postrouting {
+    type nat hook postrouting priority 100; policy accept;
+    oifname != "lo" masquerade
+  }
+}
