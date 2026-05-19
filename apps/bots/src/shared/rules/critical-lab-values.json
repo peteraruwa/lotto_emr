@@ -1,0 +1,99 @@
+{
+  "_comment": "Critical lab value thresholds for Lotto Central Hospital. Based on standard clinical reference ranges adapted for Nigerian clinical practice.",
+  "rules": [
+    {
+      "name": "critical-low-hemoglobin",
+      "loinc": "718-7",
+      "displayName": "Hemoglobin",
+      "unit": "g/dL",
+      "criticalLow": 7.0,
+      "criticalHigh": 20.0,
+      "actionLow": "Urgent transfusion evaluation required",
+      "actionHigh": "Evaluate for polycythemia"
+    },
+    {
+      "name": "critical-high-potassium",
+      "loinc": "2823-3",
+      "displayName": "Potassium",
+      "unit": "mEq/L",
+      "criticalLow": 2.5,
+      "criticalHigh": 6.0,
+      "actionLow": "Risk of cardiac arrhythmia — replace immediately",
+      "actionHigh": "Risk of fatal arrhythmia — treat immediately, repeat ECG"
+    },
+    {
+      "name": "critical-sodium",
+      "loinc": "2951-2",
+      "displayName": "Sodium",
+      "unit": "mEq/L",
+      "criticalLow": 120,
+      "criticalHigh": 160,
+      "actionLow": "Severe hyponatremia — risk of cerebral oedema",
+      "actionHigh": "Severe hypernatremia — risk of neurological damage"
+    },
+    {
+      "name": "critical-low-glucose",
+      "loinc": "2345-7",
+      "displayName": "Glucose",
+      "unit": "mmol/L",
+      "criticalLow": 2.8,
+      "criticalHigh": 27.8,
+      "actionLow": "Severe hypoglycaemia — administer glucose immediately",
+      "actionHigh": "Severe hyperglycaemia — evaluate for DKA/HHS"
+    },
+    {
+      "name": "critical-troponin-t",
+      "loinc": "6598-7",
+      "displayName": "Troponin T",
+      "unit": "ng/mL",
+      "criticalHigh": 0.04,
+      "actionHigh": "Elevated troponin — evaluate for acute MI, notify cardiologist"
+    },
+    {
+      "name": "critical-troponin-i",
+      "loinc": "10839-9",
+      "displayName": "Troponin I",
+      "unit": "ng/mL",
+      "criticalHigh": 0.04,
+      "actionHigh": "Elevated troponin — evaluate for acute MI, notify cardiologist"
+    },
+    {
+      "name": "critical-creatinine",
+      "loinc": "2160-0",
+      "displayName": "Creatinine",
+      "unit": "umol/L",
+      "criticalHigh": 884,
+      "actionHigh": "Severe renal impairment — evaluate for acute kidney injury"
+    },
+    {
+      "name": "critical-platelets",
+      "loinc": "777-3",
+      "displayName": "Platelets",
+      "unit": "x10^9/L",
+      "criticalLow": 20,
+      "criticalHigh": 1000,
+      "actionLow": "Severe thrombocytopenia — risk of spontaneous bleeding",
+      "actionHigh": "Thrombocytosis — evaluate for thrombotic risk"
+    },
+    {
+      "name": "critical-wbc",
+      "loinc": "6690-2",
+      "displayName": "White Blood Cell Count",
+      "unit": "x10^9/L",
+      "criticalLow": 2.0,
+      "criticalHigh": 30.0,
+      "actionLow": "Severe leukopenia — infection risk",
+      "actionHigh": "Severe leukocytosis — evaluate for sepsis or haematological malignancy"
+    },
+    {
+      "name": "critical-ph",
+      "loinc": "2744-1",
+      "displayName": "Arterial pH",
+      "unit": "",
+      "criticalLow": 7.20,
+      "criticalHigh": 7.60,
+      "actionLow": "Severe acidosis — identify and treat cause",
+      "actionHigh": "Severe alkalosis — identify and treat cause"
+    }
+  ]
+}

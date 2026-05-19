@@ -1,0 +1,21 @@
+{
+  "name": "@lotto-emr/bots",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "build": "tsc",
+    "deploy": "medplum bot deploy",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@lotto-emr/core": "workspace:*",
+    "@medplum/core": "^3.2.0",
+    "@medplum/fhirtypes": "^3.2.0",
+    "json-rules-engine": "^6.1.3",
+    "zod": "^3.22.0"
+  },
+  "devDependencies": {
+    "@medplum/cli": "^3.2.0",
+    "typescript": "^5.4.0"
+  }
+}

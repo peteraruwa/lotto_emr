@@ -1,0 +1,85 @@
+{
+  "_comment": "Drug-drug interaction rules for common medications in the Nigerian National Formulary. Severity: contraindicated | major | moderate | minor.",
+  "interactions": [
+    {
+      "id": "warfarin-aspirin",
+      "drugs": ["warfarin", "aspirin"],
+      "rxnorm": ["11289", "1191"],
+      "severity": "major",
+      "description": "Concurrent use significantly increases risk of bleeding. Avoid combination unless benefit clearly outweighs risk.",
+      "action": "Monitor closely for signs of bleeding. Consider alternative antiplatelet agent."
+    },
+    {
+      "id": "metformin-contrast",
+      "drugs": ["metformin", "iodinated contrast"],
+      "rxnorm": ["6809"],
+      "severity": "major",
+      "description": "Risk of contrast-induced nephropathy leading to metformin-associated lactic acidosis.",
+      "action": "Hold metformin 48 hours before and after iodinated contrast procedures. Check renal function before resuming."
+    },
+    {
+      "id": "ciprofloxacin-antacids",
+      "drugs": ["ciprofloxacin", "antacids"],
+      "rxnorm": ["2551"],
+      "severity": "moderate",
+      "description": "Antacids containing aluminium/magnesium chelate fluoroquinolones, reducing absorption by up to 90%.",
+      "action": "Administer ciprofloxacin 2 hours before or 6 hours after antacid."
+    },
+    {
+      "id": "ace-inhibitor-potassium",
+      "drugs": ["lisinopril", "potassium chloride"],
+      "rxnorm": ["29046", "8591"],
+      "severity": "major",
+      "description": "ACE inhibitors reduce renal potassium excretion; concurrent potassium supplementation can cause hyperkalaemia.",
+      "action": "Monitor serum potassium regularly. Avoid concurrent use unless serum K < 3.5 mEq/L."
+    },
+    {
+      "id": "ssri-tramadol",
+      "drugs": ["fluoxetine", "tramadol"],
+      "rxnorm": ["41493", "41493"],
+      "severity": "major",
+      "description": "Combined use increases risk of serotonin syndrome and lowers seizure threshold.",
+      "action": "Avoid combination. If necessary, use lowest effective tramadol dose and monitor for serotonin syndrome symptoms."
+    },
+    {
+      "id": "metronidazole-alcohol",
+      "drugs": ["metronidazole", "alcohol"],
+      "rxnorm": ["6922"],
+      "severity": "contraindicated",
+      "description": "Disulfiram-like reaction with severe nausea, vomiting, flushing, and hypotension.",
+      "action": "Contraindicated. Advise patient to avoid alcohol during treatment and for 48 hours after the last dose."
+    },
+    {
+      "id": "amoxicillin-warfarin",
+      "drugs": ["amoxicillin", "warfarin"],
+      "rxnorm": ["723", "11289"],
+      "severity": "moderate",
+      "description": "Antibiotics can disrupt gut flora and reduce Vitamin K synthesis, potentially increasing INR.",
+      "action": "Monitor INR more frequently during antibiotic course and for 1 week after completion."
+    },
+    {
+      "id": "digoxin-amiodarone",
+      "drugs": ["digoxin", "amiodarone"],
+      "rxnorm": ["3407", "703"],
+      "severity": "major",
+      "description": "Amiodarone inhibits P-glycoprotein and CYP3A4, significantly increasing digoxin plasma levels.",
+      "action": "Reduce digoxin dose by 30–50% when initiating amiodarone. Monitor digoxin levels and ECG."
+    },
+    {
+      "id": "statin-clarithromycin",
+      "drugs": ["simvastatin", "clarithromycin"],
+      "rxnorm": ["36567", "21212"],
+      "severity": "contraindicated",
+      "description": "Clarithromycin inhibits CYP3A4, massively increasing simvastatin exposure and risk of myopathy/rhabdomyolysis.",
+      "action": "Contraindicated. Temporarily suspend simvastatin for the duration of clarithromycin treatment."
+    },
+    {
+      "id": "nsaid-ace-inhibitor",
+      "drugs": ["ibuprofen", "enalapril"],
+      "rxnorm": ["5640", "3827"],
+      "severity": "moderate",
+      "description": "NSAIDs reduce the antihypertensive effect of ACE inhibitors and increase risk of acute kidney injury.",
+      "action": "Avoid combination when possible. If necessary, monitor renal function and blood pressure."
+    }
+  ]
+}

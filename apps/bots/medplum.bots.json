@@ -1,0 +1,62 @@
+{
+  "bots": [
+    {
+      "name": "patient-view-cds",
+      "id": "patient-view-cds",
+      "description": "CDS Hooks patient-view: evaluates allergies, overdue screenings, active conditions",
+      "source": "src/cds-hooks/patient-view/handler.ts",
+      "dist": "dist/cds-hooks/patient-view/handler.js"
+    },
+    {
+      "name": "order-select-cds",
+      "id": "order-select-cds",
+      "description": "CDS Hooks order-select: checks duplicate orders, formulary compliance",
+      "source": "src/cds-hooks/order-select/handler.ts",
+      "dist": "dist/cds-hooks/order-select/handler.js"
+    },
+    {
+      "name": "order-sign-cds",
+      "id": "order-sign-cds",
+      "description": "CDS Hooks order-sign: drug-drug interaction, allergy cross-reference, dose range checks",
+      "source": "src/cds-hooks/order-sign/handler.ts",
+      "dist": "dist/cds-hooks/order-sign/handler.js"
+    },
+    {
+      "name": "note-draft-ai",
+      "id": "note-draft-ai",
+      "description": "AI bot: generates clinical note draft using Gemini after de-identification",
+      "source": "src/ai/handlers/note-draft/handler.ts",
+      "dist": "dist/ai/handlers/note-draft/handler.js"
+    },
+    {
+      "name": "summarize-history-ai",
+      "id": "summarize-history-ai",
+      "description": "AI bot: summarizes patient history for referral letters",
+      "source": "src/ai/handlers/summarize-history/handler.ts",
+      "dist": "dist/ai/handlers/summarize-history/handler.js"
+    },
+    {
+      "name": "differential-suggest-ai",
+      "id": "differential-suggest-ai",
+      "description": "AI bot: suggests differential diagnoses based on symptoms and labs",
+      "source": "src/ai/handlers/differential-suggest/handler.ts",
+      "dist": "dist/ai/handlers/differential-suggest/handler.js"
+    },
+    {
+      "name": "on-patient-create",
+      "id": "on-patient-create",
+      "description": "Automation: generates LCH-YYYYNNNNNN MRN on Patient creation",
+      "source": "src/automations/on-patient-create/handler.ts",
+      "dist": "dist/automations/on-patient-create/handler.js",
+      "criteria": "Patient"
+    },
+    {
+      "name": "on-observation-create",
+      "id": "on-observation-create",
+      "description": "Automation: flags critical lab values and creates urgent Task",
+      "source": "src/automations/on-observation-create/handler.ts",
+      "dist": "dist/automations/on-observation-create/handler.js",
+      "criteria": "Observation"
+    }
+  ]
+}
