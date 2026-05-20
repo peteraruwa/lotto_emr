@@ -1,12 +1,12 @@
 import type { Metadata } from 'next';
-import { PatientChart } from '@/features/patients';
+import { PatientProfile } from '@/features/patients';
 
-interface PatientChartPageProps {
+interface PatientProfilePageProps {
   params: { id: string };
 }
 
-export const metadata: Metadata = { title: 'Patient Chart' };
+export const metadata: Metadata = { title: 'Patient Profile' };
 
-export default function PatientChartPage({ params }: PatientChartPageProps) {
-  return <PatientChart patientId={params.id} />;
+export default function PatientProfilePage({ params }: PatientProfilePageProps) {
+  return <PatientProfile patientId={params.id} />;
 }
