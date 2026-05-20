@@ -19,12 +19,15 @@ interface PlanContext {
   medications?: string[];
 }
 
+export type ExamData = Record<string, Record<string, string | string[]>>;
+
 // ── Hook ───────────────────────────────────────────────────────────────────────
 export function useAiAssist() {
   const [loadingSection, setLoadingSection] = useState<string | null>(null);
   const [icdResults, setIcdResults] = useState<IcdCode[]>([]);
   const [isSearchingIcd, setIsSearchingIcd] = useState(false);
   const [isGeneratingPlan, setIsGeneratingPlan] = useState(false);
+  const [isConvertingExam, setIsConvertingExam] = useState(false);
 
   /**
    * Expands a clinical section's text using AI.
@@ -113,14 +116,45 @@ export function useAiAssist() {
     []
   );
 
+  /**
+   * Converts structured exam findings into a clinical narrative.
+   * Returns the narrative text, or undefined on failure.
+   */
+  const convertExamToNarrative = useCallback(
+    async (examData: ExamData): Promise<string | undefined> => {
+      setIsConvertingExam(true);
+      try {
+        const response = await fetch('/api/ai-assist', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'convert-exam',
+            examData,
+          }),
+        });
+
+        if (!response.ok) return undefined;
+        const data = await response.json() as { narrative?: string };
+        return data.narrative;
+      } catch {
+        return undefined;
+      } finally {
+        setIsConvertingExam(false);
+      }
+    },
+    []
+  );
+
   return {
     expandSection,
     searchIcd,
     suggestPlan,
+    convertExamToNarrative,
     loadingSection,
     icdResults,
     setIcdResults,
     isSearchingIcd,
     isGeneratingPlan,
+    isConvertingExam,
   };
 }

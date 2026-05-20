@@ -11,11 +11,17 @@ export async function POST(req: NextRequest) {
     action?: string;
     text?: string;
     context?: Record<string, unknown>;
+    examData?: Record<string, Record<string, string | string[]>>;
   } | null;
 
-  const { action, text, context } = body ?? {};
+  const { action, text, context, examData } = body ?? {};
 
-  if (!action || !text) {
+  if (!action) {
+    return NextResponse.json({ error: 'action required' }, { status: 400 });
+  }
+
+  // convert-exam does not require text
+  if (!text && action !== 'convert-exam') {
     return NextResponse.json({ error: 'action and text required' }, { status: 400 });
   }
 
@@ -100,6 +106,54 @@ Be practical and evidence-based. Respond with the plan text only.`,
 
       const plan = result.response.text();
       return NextResponse.json({ plan });
+    }
+
+    if (action === 'convert-exam') {
+      if (!examData || typeof examData !== 'object') {
+        return NextResponse.json({ error: 'examData required' }, { status: 400 });
+      }
+
+      // Convert structured exam data to readable text for the AI
+      const lines: string[] = [];
+      for (const [moduleId, categories] of Object.entries(examData)) {
+        // Convert moduleId to a readable label (e.g. general_examination -> General Examination)
+        const moduleLabel = moduleId
+          .split('_')
+          .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+          .join(' ');
+
+        const findings: string[] = [];
+        for (const [category, selection] of Object.entries(categories)) {
+          if (Array.isArray(selection)) {
+            findings.push(`${category}: ${selection.join(', ')}`);
+          } else {
+            findings.push(`${category}: ${selection}`);
+          }
+        }
+
+        if (findings.length > 0) {
+          lines.push(`${moduleLabel}:\n  ${findings.join('\n  ')}`);
+        }
+      }
+
+      const examText = lines.join('\n\n');
+
+      const result = await flashModel.generateContent({
+        systemInstruction: `You are a clinical documentation assistant. Convert the structured examination findings into a professional clinical examination narrative in the third person. Use formal medical language. Be concise. Do not add findings not present in the input. Do not include diagnoses or interpretations.`,
+        contents: [
+          {
+            role: 'user',
+            parts: [
+              {
+                text: `Convert the following structured examination findings into a clinical narrative:\n\n${examText}`,
+              },
+            ],
+          },
+        ],
+      });
+
+      const narrative = result.response.text();
+      return NextResponse.json({ narrative });
     }
 
     return NextResponse.json({ error: 'unknown action' }, { status: 400 });
