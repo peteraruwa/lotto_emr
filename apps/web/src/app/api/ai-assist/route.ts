@@ -1,7 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
-import Anthropic from '@anthropic-ai/sdk';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 
-const client = new Anthropic(); // reads ANTHROPIC_API_KEY from env
+const genAI = new GoogleGenerativeAI(process.env.EMR_API_KEY ?? '');
+
+const flashModel = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
+const proModel = genAI.getGenerativeModel({ model: 'gemini-1.5-pro' });
 
 export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => null) as {
@@ -18,28 +21,18 @@ export async function POST(req: NextRequest) {
 
   try {
     if (action === 'icd-search') {
-      const message = await client.messages.create({
-        model: 'claude-haiku-4-5-20251001',
-        max_tokens: 1024,
-        system: `You are a clinical coding assistant specializing in ICD-10 codes for a Nigerian hospital.
+      const result = await flashModel.generateContent({
+        systemInstruction: `You are a clinical coding assistant specializing in ICD-10 codes for a Nigerian hospital.
 Given a diagnosis or clinical description, return a JSON array of relevant ICD-10 codes.
 Respond ONLY with valid JSON — no prose, no markdown fences.
 Format: [{"code": "I10", "description": "Essential (primary) hypertension"}, ...]
 Return 3-7 of the most relevant codes. Prioritize codes commonly used in Nigerian clinical practice.`,
-        messages: [
-          {
-            role: 'user',
-            content: `Find ICD-10 codes for: ${text}`,
-          },
-        ],
+        contents: [{ role: 'user', parts: [{ text: `Find ICD-10 codes for: ${text}` }] }],
       });
 
-      const responseText =
-        message.content[0].type === 'text' ? message.content[0].text : '';
-
+      const responseText = result.response.text();
       let codes: Array<{ code: string; description: string }> = [];
       try {
-        // Strip any accidental markdown fences
         const cleaned = responseText.replace(/```[a-z]*\n?/g, '').trim();
         codes = JSON.parse(cleaned);
       } catch {
@@ -52,26 +45,22 @@ Return 3-7 of the most relevant codes. Prioritize codes commonly used in Nigeria
     if (action === 'expand-section') {
       const sectionName = (context?.section as string) ?? 'clinical section';
 
-      const message = await client.messages.create({
-        model: 'claude-haiku-4-5-20251001',
-        max_tokens: 1024,
-        system: `You are an experienced Nigerian hospital physician assistant helping doctors write clinical notes.
+      const result = await flashModel.generateContent({
+        systemInstruction: `You are an experienced Nigerian hospital physician assistant helping doctors write clinical notes.
 Expand the provided clinical text into a well-structured, professional clinical note section.
 Use standard medical terminology appropriate for a Nigerian hospital setting.
 Keep the expansion clinically accurate, concise, and in the third person.
 Do NOT add fabricated clinical details — only expand and structure what is provided.
 Respond with only the expanded text, no additional commentary.`,
-        messages: [
+        contents: [
           {
             role: 'user',
-            content: `Section: ${sectionName}\n\nExpand this clinical text:\n${text}`,
+            parts: [{ text: `Section: ${sectionName}\n\nExpand this clinical text:\n${text}` }],
           },
         ],
       });
 
-      const expanded =
-        message.content[0].type === 'text' ? message.content[0].text : text;
-
+      const expanded = result.response.text() || text;
       return NextResponse.json({ expanded });
     }
 
@@ -90,26 +79,26 @@ Respond with only the expanded text, no additional commentary.`,
         .filter(Boolean)
         .join('\n');
 
-      const message = await client.messages.create({
-        model: 'claude-sonnet-4-6',
-        max_tokens: 2048,
-        system: `You are a senior clinician at a Nigerian tertiary hospital creating management plans.
+      const result = await proModel.generateContent({
+        systemInstruction: `You are a senior clinician at a Nigerian tertiary hospital creating management plans.
 Generate a comprehensive, structured management plan appropriate for a Nigerian hospital setting.
 Consider local drug availability, national treatment guidelines, and resource constraints.
 Structure the plan with clear headings: Investigations, Medications, Non-pharmacological measures, Follow-up, Patient education.
 Use generic drug names. Include specific dosages where appropriate.
 Be practical and evidence-based. Respond with the plan text only.`,
-        messages: [
+        contents: [
           {
             role: 'user',
-            content: `Patient context:\n${patientContext}\n\nDiagnosis/Assessment:\n${text}\n\nGenerate a management plan.`,
+            parts: [
+              {
+                text: `Patient context:\n${patientContext}\n\nDiagnosis/Assessment:\n${text}\n\nGenerate a management plan.`,
+              },
+            ],
           },
         ],
       });
 
-      const plan =
-        message.content[0].type === 'text' ? message.content[0].text : '';
-
+      const plan = result.response.text();
       return NextResponse.json({ plan });
     }
 

@@ -10,9 +10,9 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.97.1",
     "@emotion/react": "^11.14.0",
     "@emotion/server": "^11.11.0",
+    "@google/generative-ai": "^0.24.1",
     "@hookform/resolvers": "^3.3.4",
     "@lotto-emr/core": "workspace:*",
     "@lotto-emr/ui": "workspace:*",
