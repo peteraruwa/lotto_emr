@@ -107,7 +107,11 @@ async function seedUser(medplum: MedplumClient, user: SeedUser): Promise<void> {
   console.log(`  Created Practitioner (id=${practitioner.id})`);
 
   // 4. Invite the user to the project — this creates ProjectMembership
-  const membership = await medplum.post('admin/projects/$invite', {
+  const project = await medplum.searchOne('Project', {});
+  const projectId = project?.id;
+  if (!projectId) throw new Error('Could not determine project ID from client credentials');
+
+  const membership = await medplum.post(`admin/projects/${projectId}/invite`, {
     resourceType: 'Practitioner',
     firstName: given[0] ?? user.name,
     lastName: family,
