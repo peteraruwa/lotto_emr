@@ -22,11 +22,8 @@ export const newPatientSchema = z.object({
 
   phone: z
     .string()
-    .min(1, 'Phone number is required')
-    .regex(
-      /^(\+?234|0)[789]\d{9}$/,
-      'Enter a valid Nigerian phone number (e.g. 08012345678)'
-    ),
+    .min(7, 'Phone number is required')
+    .max(20, 'Phone number too long'),
 
   email: z.string().email('Invalid email address').optional().or(z.literal('')),
 
@@ -46,14 +43,7 @@ export const newPatientSchema = z.object({
   nextOfKinRelationship: z
     .enum(['spouse', 'parent', 'child', 'sibling', 'friend', 'other'])
     .optional(),
-  nextOfKinPhone: z
-    .string()
-    .regex(
-      /^(\+?234|0)[789]\d{9}$/,
-      'Enter a valid Nigerian phone number'
-    )
-    .optional()
-    .or(z.literal('')),
+  nextOfKinPhone: z.string().max(20).optional().or(z.literal('')),
 
   insuranceNumber: z.string().max(50).optional(),
   insuranceProvider: z.string().max(100).optional(),

@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -8,13 +8,11 @@ import { Button, Card, CardContent, Input, Label } from '@lotto-emr/ui';
 import { newPatientSchema, type NewPatientFormData } from '../schemas/patient.schema';
 import { useCreatePatient } from '../api/use-create-patient';
 
-/**
- * New patient registration form.
- * On successful submission, redirects to the new patient's chart page.
- */
 export function NewPatientForm() {
   const router = useRouter();
   const { mutateAsync: createPatient, isPending } = useCreatePatient();
+  const [apiError, setApiError] = useState<string | null>(null);
+  const errorRef = useRef<HTMLDivElement>(null);
 
   const {
     register,
@@ -22,22 +20,38 @@ export function NewPatientForm() {
     formState: { errors },
   } = useForm<NewPatientFormData>({
     resolver: zodResolver(newPatientSchema),
-    defaultValues: {
-      gender: 'unknown',
-    },
+    defaultValues: { gender: 'unknown' },
   });
 
   async function onSubmit(data: NewPatientFormData) {
+    setApiError(null);
     try {
       const patient = await createPatient(data);
       router.push(`/patients/${patient.id}`);
-    } catch {
-      // Error handled by the mutation's error state if needed
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Failed to register patient. Please try again.';
+      setApiError(msg);
+      errorRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
   }
 
+  // Scroll to first field error when form has validation failures
+  function onInvalid() {
+    const firstError = document.querySelector('[aria-invalid="true"]') as HTMLElement | null;
+    firstError?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+    <form onSubmit={handleSubmit(onSubmit, onInvalid)} className="space-y-6">
+      {apiError && (
+        <div ref={errorRef} className="p-4 bg-red-50 border border-red-200 rounded-lg flex gap-3">
+          <span className="text-red-500 text-lg leading-none">⚠</span>
+          <div>
+            <p className="text-sm font-medium text-red-800">Registration failed</p>
+            <p className="text-xs text-red-700 mt-0.5">{apiError}</p>
+          </div>
+        </div>
+      )}
       {/* Demographics */}
       <Card>
         <CardContent className="pt-6 space-y-4">
@@ -124,7 +138,7 @@ export function NewPatientForm() {
 
           <div className="space-y-1">
             <Label htmlFor="phone">Phone Number *</Label>
-            <Input id="phone" {...register('phone')} placeholder="08012345678" type="tel" />
+            <Input id="phone" {...register('phone')} placeholder="08012345678" type="tel" aria-invalid={!!errors.phone} />
             {errors.phone && (
               <p className="text-xs text-destructive">{errors.phone.message}</p>
             )}
