@@ -119,9 +119,9 @@ export const ROLE_CONFIG: Record<Role, RoleConfig> = {
   },
 
   [ROLES.SUPERADMIN]: {
-    homeRoute: '/dashboard',
+    homeRoute: '/',
     navItems: [
-      { label: 'Dashboard',  href: '/dashboard', icon: 'LayoutDashboard' },
+      { label: 'Dashboard',  href: '/',          icon: 'LayoutDashboard' },
       { label: 'Employees',  href: '/hr',         icon: 'UsersRound' },
       { label: 'Patients',   href: '/patients',   icon: 'Users' },
       { label: 'Schedule',   href: '/schedule',   icon: 'Calendar' },
