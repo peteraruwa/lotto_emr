@@ -8,7 +8,7 @@ interface AccountResult {
   email:    string;
   role:     string;
   password: string;
-  status:   'created' | 'already_exists' | 'error';
+  status:   'created' | 'role_fixed' | 'already_exists' | 'error';
   error?:   string;
 }
 
@@ -151,8 +151,11 @@ export default function SetupPage() {
                   {r.status === 'created' && (
                     <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-medium">Created</span>
                   )}
+                  {r.status === 'role_fixed' && (
+                    <span className="text-xs bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full font-medium">Role fixed ✓</span>
+                  )}
                   {r.status === 'already_exists' && (
-                    <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full font-medium">Already exists</span>
+                    <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full font-medium">Already active</span>
                   )}
                   {r.status === 'error' && (
                     <span className="text-xs bg-red-100 text-red-700 px-2 py-0.5 rounded-full font-medium">Error</span>

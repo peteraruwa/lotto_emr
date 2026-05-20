@@ -112,47 +112,109 @@ async function getProjectId(baseUrl: string, token: string): Promise<string> {
   throw new Error('Could not determine project ID — ensure this Medplum account owns a project.');
 }
 
+async function applyRoleTag(
+  baseUrl: string,
+  h: Record<string, string>,
+  membershipId: string,
+  role: string,
+): Promise<void> {
+  // Read current membership
+  const getRes = await fetch(`${baseUrl}fhir/R4/ProjectMembership/${membershipId}`, { headers: h });
+  const membership = await getRes.json();
+  if (!getRes.ok) throw new Error(`Could not read membership ${membershipId}`);
+
+  // Build updated resource — keep all existing tags except our system, then add the correct one
+  const otherTags = (membership.meta?.tag ?? []).filter((t: { system: string }) => t.system !== ROLE_TAG_SYSTEM);
+  const updated = {
+    ...membership,
+    meta: {
+      ...membership.meta,
+      tag: [
+        ...otherTags,
+        { system: ROLE_TAG_SYSTEM, code: role, display: role.charAt(0).toUpperCase() + role.slice(1) },
+      ],
+    },
+  };
+
+  const putRes = await fetch(`${baseUrl}fhir/R4/ProjectMembership/${membershipId}`, {
+    method:  'PUT',
+    headers: { ...h, 'Content-Type': 'application/fhir+json' },
+    body:    JSON.stringify(updated),
+  });
+  if (!putRes.ok) {
+    const err = await putRes.json().catch(() => ({}));
+    throw new Error(err?.issue?.[0]?.details?.text ?? `Role tag update failed (${putRes.status})`);
+  }
+}
+
 async function provisionAccount(
   baseUrl: string,
   token:   string,
   projectId: string,
   account: typeof ACCOUNTS[number],
-): Promise<'created' | 'already_exists'> {
+): Promise<'created' | 'role_fixed' | 'already_exists'> {
   const h = authHeaders(token);
 
-  // Skip if staff ID already registered
+  // ── Find or create Practitioner ───────────────────────────────────────────
   const searchRes = await fetch(
     `${baseUrl}fhir/R4/Practitioner?identifier=${encodeURIComponent(STAFF_ID_SYSTEM + '|' + account.staffId)}`,
     { headers: h },
   );
   const bundle = await searchRes.json().catch(() => ({}));
-  if ((bundle?.total ?? 0) > 0) return 'already_exists';
 
-  // Create Practitioner
-  const practRes = await fetch(`${baseUrl}fhir/R4/Practitioner`, {
-    method:  'POST',
-    headers: { ...h, 'Content-Type': 'application/fhir+json' },
-    body: JSON.stringify({
-      resourceType: 'Practitioner',
-      active:       true,
-      identifier:   [{ system: STAFF_ID_SYSTEM, value: account.staffId }],
-      name:         [{ use: 'official', given: [account.firstName], family: account.lastName }],
-      telecom:      [{ system: 'email', value: account.email, use: 'work' }],
-      qualification:[{ code: { text: account.jobTitle } }],
-      extension: [
-        { url: 'https://lotto-hospital.local/fhir/StructureDefinition/department',         valueString: account.department },
-        { url: 'https://lotto-hospital.local/fhir/StructureDefinition/system-role',        valueString: account.role },
-        { url: 'https://lotto-hospital.local/fhir/StructureDefinition/date-of-employment', valueDate:   new Date().toISOString().slice(0, 10) },
-      ],
-    } satisfies Partial<Practitioner>),
-  });
+  let practitionerId: string;
 
-  const practitioner = await practRes.json();
-  if (!practRes.ok) {
-    throw new Error(practitioner?.issue?.[0]?.details?.text ?? `Practitioner create failed (${practRes.status})`);
+  if ((bundle?.total ?? 0) > 0) {
+    // Practitioner already exists — check if membership has role tag
+    practitionerId = bundle.entry[0].resource.id;
+
+    const mbrRes = await fetch(
+      `${baseUrl}fhir/R4/ProjectMembership?profile=Practitioner/${practitionerId}&_count=1`,
+      { headers: h },
+    );
+    const mbrBundle = await mbrRes.json().catch(() => ({}));
+    const membership = mbrBundle?.entry?.[0]?.resource;
+
+    if (membership) {
+      const hasTag = membership.meta?.tag?.some(
+        (t: { system: string; code: string }) => t.system === ROLE_TAG_SYSTEM && t.code === account.role,
+      );
+      if (hasTag) return 'already_exists';
+
+      // Tag missing — fix it
+      await applyRoleTag(baseUrl, h, membership.id, account.role);
+      return 'role_fixed';
+    }
+
+    // Membership not found — fall through to re-invite
+  } else {
+    // Create Practitioner
+    const practRes = await fetch(`${baseUrl}fhir/R4/Practitioner`, {
+      method:  'POST',
+      headers: { ...h, 'Content-Type': 'application/fhir+json' },
+      body: JSON.stringify({
+        resourceType: 'Practitioner',
+        active:       true,
+        identifier:   [{ system: STAFF_ID_SYSTEM, value: account.staffId }],
+        name:         [{ use: 'official', given: [account.firstName], family: account.lastName }],
+        telecom:      [{ system: 'email', value: account.email, use: 'work' }],
+        qualification:[{ code: { text: account.jobTitle } }],
+        extension: [
+          { url: 'https://lotto-hospital.local/fhir/StructureDefinition/department',         valueString: account.department },
+          { url: 'https://lotto-hospital.local/fhir/StructureDefinition/system-role',        valueString: account.role },
+          { url: 'https://lotto-hospital.local/fhir/StructureDefinition/date-of-employment', valueDate:   new Date().toISOString().slice(0, 10) },
+        ],
+      } satisfies Partial<Practitioner>),
+    });
+
+    const practitioner = await practRes.json();
+    if (!practRes.ok) {
+      throw new Error(practitioner?.issue?.[0]?.details?.text ?? `Practitioner create failed (${practRes.status})`);
+    }
+    practitionerId = practitioner.id;
   }
 
-  // Invite — creates login + ProjectMembership with role tag
+  // ── Invite (creates ProjectMembership + login) ────────────────────────────
   const inviteRes = await fetch(`${baseUrl}admin/projects/${projectId}/invite`, {
     method:  'POST',
     headers: h,
@@ -164,14 +226,7 @@ async function provisionAccount(
       password:     account.password,
       sendEmail:    false,
       membership: {
-        profile: { reference: `Practitioner/${practitioner.id}` },
-        meta: {
-          tag: [{
-            system:  ROLE_TAG_SYSTEM,
-            code:    account.role,
-            display: account.role.charAt(0).toUpperCase() + account.role.slice(1),
-          }],
-        },
+        profile: { reference: `Practitioner/${practitionerId}` },
       },
     }),
   });
@@ -179,6 +234,25 @@ async function provisionAccount(
   if (!inviteRes.ok) {
     const err = await inviteRes.json().catch(() => ({}));
     throw new Error(err?.issue?.[0]?.details?.text ?? `Invite failed (${inviteRes.status})`);
+  }
+
+  // ── Apply role tag explicitly (invite body meta.tag is stripped by Medplum) ─
+  const inviteData = await inviteRes.json().catch(() => ({}));
+  const membershipId: string | undefined = inviteData?.resourceType === 'ProjectMembership'
+    ? inviteData.id
+    : inviteData?.membership?.id;
+
+  if (membershipId) {
+    await applyRoleTag(baseUrl, h, membershipId, account.role);
+  } else {
+    // Fallback: search by profile
+    const mbrRes = await fetch(
+      `${baseUrl}fhir/R4/ProjectMembership?profile=Practitioner/${practitionerId}&_count=1`,
+      { headers: h },
+    );
+    const mbrBundle = await mbrRes.json().catch(() => ({}));
+    const mbrId = mbrBundle?.entry?.[0]?.resource?.id;
+    if (mbrId) await applyRoleTag(baseUrl, h, mbrId, account.role);
   }
 
   return 'created';
