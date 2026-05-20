@@ -45,7 +45,16 @@ export async function POST(req: NextRequest) {
   }
 
   const baseUrl = process.env.NEXT_PUBLIC_MEDPLUM_BASE_URL ?? 'https://api.medplum.com/';
-  const medplum = new MedplumClient({ baseUrl, fetch });
+  // Server-side in-memory storage — avoids sessionStorage (browser-only)
+  const store = new Map<string, string>();
+  const storage = {
+    clear:     () => store.clear(),
+    getString: (k: string) => store.get(k),
+    setString: (k: string, v: string | undefined) => { v === undefined ? store.delete(k) : store.set(k, v); },
+    getObject: <T>(k: string): T | undefined => { const v = store.get(k); return v ? JSON.parse(v) : undefined; },
+    setObject: <T>(k: string, v: T | undefined) => { v === undefined ? store.delete(k) : store.set(k, JSON.stringify(v)); },
+  };
+  const medplum = new MedplumClient({ baseUrl, fetch, storage });
 
   // Authenticate as the Medplum project owner
   let loginResult: Awaited<ReturnType<typeof medplum.startLogin>>;
