@@ -9,6 +9,8 @@ import { useMedplum } from '@medplum/react';
 import { useAiAssist } from '../hooks/use-ai-assist';
 import type { IcdCode } from '../hooks/use-ai-assist';
 import type { DocumentReference } from '@medplum/fhirtypes';
+import { ExamBuilder } from './exam-builder';
+import type { ExamBuilderValue } from './exam-builder';
 
 // ── Form data shape ────────────────────────────────────────────────────────────
 interface StructuredNoteFormData {
@@ -20,13 +22,6 @@ interface StructuredNoteFormData {
   drugHistory: string;
   reviewOfSystems: string;
   diagnosis: string;
-  // Examination sub-sections
-  generalExamination: string;
-  cvsExamination: string;
-  respiratoryExamination: string;
-  cnsExamination: string;
-  entExamination: string;
-  ophthalmologyExamination: string;
   // Plan
   plan: string;
 }
@@ -115,15 +110,21 @@ export function StructuredNoteEditor({
   const [icdOpen, setIcdOpen] = useState(false);
   const diagnosisRef = useRef<HTMLDivElement>(null);
 
+  // ── Exam builder state ────────────────────────────────────────────────────
+  const [examFindings, setExamFindings] = useState<ExamBuilderValue>({});
+  const [examinationNarrative, setExaminationNarrative] = useState('');
+
   const {
     expandSection,
     searchIcd,
     suggestPlan,
+    convertExamToNarrative,
     loadingSection,
     icdResults,
     setIcdResults,
     isSearchingIcd,
     isGeneratingPlan,
+    isConvertingExam,
   } = useAiAssist();
 
   const { control, handleSubmit, watch, setValue } = useForm<StructuredNoteFormData>({
@@ -136,12 +137,6 @@ export function StructuredNoteEditor({
       drugHistory: '',
       reviewOfSystems: '',
       diagnosis: '',
-      generalExamination: '',
-      cvsExamination: '',
-      respiratoryExamination: '',
-      cnsExamination: '',
-      entExamination: '',
-      ophthalmologyExamination: '',
       plan: '',
     },
   });
@@ -183,12 +178,23 @@ export function StructuredNoteEditor({
     if (planText) setValue('plan', planText);
   }
 
+  // ── Generate exam narrative ────────────────────────────────────────────────
+  async function handleGenerateNarrative() {
+    const narrative = await convertExamToNarrative(examFindings);
+    if (narrative) setExaminationNarrative(narrative);
+  }
+
   // ── Save note ──────────────────────────────────────────────────────────────
   async function saveNote(formData: StructuredNoteFormData, status: 'draft' | 'final') {
     setIsSaving(true);
     try {
       const currentUser = medplum.getProfile();
-      const contentBase64 = Buffer.from(JSON.stringify(formData), 'utf-8').toString('base64');
+      const noteContent = {
+        ...formData,
+        examFindings,
+        examinationNarrative,
+      };
+      const contentBase64 = Buffer.from(JSON.stringify(noteContent), 'utf-8').toString('base64');
 
       const doc: DocumentReference = {
         resourceType: 'DocumentReference',
@@ -547,32 +553,30 @@ export function StructuredNoteEditor({
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-5">
-            {[
-              { field: 'generalExamination' as const, label: 'General Examination' },
-              { field: 'cvsExamination' as const, label: 'CVS Examination' },
-              { field: 'respiratoryExamination' as const, label: 'Respiratory Examination' },
-              { field: 'cnsExamination' as const, label: 'CNS Examination' },
-              { field: 'entExamination' as const, label: 'ENT Examination' },
-              { field: 'ophthalmologyExamination' as const, label: 'Ophthalmology Examination' },
-            ].map(({ field, label }) => (
-              <Controller
-                key={field}
-                control={control}
-                name={field}
-                render={({ fieldState: _fs, ...rest }) => (
-                  <SectionTextarea
-                    id={field}
-                    label={label}
-                    value={rest.field.value}
-                    onChange={rest.field.onChange}
-                    showAiAssist
-                    isAssisting={loadingSection === field}
-                    onAiAssist={() => handleAiAssist(field, label)}
-                    rows={3}
-                  />
-                )}
-              />
-            ))}
+            <ExamBuilder
+              value={examFindings}
+              onChange={setExamFindings}
+              onGenerateNarrative={handleGenerateNarrative}
+              isGenerating={isConvertingExam}
+            />
+
+            {/* Generated narrative read-only preview */}
+            {examinationNarrative && (
+              <div className="space-y-1.5">
+                <Label className="text-sm font-medium text-gray-700">
+                  Generated Examination Narrative
+                </Label>
+                <textarea
+                  readOnly
+                  value={examinationNarrative}
+                  rows={6}
+                  className="flex w-full rounded-md border border-teal-200 bg-teal-50/40 px-3 py-2 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-teal-400 resize-y text-gray-800"
+                />
+                <p className="text-xs text-muted-foreground">
+                  Review this AI-generated narrative before signing. Edit directly if needed.
+                </p>
+              </div>
+            )}
           </CardContent>
         </Card>
 
