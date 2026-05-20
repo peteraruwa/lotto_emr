@@ -1,7 +1,10 @@
 [build]
-  base      = "apps/web"
-  command   = "cd ../.. && pnpm install --frozen-lockfile && pnpm turbo run build --filter=@lotto-emr/web"
-  publish   = ".next"
+  command = "pnpm install && pnpm --filter @lotto-emr/web build"
+  publish = "apps/web/.next"
+
+[build.environment]
+  NODE_VERSION = "20"
+  PNPM_VERSION = "9"
 
 [[plugins]]
   package = "@netlify/plugin-nextjs"
