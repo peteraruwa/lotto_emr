@@ -76,7 +76,7 @@ export function PatientQueue({ rows, loading, onOpenPatient }: PatientQueueProps
           <tr className="border-b bg-gray-50">
             <th className="px-4 py-2.5 text-left text-xs font-semibold text-gray-500 w-16">Time</th>
             <th className="px-4 py-2.5 text-left text-xs font-semibold text-gray-500">Patient</th>
-            <th className="px-4 py-2.5 text-left text-xs font-semibold text-gray-500 hidden sm:table-cell">Visit Type</th>
+            <th className="px-4 py-2.5 text-left text-xs font-semibold text-gray-500">Visit Type</th>
             <th className="px-4 py-2.5 text-left text-xs font-semibold text-gray-500">Status</th>
             <th className="px-4 py-2.5 text-right text-xs font-semibold text-gray-500"></th>
           </tr>
@@ -110,7 +110,7 @@ export function PatientQueue({ rows, loading, onOpenPatient }: PatientQueueProps
                   )}
                 </td>
 
-                <td className="px-4 py-3 text-xs text-gray-500 hidden sm:table-cell">
+                <td className="px-4 py-3 text-xs text-gray-500">
                   {appt.visitType}
                 </td>
 
