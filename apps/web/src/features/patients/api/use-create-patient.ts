@@ -5,11 +5,17 @@ import { useMedplum } from '@medplum/react';
 import type { Patient } from '@medplum/fhirtypes';
 import type { NewPatientFormData } from '../schemas/patient.schema';
 
+const MRN_SYSTEM = 'https://lotto-hospital.local/fhir/identifier/mrn';
+
+function generateMRN(): string {
+  const year = new Date().getFullYear();
+  const seq = String(Math.floor(100000 + Math.random() * 900000));
+  return `LCH-${year}-${seq}`;
+}
+
 /**
  * Mutation hook for creating a new Patient resource in Medplum.
- *
- * After the Patient is created, the Medplum subscription triggers the
- * `on-patient-create` bot which auto-generates and attaches an MRN.
+ * Generates and embeds an MRN identifier on creation.
  */
 export function useCreatePatient() {
   const medplum = useMedplum();
@@ -17,6 +23,7 @@ export function useCreatePatient() {
 
   return useMutation({
     mutationFn: async (data: NewPatientFormData): Promise<Patient> => {
+      const mrn = generateMRN();
       const patientResource: Patient = {
         resourceType: 'Patient',
         active: true,
@@ -83,18 +90,29 @@ export function useCreatePatient() {
               ]
             : []),
         ],
-        identifier: data.insuranceNumber
-          ? [
-              {
-                system: 'https://lotto-hospital.local/fhir/identifier/insurance',
-                value: data.insuranceNumber,
-                type: {
-                  coding: [{ system: 'http://terminology.hl7.org/CodeSystem/v2-0203', code: 'MB' }],
-                  text: data.insuranceProvider ?? 'Insurance',
+        identifier: [
+          {
+            system: MRN_SYSTEM,
+            value: mrn,
+            use: 'official',
+            type: {
+              coding: [{ system: 'http://terminology.hl7.org/CodeSystem/v2-0203', code: 'MR', display: 'Medical Record Number' }],
+              text: 'MRN',
+            },
+          },
+          ...(data.insuranceNumber
+            ? [
+                {
+                  system: 'https://lotto-hospital.local/fhir/identifier/insurance',
+                  value: data.insuranceNumber,
+                  type: {
+                    coding: [{ system: 'http://terminology.hl7.org/CodeSystem/v2-0203', code: 'MB' }],
+                    text: data.insuranceProvider ?? 'Insurance',
+                  },
                 },
-              },
-            ]
-          : [],
+              ]
+            : []),
+        ],
       };
 
       return medplum.createResource(patientResource);

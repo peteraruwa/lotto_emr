@@ -166,6 +166,17 @@ export function AppShell({ children }: AppShellProps) {
           <p className="text-sm font-semibold text-gray-900">Lotto Central Hospital</p>
         </header>
 
+        {/* Desktop top bar */}
+        <header className="hidden md:flex items-center justify-between px-6 py-3 bg-white border-b flex-shrink-0">
+          <p className="text-sm font-semibold text-gray-800">Lotto Central Hospital</p>
+          <div className="flex items-center gap-3">
+            <span className="text-xs text-gray-500 capitalize">{role ?? ''}</span>
+            <div className="w-7 h-7 rounded-full bg-hospital-200 flex items-center justify-center text-hospital-700 text-xs font-bold">
+              {displayName.charAt(0).toUpperCase()}
+            </div>
+          </div>
+        </header>
+
         {/* Page content */}
         <main className="flex-1 overflow-y-auto p-4 md:p-6">
           {children}

@@ -181,6 +181,7 @@ export default function SetupPage() {
 
       <p className="text-xs text-gray-400 text-center max-w-xs">
         This page is safe to revisit — it skips accounts that already exist.
+        {' '}<Link href="/seed-patients" className="underline hover:text-gray-600">Seed demo patients →</Link>
       </p>
     </div>
   );

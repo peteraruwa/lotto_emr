@@ -23,11 +23,11 @@ export const ROLE_CONFIG: Record<Role, RoleConfig> = {
   [ROLES.DOCTOR]: {
     homeRoute: '/',
     navItems: [
-      { label: 'Dashboard', href: '/', icon: 'LayoutDashboard' },
-      { label: 'Patients', href: '/patients', icon: 'Users' },
-      { label: 'Schedule', href: '/schedule', icon: 'Calendar' },
-      { label: 'Orders', href: '/orders', icon: 'ClipboardList' },
-      { label: 'Results', href: '/results', icon: 'FlaskConical' },
+      { label: 'Dashboard',    href: '/',          icon: 'LayoutDashboard' },
+      { label: 'Patients',     href: '/patients',  icon: 'Users' },
+      { label: 'Appointments', href: '/schedule',  icon: 'Calendar' },
+      { label: 'Orders',       href: '/orders',    icon: 'ClipboardList' },
+      { label: 'Results',      href: '/results',   icon: 'FlaskConical' },
     ],
     allowedActions: [
       'patient:read',

@@ -47,7 +47,7 @@ export function PatientList() {
           />
         </div>
 
-        <RequireRole roles={['admin', 'doctor', 'nurse']}>
+        <RequireRole roles={['admin']}>
           <Button asChild size="sm">
             <Link href="/patients/new">
               <Plus className="h-4 w-4 mr-1" />
