@@ -1,21 +1,18 @@
 'use client';
 
 import { useMedplum } from '@medplum/react';
+import type { Extension } from '@medplum/fhirtypes';
 import { Role, ROLES } from './roles';
 
 const ROLE_TAG_SYSTEM = 'https://lotto-hospital.local/fhir/role';
+const SYSTEM_ROLE_EXT = 'https://lotto-hospital.local/fhir/StructureDefinition/system-role';
 
 export type RoleState =
   | { status: 'loading' }
   | { status: 'unauthenticated' }
-  | { status: 'no-tag' }          // logged in but no role tag assigned
+  | { status: 'no-tag' }
   | { status: 'resolved'; role: Role };
 
-/**
- * Returns the current user's role state.
- * Distinguishes between "still initialising", "not logged in",
- * "logged in but no role tag", and "role resolved".
- */
 export function useRoleState(): RoleState {
   const medplum = useMedplum();
 
@@ -27,12 +24,23 @@ export function useRoleState(): RoleState {
   const membership = medplum.getProjectMembership();
   if (!membership) return { status: 'no-tag' };
 
-  const roleTag = membership.meta?.tag?.find((t) => t.system === ROLE_TAG_SYSTEM);
-  const roleCode = roleTag?.code;
   const validRoles = Object.values(ROLES) as string[];
 
-  if (roleCode && validRoles.includes(roleCode)) {
-    return { status: 'resolved', role: roleCode as Role };
+  // Primary: ProjectMembership meta.tag (set via admin invite + role tag PUT)
+  const tagCode = membership.meta?.tag?.find((t) => t.system === ROLE_TAG_SYSTEM)?.code;
+  if (tagCode && validRoles.includes(tagCode)) {
+    return { status: 'resolved', role: tagCode as Role };
+  }
+
+  // Fallback: system-role extension on the Practitioner profile
+  // This is always set during account creation (via EmployeeForm or provision script)
+  // and is returned in the login response alongside the profile resource.
+  const extCode = (profile as { extension?: Extension[] })
+    .extension
+    ?.find((e) => e.url === SYSTEM_ROLE_EXT)
+    ?.valueString;
+  if (extCode && validRoles.includes(extCode)) {
+    return { status: 'resolved', role: extCode as Role };
   }
 
   return { status: 'no-tag' };
