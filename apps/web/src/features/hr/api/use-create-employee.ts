@@ -70,7 +70,10 @@ export function useCreateEmployee() {
       });
 
       // 2. Invite to the project — creates ProjectMembership + login credentials
-      await medplum.post('admin/projects/$invite', {
+      const projectId = medplum.getProject()?.id;
+      if (!projectId) throw new Error('No active Medplum project found. Please re-login.');
+
+      await medplum.post(`admin/projects/${projectId}/invite`, {
         resourceType: 'Practitioner',
         firstName:    data.firstName,
         lastName:     data.lastName,
