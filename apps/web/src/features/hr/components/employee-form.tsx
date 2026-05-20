@@ -2,7 +2,7 @@
 
 import React, { useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Eye, EyeOff } from 'lucide-react';
 import { Button, Card, CardContent, Input, Label } from '@lotto-emr/ui';
@@ -20,6 +20,33 @@ const NIGERIAN_STATES = [
   'Jigawa','Kaduna','Kano','Katsina','Kebbi','Kogi','Kwara','Lagos','Nasarawa',
   'Niger','Ogun','Ondo','Osun','Oyo','Plateau','Rivers','Sokoto','Taraba','Yobe','Zamfara',
 ];
+
+const SELECT_CLASS =
+  'flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring';
+
+const DOCTOR_DEFAULTS: EmployeeFormData = {
+  firstName:            'Chukwuemeka',
+  lastName:             'Okonkwo',
+  otherNames:           'David',
+  dateOfBirth:          '1985-03-14',
+  gender:               'male',
+  phone:                '08012345678',
+  personalEmail:        'emeka.okonkwo@gmail.com',
+  address:              '12 Adeola Hopewell Street, Victoria Island',
+  state:                'Lagos',
+  nextOfKinName:        'Ngozi Okonkwo',
+  nextOfKinPhone:       '08098765432',
+  nextOfKinRelationship:'Spouse',
+  department:           'Clinical',
+  jobTitle:             'Senior Medical Officer',
+  qualification:        'MBBS (University of Lagos), FMCP Internal Medicine',
+  dateOfEmployment:     '2026-05-20',
+  employeeId:           '',
+  loginEmail:           'dr.okonkwo@lotto-hospital.ng',
+  password:             'Doctor@2026!',
+  confirmPassword:      'Doctor@2026!',
+  systemRole:           'doctor',
+};
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
@@ -42,34 +69,17 @@ function Field({ label, error, children }: { label: string; error?: string; chil
   );
 }
 
-function SelectField({ id, options, placeholder, ...props }: any) {
-  return (
-    <select
-      id={id}
-      className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-      {...props}
-    >
-      {placeholder && <option value="">{placeholder}</option>}
-      {options.map((o: any) =>
-        typeof o === 'string'
-          ? <option key={o} value={o}>{o}</option>
-          : <option key={o.value} value={o.value}>{o.label}</option>
-      )}
-    </select>
-  );
-}
-
 export function EmployeeForm() {
   const router = useRouter();
   const { mutateAsync, isPending } = useCreateEmployee();
-  const [apiError, setApiError]     = useState<string | null>(null);
-  const [showPwd, setShowPwd]       = useState(false);
+  const [apiError, setApiError]       = useState<string | null>(null);
+  const [showPwd, setShowPwd]         = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const errorRef = useRef<HTMLDivElement>(null);
 
-  const { register, handleSubmit, formState: { errors } } = useForm<EmployeeFormData>({
+  const { register, control, handleSubmit, formState: { errors } } = useForm<EmployeeFormData>({
     resolver: zodResolver(employeeSchema),
-    defaultValues: { gender: 'male', systemRole: 'admin' },
+    defaultValues: DOCTOR_DEFAULTS,
   });
 
   async function onSubmit(data: EmployeeFormData) {
@@ -105,13 +115,13 @@ export function EmployeeForm() {
       <Section title="Personal Biodata">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <Field label="First Name *" error={errors.firstName?.message}>
-            <Input {...register('firstName')} placeholder="Emeka" aria-invalid={!!errors.firstName} />
+            <Input {...register('firstName')} aria-invalid={!!errors.firstName} />
           </Field>
           <Field label="Other Names" error={errors.otherNames?.message}>
-            <Input {...register('otherNames')} placeholder="Chukwu" />
+            <Input {...register('otherNames')} />
           </Field>
           <Field label="Last Name *" error={errors.lastName?.message}>
-            <Input {...register('lastName')} placeholder="Okonkwo" aria-invalid={!!errors.lastName} />
+            <Input {...register('lastName')} aria-invalid={!!errors.lastName} />
           </Field>
         </div>
 
@@ -120,42 +130,56 @@ export function EmployeeForm() {
             <Input type="date" {...register('dateOfBirth')} aria-invalid={!!errors.dateOfBirth} />
           </Field>
           <Field label="Gender *" error={errors.gender?.message}>
-            <SelectField
-              {...register('gender')}
-              options={[
-                { value: 'male', label: 'Male' },
-                { value: 'female', label: 'Female' },
-                { value: 'other', label: 'Other' },
-              ]}
+            <Controller
+              name="gender"
+              control={control}
+              render={({ field }) => (
+                <select {...field} className={SELECT_CLASS} aria-invalid={!!errors.gender}>
+                  <option value="male">Male</option>
+                  <option value="female">Female</option>
+                  <option value="other">Other</option>
+                </select>
+              )}
             />
           </Field>
           <Field label="Phone *" error={errors.phone?.message}>
-            <Input type="tel" {...register('phone')} placeholder="08012345678" aria-invalid={!!errors.phone} />
+            <Input type="tel" {...register('phone')} aria-invalid={!!errors.phone} />
           </Field>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <Field label="Personal Email" error={errors.personalEmail?.message}>
-            <Input type="email" {...register('personalEmail')} placeholder="personal@gmail.com" />
+            <Input type="email" {...register('personalEmail')} />
           </Field>
           <Field label="State of Origin">
-            <SelectField {...register('state')} placeholder="Select state" options={NIGERIAN_STATES} />
+            <Controller
+              name="state"
+              control={control}
+              render={({ field }) => (
+                <select {...field} className={SELECT_CLASS}>
+                  <option value="">Select state</option>
+                  {NIGERIAN_STATES.map((s) => (
+                    <option key={s} value={s}>{s}</option>
+                  ))}
+                </select>
+              )}
+            />
           </Field>
         </div>
 
         <Field label="Home Address">
-          <Input {...register('address')} placeholder="12 Adeola Odeku Street, VI" />
+          <Input {...register('address')} />
         </Field>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <Field label="Next of Kin Name">
-            <Input {...register('nextOfKinName')} placeholder="Ngozi Okonkwo" />
+            <Input {...register('nextOfKinName')} />
           </Field>
           <Field label="Relationship">
-            <Input {...register('nextOfKinRelationship')} placeholder="Spouse" />
+            <Input {...register('nextOfKinRelationship')} />
           </Field>
           <Field label="Next of Kin Phone">
-            <Input type="tel" {...register('nextOfKinPhone')} placeholder="08098765432" />
+            <Input type="tel" {...register('nextOfKinPhone')} />
           </Field>
         </div>
       </Section>
@@ -164,21 +188,27 @@ export function EmployeeForm() {
       <Section title="Employment Details">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <Field label="Department *" error={errors.department?.message}>
-            <SelectField
-              {...register('department')}
-              placeholder="Select department"
-              options={DEPARTMENTS}
-              aria-invalid={!!errors.department}
+            <Controller
+              name="department"
+              control={control}
+              render={({ field }) => (
+                <select {...field} className={SELECT_CLASS} aria-invalid={!!errors.department}>
+                  <option value="">Select department</option>
+                  {DEPARTMENTS.map((d) => (
+                    <option key={d} value={d}>{d}</option>
+                  ))}
+                </select>
+              )}
             />
           </Field>
           <Field label="Job Title *" error={errors.jobTitle?.message}>
-            <Input {...register('jobTitle')} placeholder="Consultant Physician" aria-invalid={!!errors.jobTitle} />
+            <Input {...register('jobTitle')} aria-invalid={!!errors.jobTitle} />
           </Field>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <Field label="Qualification / Specialty">
-            <Input {...register('qualification')} placeholder="MBBS, FWACP — Internal Medicine" />
+            <Input {...register('qualification')} />
           </Field>
           <Field label="Date of Employment *" error={errors.dateOfEmployment?.message}>
             <Input type="date" {...register('dateOfEmployment')} aria-invalid={!!errors.dateOfEmployment} />
@@ -186,7 +216,7 @@ export function EmployeeForm() {
         </div>
 
         <Field label="Staff ID (leave blank to auto-generate)">
-          <Input {...register('employeeId')} placeholder="LCH-2025-00001" className="font-mono" />
+          <Input {...register('employeeId')} className="font-mono" />
         </Field>
       </Section>
 
@@ -201,16 +231,21 @@ export function EmployeeForm() {
             <Input
               type="email"
               {...register('loginEmail')}
-              placeholder="dr.okonkwo@lotto-hospital.ng"
               aria-invalid={!!errors.loginEmail}
             />
           </Field>
           <Field label="System Role *" error={errors.systemRole?.message}>
-            <SelectField
-              {...register('systemRole')}
-              placeholder="Select role"
-              options={HOSPITAL_ROLES_FOR_STAFF}
-              aria-invalid={!!errors.systemRole}
+            <Controller
+              name="systemRole"
+              control={control}
+              render={({ field }) => (
+                <select {...field} className={SELECT_CLASS} aria-invalid={!!errors.systemRole}>
+                  <option value="">Select role</option>
+                  {HOSPITAL_ROLES_FOR_STAFF.map((r) => (
+                    <option key={r.value} value={r.value}>{r.label}</option>
+                  ))}
+                </select>
+              )}
             />
           </Field>
         </div>
@@ -221,7 +256,6 @@ export function EmployeeForm() {
               <Input
                 type={showPwd ? 'text' : 'password'}
                 {...register('password')}
-                placeholder="Min. 8 characters"
                 className="pr-10"
                 aria-invalid={!!errors.password}
               />
@@ -236,7 +270,6 @@ export function EmployeeForm() {
               <Input
                 type={showConfirm ? 'text' : 'password'}
                 {...register('confirmPassword')}
-                placeholder="Repeat password"
                 className="pr-10"
                 aria-invalid={!!errors.confirmPassword}
               />
