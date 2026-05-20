@@ -21,9 +21,9 @@ export interface RoleConfig {
  */
 export const ROLE_CONFIG: Record<Role, RoleConfig> = {
   [ROLES.DOCTOR]: {
-    homeRoute: '/dashboard',
+    homeRoute: '/',
     navItems: [
-      { label: 'Dashboard', href: '/dashboard', icon: 'LayoutDashboard' },
+      { label: 'Dashboard', href: '/', icon: 'LayoutDashboard' },
       { label: 'Patients', href: '/patients', icon: 'Users' },
       { label: 'Schedule', href: '/schedule', icon: 'Calendar' },
       { label: 'Orders', href: '/orders', icon: 'ClipboardList' },
@@ -43,9 +43,9 @@ export const ROLE_CONFIG: Record<Role, RoleConfig> = {
   },
 
   [ROLES.NURSE]: {
-    homeRoute: '/dashboard',
+    homeRoute: '/',
     navItems: [
-      { label: 'Dashboard', href: '/dashboard', icon: 'LayoutDashboard' },
+      { label: 'Dashboard', href: '/', icon: 'LayoutDashboard' },
       { label: 'Patients', href: '/patients', icon: 'Users' },
       { label: 'Schedule', href: '/schedule', icon: 'Calendar' },
       { label: 'Vitals', href: '/results', icon: 'Activity' },
@@ -61,9 +61,9 @@ export const ROLE_CONFIG: Record<Role, RoleConfig> = {
   },
 
   [ROLES.PHARMACIST]: {
-    homeRoute: '/dashboard',
+    homeRoute: '/',
     navItems: [
-      { label: 'Dashboard', href: '/dashboard', icon: 'LayoutDashboard' },
+      { label: 'Dashboard', href: '/', icon: 'LayoutDashboard' },
       { label: 'Prescriptions', href: '/orders', icon: 'Pill' },
     ],
     allowedActions: [
@@ -75,9 +75,9 @@ export const ROLE_CONFIG: Record<Role, RoleConfig> = {
   },
 
   [ROLES.LAB]: {
-    homeRoute: '/dashboard',
+    homeRoute: '/',
     navItems: [
-      { label: 'Dashboard', href: '/dashboard', icon: 'LayoutDashboard' },
+      { label: 'Dashboard', href: '/', icon: 'LayoutDashboard' },
       { label: 'Lab Orders', href: '/orders', icon: 'FlaskConical' },
       { label: 'Results', href: '/results', icon: 'BarChart2' },
     ],
@@ -91,9 +91,9 @@ export const ROLE_CONFIG: Record<Role, RoleConfig> = {
   },
 
   [ROLES.RADIOLOGIST]: {
-    homeRoute: '/dashboard',
+    homeRoute: '/',
     navItems: [
-      { label: 'Dashboard', href: '/dashboard', icon: 'LayoutDashboard' },
+      { label: 'Dashboard', href: '/', icon: 'LayoutDashboard' },
       { label: 'Imaging Orders', href: '/orders', icon: 'Scan' },
       { label: 'Reports', href: '/results', icon: 'FileText' },
     ],
@@ -106,9 +106,9 @@ export const ROLE_CONFIG: Record<Role, RoleConfig> = {
   },
 
   [ROLES.ADMIN]: {
-    homeRoute: '/dashboard',
+    homeRoute: '/',
     navItems: [
-      { label: 'Dashboard', href: '/dashboard', icon: 'LayoutDashboard' },
+      { label: 'Dashboard', href: '/', icon: 'LayoutDashboard' },
       { label: 'Patients',  href: '/patients',  icon: 'Users' },
       { label: 'Schedule',  href: '/schedule',  icon: 'Calendar' },
     ],

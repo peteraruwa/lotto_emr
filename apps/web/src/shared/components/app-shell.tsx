@@ -42,7 +42,7 @@ const ICON_MAP: Record<string, React.ElementType> = {
 function NavLink({ item, onClick }: { item: NavItem; onClick?: () => void }) {
   const pathname = usePathname();
   const Icon = ICON_MAP[item.icon] ?? ChevronRight;
-  const isActive = pathname === item.href || (item.href !== '/dashboard' && pathname.startsWith(item.href));
+  const isActive = pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href));
 
   return (
     <Link
