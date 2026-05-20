@@ -1,16 +1,31 @@
 'use client';
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
 import { Wand2, Search, Loader2, CheckCircle2 } from 'lucide-react';
 import { Badge, Button, Card, CardContent, CardHeader, CardTitle, Input, Label } from '@lotto-emr/ui';
 import { useMedplum } from '@medplum/react';
+import type { Observation } from '@medplum/fhirtypes';
 import { useAiAssist } from '../hooks/use-ai-assist';
 import type { IcdCode } from '../hooks/use-ai-assist';
 import type { DocumentReference } from '@medplum/fhirtypes';
 import { ExamBuilder } from './exam-builder';
 import type { ExamBuilderValue } from './exam-builder';
+import type { VitalsSnapshot } from '../data/exam-data';
+
+// ── LOINC codes (same as use-patient-profile.ts) ───────────────────────────────
+const VITAL_LOINC = {
+  BP_PANEL: '55284-4',
+  SYSTOLIC: '8480-6',
+  DIASTOLIC: '8462-4',
+  HR: '8867-4',
+  TEMP: '8310-5',
+  SPO2: '59408-5',
+  WEIGHT: '29463-7',
+  HEIGHT: '8302-2',
+  RR: '9279-1',
+} as const;
 
 // ── Form data shape ────────────────────────────────────────────────────────────
 interface StructuredNoteFormData {
@@ -33,6 +48,7 @@ interface StructuredNoteEditorProps {
   patientAge?: number;
   conditions?: string[];
   medications?: string[];
+  latestVitals?: VitalsSnapshot;
 }
 
 // ── Textarea section helper ────────────────────────────────────────────────────
@@ -95,6 +111,51 @@ function SectionTextarea({
   );
 }
 
+// ── Helper: parse vitals from Observation array ────────────────────────────────
+function parseVitalsFromObservations(observations: Observation[]): VitalsSnapshot {
+  const snapshot: VitalsSnapshot = {};
+
+  for (const obs of observations) {
+    const loincCode = obs.code?.coding?.find((c) => c.system === 'http://loinc.org')?.code;
+
+    if (loincCode === VITAL_LOINC.BP_PANEL) {
+      const systolicComp = obs.component?.find((comp) =>
+        comp.code?.coding?.some((c) => c.code === VITAL_LOINC.SYSTOLIC)
+      );
+      const diastolicComp = obs.component?.find((comp) =>
+        comp.code?.coding?.some((c) => c.code === VITAL_LOINC.DIASTOLIC)
+      );
+      if (
+        systolicComp?.valueQuantity?.value !== undefined &&
+        diastolicComp?.valueQuantity?.value !== undefined &&
+        !snapshot.bp
+      ) {
+        snapshot.bp = `${systolicComp.valueQuantity.value}/${diastolicComp.valueQuantity.value} mmHg`;
+      }
+    } else if (loincCode === VITAL_LOINC.HR && !snapshot.hr) {
+      const val = obs.valueQuantity?.value;
+      if (val !== undefined) snapshot.hr = `${val} /min`;
+    } else if (loincCode === VITAL_LOINC.TEMP && !snapshot.temp) {
+      const val = obs.valueQuantity?.value;
+      if (val !== undefined) snapshot.temp = `${val} °C`;
+    } else if (loincCode === VITAL_LOINC.SPO2 && !snapshot.spo2) {
+      const val = obs.valueQuantity?.value;
+      if (val !== undefined) snapshot.spo2 = `${val} %`;
+    } else if (loincCode === VITAL_LOINC.WEIGHT && !snapshot.weight) {
+      const val = obs.valueQuantity?.value;
+      if (val !== undefined) snapshot.weight = `${val} kg`;
+    } else if (loincCode === VITAL_LOINC.HEIGHT && !snapshot.height) {
+      const val = obs.valueQuantity?.value;
+      if (val !== undefined) snapshot.height = `${val} cm`;
+    } else if (loincCode === VITAL_LOINC.RR && !snapshot.rr) {
+      const val = obs.valueQuantity?.value;
+      if (val !== undefined) snapshot.rr = `${val} /min`;
+    }
+  }
+
+  return snapshot;
+}
+
 // ── Main component ─────────────────────────────────────────────────────────────
 export function StructuredNoteEditor({
   patientId,
@@ -114,11 +175,18 @@ export function StructuredNoteEditor({
   const [examFindings, setExamFindings] = useState<ExamBuilderValue>({});
   const [examinationNarrative, setExaminationNarrative] = useState('');
 
+  // ── Vitals state ──────────────────────────────────────────────────────────
+  const [latestVitals, setLatestVitals] = useState<VitalsSnapshot | undefined>(undefined);
+
+  // ── AI alerts state ───────────────────────────────────────────────────────
+  const [aiAlerts, setAiAlerts] = useState<string[]>([]);
+
   const {
     expandSection,
     searchIcd,
     suggestPlan,
     convertExamToNarrative,
+    getAiAlerts,
     loadingSection,
     icdResults,
     setIcdResults,
@@ -126,6 +194,32 @@ export function StructuredNoteEditor({
     isGeneratingPlan,
     isConvertingExam,
   } = useAiAssist();
+
+  // ── Fetch latest vitals client-side on mount ──────────────────────────────
+  useEffect(() => {
+    if (!patientId) return;
+
+    medplum
+      .searchResources('Observation', {
+        patient: `Patient/${patientId}`,
+        category: 'vital-signs',
+        _sort: '-date',
+        _count: '10',
+      })
+      .then((observations) => {
+        const snapshot = parseVitalsFromObservations(observations as Observation[]);
+        const hasAnyVital = Object.values(snapshot).some((v) => v !== undefined);
+        if (hasAnyVital) {
+          setLatestVitals(snapshot);
+          // Trigger AI alerts once vitals are ready
+          getAiAlerts(snapshot).then((alerts) => setAiAlerts(alerts));
+        }
+      })
+      .catch(() => {
+        // Silently ignore — vitals are optional
+      });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const { control, handleSubmit, watch, setValue } = useForm<StructuredNoteFormData>({
     defaultValues: {
@@ -556,8 +650,10 @@ export function StructuredNoteEditor({
             <ExamBuilder
               value={examFindings}
               onChange={setExamFindings}
+              vitals={latestVitals}
               onGenerateNarrative={handleGenerateNarrative}
               isGenerating={isConvertingExam}
+              aiAlerts={aiAlerts}
             />
 
             {/* Generated narrative read-only preview */}
@@ -624,13 +720,27 @@ export function StructuredNoteEditor({
         </Card>
 
         {/* Action buttons */}
-        <div className="flex justify-end gap-3 pb-8">
+        <div className="flex flex-wrap justify-end gap-3 pb-8">
           <Button
             type="button"
             variant="outline"
             onClick={() => router.push(`/patients/${patientId}`)}
           >
             Cancel
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => router.push(`/patients/${patientId}?action=admit`)}
+          >
+            Admit Patient
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => router.push(`/schedule?patient=${patientId}`)}
+          >
+            Book Appointment
           </Button>
           <Button
             type="button"
