@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState } from 'react'; // useState kept for TopBar search
 import Link from 'next/link';
 import { format } from 'date-fns';
 import {
@@ -9,9 +9,8 @@ import {
 } from 'lucide-react';
 import { Card, CardContent, Button, Input } from '@lotto-emr/ui';
 import { useMedplum } from '@medplum/react';
-import { useDoctorDashboardData, type AppointmentRow } from '../hooks/use-dashboard-data';
+import { useDoctorDashboardData } from '../hooks/use-dashboard-data';
 import { PatientQueue } from './patient-queue';
-import { ConsultationView } from './consultation-view';
 import { RightPanel } from './right-panel';
 
 // ── Stat card ─────────────────────────────────────────────────────────────────
@@ -101,8 +100,6 @@ function TopBar({
 export function DoctorDashboard() {
   const medplum = useMedplum();
   const { data, isLoading } = useDoctorDashboardData();
-  const [activeAppt, setActiveAppt] = useState<AppointmentRow | null>(null);
-
   const profile   = medplum.getProfile() as any;
   const firstName = profile?.name?.[0]?.given?.[0] ?? 'Doctor';
   const hour      = new Date().getHours();
@@ -129,38 +126,30 @@ export function DoctorDashboard() {
       {/* Main workspace */}
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-4">
 
-        {/* Centre: queue table OR active consultation */}
+        {/* Centre: queue table */}
         <div>
-          {activeAppt ? (
-            <ConsultationView
-              appointment={activeAppt}
-              onBack={() => setActiveAppt(null)}
-            />
-          ) : (
-            <Card>
-              <div className="flex items-center justify-between px-4 pt-4 pb-2">
-                <h2 className="font-semibold text-sm flex items-center gap-2">
-                  <Calendar className="h-4 w-4 text-hospital-600" />
-                  Today's Patient Queue
-                  {(data?.todayAppointments ?? 0) > 0 && (
-                    <span className="ml-1 text-xs bg-hospital-100 text-hospital-700 px-1.5 py-0.5 rounded-full font-medium">
-                      {data!.todayAppointments}
-                    </span>
-                  )}
-                </h2>
-                <Link href="/schedule" className="text-xs text-hospital-600 hover:underline">
-                  Manage schedule →
-                </Link>
-              </div>
-              <CardContent className="p-0">
-                <PatientQueue
-                  rows={data?.schedule ?? []}
-                  loading={isLoading}
-                  onOpenPatient={(appt) => setActiveAppt(appt)}
-                />
-              </CardContent>
-            </Card>
-          )}
+          <Card>
+            <div className="flex items-center justify-between px-4 pt-4 pb-2">
+              <h2 className="font-semibold text-sm flex items-center gap-2">
+                <Calendar className="h-4 w-4 text-hospital-600" />
+                Today's Patient Queue
+                {(data?.todayAppointments ?? 0) > 0 && (
+                  <span className="ml-1 text-xs bg-hospital-100 text-hospital-700 px-1.5 py-0.5 rounded-full font-medium">
+                    {data!.todayAppointments}
+                  </span>
+                )}
+              </h2>
+              <Link href="/schedule" className="text-xs text-hospital-600 hover:underline">
+                Manage schedule →
+              </Link>
+            </div>
+            <CardContent className="p-0">
+              <PatientQueue
+                rows={data?.schedule ?? []}
+                loading={isLoading}
+              />
+            </CardContent>
+          </Card>
         </div>
 
         {/* Right panel: alerts + recent patients + tasks */}

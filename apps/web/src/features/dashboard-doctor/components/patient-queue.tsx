@@ -32,10 +32,9 @@ const STATUS_LABEL: Record<string, string> = {
 interface PatientQueueProps {
   rows: AppointmentRow[];
   loading: boolean;
-  onOpenPatient: (row: AppointmentRow) => void;
 }
 
-export function PatientQueue({ rows, loading, onOpenPatient }: PatientQueueProps) {
+export function PatientQueue({ rows, loading }: PatientQueueProps) {
   if (loading) {
     return (
       <div className="divide-y">
@@ -125,13 +124,10 @@ export function PatientQueue({ rows, loading, onOpenPatient }: PatientQueueProps
 
                 <td className="px-4 py-3 text-right">
                   {patientId && (
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      className="h-7 text-xs px-2"
-                      onClick={() => onOpenPatient(appt)}
-                    >
-                      Open <ChevronRight className="h-3 w-3 ml-0.5" />
+                    <Button asChild size="sm" variant="outline" className="h-7 text-xs px-2">
+                      <Link href={`/patients/${patientId}`}>
+                        Open <ChevronRight className="h-3 w-3 ml-0.5" />
+                      </Link>
                     </Button>
                   )}
                 </td>
