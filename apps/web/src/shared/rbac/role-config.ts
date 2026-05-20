@@ -109,15 +109,27 @@ export const ROLE_CONFIG: Record<Role, RoleConfig> = {
     homeRoute: '/dashboard',
     navItems: [
       { label: 'Dashboard', href: '/dashboard', icon: 'LayoutDashboard' },
-      { label: 'Patients', href: '/patients', icon: 'Users' },
-      { label: 'Schedule', href: '/schedule', icon: 'Calendar' },
+      { label: 'Patients',  href: '/patients',  icon: 'Users' },
+      { label: 'Schedule',  href: '/schedule',  icon: 'Calendar' },
     ],
     allowedActions: [
-      'patient:create',
-      'patient:update',
-      'appointment:write',
-      'schedule:manage',
-      'billing:write',
+      'patient:create', 'patient:update',
+      'appointment:write', 'schedule:manage', 'billing:write',
+    ],
+  },
+
+  [ROLES.SUPERADMIN]: {
+    homeRoute: '/dashboard',
+    navItems: [
+      { label: 'Dashboard',  href: '/dashboard', icon: 'LayoutDashboard' },
+      { label: 'Employees',  href: '/hr',         icon: 'UsersRound' },
+      { label: 'Patients',   href: '/patients',   icon: 'Users' },
+      { label: 'Schedule',   href: '/schedule',   icon: 'Calendar' },
+    ],
+    allowedActions: [
+      'employee:create', 'employee:read', 'employee:update',
+      'patient:create', 'patient:read',
+      'appointment:write', 'system:manage',
     ],
   },
 };

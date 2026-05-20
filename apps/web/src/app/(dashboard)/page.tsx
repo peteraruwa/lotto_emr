@@ -9,14 +9,16 @@ import { PharmacistDashboard } from '@/features/dashboard-pharmacist';
 import { LabDashboard } from '@/features/dashboard-lab';
 import { RadiologistDashboard } from '@/features/dashboard-radiologist';
 import { AdminDashboard } from '@/features/dashboard-admin';
+import { SuperadminDashboard } from '@/features/dashboard-superadmin';
 
 const ROLE_OPTIONS: { role: Role; label: string; description: string; color: string }[] = [
-  { role: ROLES.DOCTOR,       label: 'Doctor',       description: 'Full clinical chart, orders, prescriptions, AI-assisted notes', color: 'bg-blue-600' },
-  { role: ROLES.NURSE,        label: 'Nurse',        description: 'Vitals, observations, medication administration, care plans',    color: 'bg-teal-600' },
-  { role: ROLES.PHARMACIST,   label: 'Pharmacist',   description: 'Prescription queue, dispense workflow, formulary',              color: 'bg-purple-600' },
-  { role: ROLES.LAB,          label: 'Lab Tech',     description: 'Lab orders queue, enter results, flag critical values',         color: 'bg-amber-600' },
-  { role: ROLES.RADIOLOGIST,  label: 'Radiologist',  description: 'Imaging orders, write diagnostic reports',                      color: 'bg-indigo-600' },
-  { role: ROLES.ADMIN,        label: 'Admin',        description: 'Patient registration, scheduling, appointments',                 color: 'bg-gray-600' },
+  { role: ROLES.DOCTOR,      label: 'Doctor',        description: 'Full clinical chart, orders, prescriptions, AI-assisted notes', color: 'bg-blue-600' },
+  { role: ROLES.NURSE,       label: 'Nurse',         description: 'Vitals, observations, medication administration, care plans',    color: 'bg-teal-600' },
+  { role: ROLES.PHARMACIST,  label: 'Pharmacist',    description: 'Prescription queue, dispense workflow, formulary',              color: 'bg-purple-600' },
+  { role: ROLES.LAB,         label: 'Lab Tech',      description: 'Lab orders queue, enter results, flag critical values',         color: 'bg-amber-600' },
+  { role: ROLES.RADIOLOGIST, label: 'Radiologist',   description: 'Imaging orders, write diagnostic reports',                      color: 'bg-indigo-600' },
+  { role: ROLES.ADMIN,       label: 'Admin',         description: 'Patient registration, scheduling, appointments',                color: 'bg-gray-600' },
+  { role: ROLES.SUPERADMIN,  label: 'Super Admin',   description: 'Register employees, manage accounts, system administration',    color: 'bg-red-700' },
 ];
 
 function RoleDashboard({ role }: { role: Role }) {
@@ -27,6 +29,7 @@ function RoleDashboard({ role }: { role: Role }) {
     case ROLES.LAB:         return <LabDashboard />;
     case ROLES.RADIOLOGIST: return <RadiologistDashboard />;
     case ROLES.ADMIN:       return <AdminDashboard />;
+    case ROLES.SUPERADMIN:  return <SuperadminDashboard />;
   }
 }
 

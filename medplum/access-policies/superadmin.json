@@ -1,0 +1,30 @@
+{
+  "resourceType": "AccessPolicy",
+  "name": "Super Administrator Access Policy",
+  "description": "Full project access for HR/IT superadmin. Can read and write all clinical and administrative resources, manage ProjectMembership, and invite users. Restricted to designated HR/IT staff only.",
+  "resource": [
+    { "resourceType": "Patient", "readonly": false },
+    { "resourceType": "Practitioner", "readonly": false },
+    { "resourceType": "PractitionerRole", "readonly": false },
+    { "resourceType": "Organization", "readonly": false },
+    { "resourceType": "Location", "readonly": false },
+    { "resourceType": "Encounter", "readonly": false },
+    { "resourceType": "Observation", "readonly": false },
+    { "resourceType": "DiagnosticReport", "readonly": false },
+    { "resourceType": "ServiceRequest", "readonly": false },
+    { "resourceType": "MedicationRequest", "readonly": false },
+    { "resourceType": "MedicationDispense", "readonly": false },
+    { "resourceType": "DocumentReference", "readonly": false },
+    { "resourceType": "Composition", "readonly": false },
+    { "resourceType": "Appointment", "readonly": false },
+    { "resourceType": "Schedule", "readonly": false },
+    { "resourceType": "Slot", "readonly": false },
+    { "resourceType": "Coverage", "readonly": false },
+    { "resourceType": "Claim", "readonly": false },
+    { "resourceType": "AccessPolicy", "readonly": false },
+    { "resourceType": "ProjectMembership", "readonly": false },
+    { "resourceType": "AuditEvent", "readonly": true },
+    { "resourceType": "ValueSet", "readonly": false },
+    { "resourceType": "CodeSystem", "readonly": false }
+  ]
+}

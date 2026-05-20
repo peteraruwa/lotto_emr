@@ -5,6 +5,7 @@ export const ROLES = {
   LAB: 'lab',
   RADIOLOGIST: 'radiologist',
   ADMIN: 'admin',
+  SUPERADMIN: 'superadmin',
 } as const;
 
 export type Role = (typeof ROLES)[keyof typeof ROLES];

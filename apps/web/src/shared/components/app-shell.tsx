@@ -10,6 +10,7 @@ import { cn } from '@lotto-emr/ui';
 import {
   LayoutDashboard,
   Users,
+  UsersRound,
   Calendar,
   ClipboardList,
   FlaskConical,
@@ -27,6 +28,7 @@ import {
 const ICON_MAP: Record<string, React.ElementType> = {
   LayoutDashboard,
   Users,
+  UsersRound,
   Calendar,
   ClipboardList,
   FlaskConical,
