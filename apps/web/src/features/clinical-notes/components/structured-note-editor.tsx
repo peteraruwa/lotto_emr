@@ -3,7 +3,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
-import { Wand2, Search, Loader2, CheckCircle2 } from 'lucide-react';
+import Link from 'next/link';
+import { Wand2, Search, Loader2, CheckCircle2, BedDouble, CalendarPlus } from 'lucide-react';
 import { Badge, Button, Card, CardContent, CardHeader, CardTitle, Input, Label } from '@lotto-emr/ui';
 import { useMedplum } from '@medplum/react';
 import type { Observation } from '@medplum/fhirtypes';
@@ -13,6 +14,7 @@ import type { DocumentReference } from '@medplum/fhirtypes';
 import { ExamBuilder } from './exam-builder';
 import type { ExamBuilderValue } from './exam-builder';
 import type { VitalsSnapshot } from '../data/exam-data';
+import { AdmitPatientModal } from '@/features/ward';
 
 // ── LOINC codes (same as use-patient-profile.ts) ───────────────────────────────
 const VITAL_LOINC = {
@@ -169,6 +171,7 @@ export function StructuredNoteEditor({
   const [isSaving, setIsSaving] = useState(false);
   const [saveStatus, setSaveStatus] = useState<'idle' | 'draft' | 'final'>('idle');
   const [icdOpen, setIcdOpen] = useState(false);
+  const [admitModalOpen, setAdmitModalOpen] = useState(false);
   const diagnosisRef = useRef<HTMLDivElement>(null);
 
   // ── Exam builder state ────────────────────────────────────────────────────
@@ -371,12 +374,35 @@ export function StructuredNoteEditor({
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-start justify-between gap-4">
         <div>
           <h1 className="text-xl font-bold text-gray-900">New Clinical Note</h1>
           <p className="text-sm text-muted-foreground mt-0.5">
             Structured progress note — review all AI-generated content before signing.
           </p>
+        </div>
+        <div className="flex items-center gap-2 shrink-0">
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            asChild
+            className="gap-1.5"
+          >
+            <Link href={`/schedule?patient=${patientId}`}>
+              <CalendarPlus className="h-4 w-4" />
+              Book Appointment
+            </Link>
+          </Button>
+          <Button
+            type="button"
+            size="sm"
+            onClick={() => setAdmitModalOpen(true)}
+            className="bg-teal-600 hover:bg-teal-700 text-white gap-1.5"
+          >
+            <BedDouble className="h-4 w-4" />
+            Admit Patient
+          </Button>
         </div>
       </div>
 
@@ -731,20 +757,6 @@ export function StructuredNoteEditor({
           <Button
             type="button"
             variant="outline"
-            onClick={() => router.push(`/patients/${patientId}?action=admit`)}
-          >
-            Admit Patient
-          </Button>
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => router.push(`/schedule?patient=${patientId}`)}
-          >
-            Book Appointment
-          </Button>
-          <Button
-            type="button"
-            variant="outline"
             onClick={handleSubmit(onDraftSubmit)}
             disabled={isSaving}
           >
@@ -766,6 +778,18 @@ export function StructuredNoteEditor({
           </Button>
         </div>
       </form>
+
+      {/* Admit Patient Modal */}
+      <AdmitPatientModal
+        patientId={patientId}
+        patientName=""
+        isOpen={admitModalOpen}
+        onClose={() => setAdmitModalOpen(false)}
+        onAdmitted={() => {
+          setAdmitModalOpen(false);
+          router.push('/ward');
+        }}
+      />
     </div>
   );
 }

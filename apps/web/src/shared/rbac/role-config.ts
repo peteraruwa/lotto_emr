@@ -26,6 +26,7 @@ export const ROLE_CONFIG: Record<Role, RoleConfig> = {
       { label: 'Dashboard',    href: '/',          icon: 'LayoutDashboard' },
       { label: 'Patients',     href: '/patients',  icon: 'Users' },
       { label: 'Appointments', href: '/schedule',  icon: 'Calendar' },
+      { label: 'Ward',         href: '/ward',      icon: 'BedDouble' },
       { label: 'Orders',       href: '/orders',    icon: 'ClipboardList' },
       { label: 'Results',      href: '/results',   icon: 'FlaskConical' },
     ],
@@ -48,6 +49,7 @@ export const ROLE_CONFIG: Record<Role, RoleConfig> = {
       { label: 'Dashboard', href: '/', icon: 'LayoutDashboard' },
       { label: 'Patients', href: '/patients', icon: 'Users' },
       { label: 'Schedule', href: '/schedule', icon: 'Calendar' },
+      { label: 'Ward', href: '/ward', icon: 'BedDouble' },
       { label: 'Vitals', href: '/results', icon: 'Activity' },
     ],
     allowedActions: [
@@ -111,6 +113,7 @@ export const ROLE_CONFIG: Record<Role, RoleConfig> = {
       { label: 'Dashboard', href: '/', icon: 'LayoutDashboard' },
       { label: 'Patients',  href: '/patients',  icon: 'Users' },
       { label: 'Schedule',  href: '/schedule',  icon: 'Calendar' },
+      { label: 'Ward',      href: '/ward',      icon: 'BedDouble' },
     ],
     allowedActions: [
       'patient:create', 'patient:update',
@@ -125,6 +128,7 @@ export const ROLE_CONFIG: Record<Role, RoleConfig> = {
       { label: 'Employees',  href: '/hr',         icon: 'UsersRound' },
       { label: 'Patients',   href: '/patients',   icon: 'Users' },
       { label: 'Schedule',   href: '/schedule',   icon: 'Calendar' },
+      { label: 'Ward',       href: '/ward',       icon: 'BedDouble' },
     ],
     allowedActions: [
       'employee:create', 'employee:read', 'employee:update',
