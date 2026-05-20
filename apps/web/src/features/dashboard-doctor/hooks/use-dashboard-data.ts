@@ -3,106 +3,149 @@
 import { useQueries } from '@tanstack/react-query';
 import { useMedplum } from '@medplum/react';
 
+export interface AppointmentRow {
+  id: string;
+  patientName: string;
+  patientRef: string;
+  time: string;
+  visitType: string;
+  status: string;
+}
+
+export interface EncounterRow {
+  id: string;
+  patientId: string;
+  patientName: string;
+  status: string;
+  start: string;
+  reason: string;
+}
+
+export interface PendingResult {
+  id: string;
+  title: string;
+  patientName: string;
+  issued: string;
+  status: string;
+}
+
 export interface DoctorDashboardData {
-  todayPatientCount: number;
+  todayAppointments:  number;
+  pendingResultsCount: number;
+  activeEncounters:   number;
   pendingOrdersCount: number;
-  criticalAlertsCount: number;
-  upcomingAppointments: Array<{
-    id: string;
-    patientName: string;
-    time: string;
-    reason: string;
-  }>;
-  recentEncounters: Array<{
-    id: string;
-    patientName: string;
-    status: string;
-    startTime: string;
-  }>;
+  schedule:           AppointmentRow[];
+  recentEncounters:   EncounterRow[];
+  pendingResults:     PendingResult[];
+  pendingOrders:      { id: string; title: string; patientName: string; priority: string }[];
 }
 
 export function useDoctorDashboardData(): { data: DoctorDashboardData | null; isLoading: boolean } {
   const medplum = useMedplum();
-  const today = new Date();
-  const todayStart = new Date(today.setHours(0, 0, 0, 0)).toISOString();
-  const todayEnd = new Date(today.setHours(23, 59, 59, 999)).toISOString();
-  const currentUser = medplum.getProfile();
+  const todayStr = new Date().toISOString().slice(0, 10);
 
-  const [appointmentsQuery, ordersQuery, observationsQuery, encountersQuery] = useQueries({
+  const [apptQ, orderQ, reportQ, encounterQ] = useQueries({
     queries: [
       {
-        queryKey: ['dashboard-doctor', 'appointments', currentUser?.id],
+        queryKey: ['doctor-dash', 'appointments', todayStr],
         queryFn: () =>
           medplum.searchResources('Appointment', {
-            practitioner: `Practitioner/${currentUser?.id}`,
-            date: `ge${todayStart}`,
-            _count: '10',
+            date: `ge${todayStr}`,
             _sort: 'date',
+            _count: '20',
           }),
-        enabled: !!currentUser?.id,
       },
       {
-        queryKey: ['dashboard-doctor', 'orders'],
+        queryKey: ['doctor-dash', 'orders'],
         queryFn: () =>
           medplum.searchResources('ServiceRequest', {
-            status: 'active',
-            _count: '1',
+            status: 'active,draft',
+            _sort: '-authored',
+            _count: '10',
           }),
       },
       {
-        queryKey: ['dashboard-doctor', 'critical-obs'],
+        queryKey: ['doctor-dash', 'reports'],
         queryFn: () =>
-          medplum.searchResources('Observation', {
-            status: 'preliminary,final',
-            _count: '20',
-            _sort: '-date',
+          medplum.searchResources('DiagnosticReport', {
+            status: 'registered,preliminary,partial',
+            _sort: '-issued',
+            _count: '10',
           }),
       },
       {
-        queryKey: ['dashboard-doctor', 'encounters'],
+        queryKey: ['doctor-dash', 'encounters'],
         queryFn: () =>
           medplum.searchResources('Encounter', {
-            practitioner: `Practitioner/${currentUser?.id}`,
-            status: 'in-progress,arrived',
-            _count: '10',
             _sort: '-date',
+            _count: '8',
           }),
-        enabled: !!currentUser?.id,
       },
     ],
   });
 
-  const isLoading =
-    appointmentsQuery.isLoading ||
-    ordersQuery.isLoading ||
-    observationsQuery.isLoading ||
-    encountersQuery.isLoading;
-
+  const isLoading = apptQ.isLoading || orderQ.isLoading || reportQ.isLoading || encounterQ.isLoading;
   if (isLoading) return { data: null, isLoading };
 
-  const appointments = appointmentsQuery.data ?? [];
-  const orders = ordersQuery.data ?? [];
-  const observations = observationsQuery.data ?? [];
-  const encounters = encountersQuery.data ?? [];
+  const appointments = (apptQ.data ?? []) as any[];
+  const orders       = (orderQ.data ?? []) as any[];
+  const reports      = (reportQ.data ?? []) as any[];
+  const encounters   = (encounterQ.data ?? []) as any[];
+
+  const schedule: AppointmentRow[] = appointments.map((a) => {
+    const patientParticipant = a.participant?.find((p: any) =>
+      p.actor?.reference?.startsWith('Patient/'),
+    );
+    return {
+      id:          a.id ?? '',
+      patientName: patientParticipant?.actor?.display ?? 'Patient',
+      patientRef:  patientParticipant?.actor?.reference ?? '',
+      time:        a.start ?? '',
+      visitType:   a.serviceType?.[0]?.text ?? a.reasonCode?.[0]?.text ?? 'Appointment',
+      status:      a.status ?? 'booked',
+    };
+  });
+
+  const recentEncounters: EncounterRow[] = encounters.map((e: any) => ({
+    id:          e.id ?? '',
+    patientId:   e.subject?.reference?.replace('Patient/', '') ?? '',
+    patientName: e.subject?.display ?? 'Patient',
+    status:      e.status ?? 'unknown',
+    start:       e.period?.start ?? '',
+    reason:      e.reasonCode?.[0]?.text ?? e.type?.[0]?.text ?? 'Encounter',
+  }));
+
+  const pendingResults: PendingResult[] = reports.map((r: any) => ({
+    id:          r.id ?? '',
+    title:       r.code?.text ?? r.code?.coding?.[0]?.display ?? 'Diagnostic Report',
+    patientName: r.subject?.display ?? 'Patient',
+    issued:      r.issued ?? r.effectiveDateTime ?? '',
+    status:      r.status ?? '',
+  }));
+
+  const pendingOrders = orders.map((o: any) => ({
+    id:          o.id ?? '',
+    title:       o.code?.text ?? o.code?.coding?.[0]?.display ?? 'Order',
+    patientName: o.subject?.display ?? 'Patient',
+    priority:    o.priority ?? 'routine',
+  }));
+
+  // Active encounters (in-progress or arrived)
+  const activeCount = encounters.filter((e: any) =>
+    ['in-progress', 'arrived', 'onleave'].includes(e.status),
+  ).length;
 
   return {
     isLoading,
     data: {
-      todayPatientCount: appointments.length,
-      pendingOrdersCount: orders.length,
-      criticalAlertsCount: observations.filter((o: any) => o.interpretation?.some((i: any) => i.coding?.some((c: any) => c.code === 'LL' || c.code === 'HH'))).length,
-      upcomingAppointments: appointments.slice(0, 5).map((a: any) => ({
-        id: a.id ?? '',
-        patientName: a.participant?.find((p: any) => p.actor?.reference?.startsWith('Patient/'))?.actor?.display ?? 'Patient',
-        time: a.start ?? '',
-        reason: a.reasonCode?.[0]?.text ?? 'Appointment',
-      })),
-      recentEncounters: encounters.slice(0, 5).map((e: any) => ({
-        id: e.id ?? '',
-        patientName: e.subject?.display ?? 'Patient',
-        status: e.status ?? 'unknown',
-        startTime: e.period?.start ?? '',
-      })),
+      todayAppointments:   schedule.length,
+      pendingResultsCount: reports.length,
+      activeEncounters:    activeCount,
+      pendingOrdersCount:  orders.length,
+      schedule,
+      recentEncounters,
+      pendingResults,
+      pendingOrders,
     },
   };
 }
