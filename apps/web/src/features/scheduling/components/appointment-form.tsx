@@ -70,12 +70,10 @@ export function AppointmentForm({ patientId, defaultDate = new Date(), onSuccess
           className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm"
         >
           <option>General Consultation</option>
-          <option>Follow-up</option>
-          <option>Specialist Referral</option>
-          <option>Lab Review</option>
-          <option>Immunization</option>
-          <option>Antenatal Care</option>
-          <option>Procedure</option>
+          <option>Surgery</option>
+          <option>Obs/Gynecology</option>
+          <option>Internal Medicine</option>
+          <option>Physiotherapy</option>
         </select>
       </div>
 
