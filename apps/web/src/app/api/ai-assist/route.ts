@@ -20,8 +20,8 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'action required' }, { status: 400 });
   }
 
-  // convert-exam does not require text
-  if (!text && action !== 'convert-exam') {
+  // convert-exam and suggest-alerts do not require text
+  if (!text && action !== 'convert-exam' && action !== 'suggest-alerts') {
     return NextResponse.json({ error: 'action and text required' }, { status: 400 });
   }
 

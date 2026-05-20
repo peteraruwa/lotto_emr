@@ -1,10 +1,12 @@
 // ── Exam module types ──────────────────────────────────────────────────────────
 export interface ExamOption {
   category: string;
-  type: 'single_select' | 'multi_select';
-  options: string[];
+  type: 'single_select' | 'multi_select' | 'free_numeric_text';
+  options?: string[];
   default?: string;           // for single_select
   default_selected?: string[]; // for multi_select
+  placeholder?: string;       // for free_numeric_text
+  vitalKey?: string;          // maps to a VitalsSnapshot key
 }
 
 export interface ExamModule {
@@ -13,12 +15,41 @@ export interface ExamModule {
   items: ExamOption[];
 }
 
+// ── Vitals snapshot type ───────────────────────────────────────────────────────
+export interface VitalsSnapshot {
+  bp?: string;       // "120/80 mmHg"
+  hr?: string;       // "88 /min"
+  temp?: string;     // "37.2 °C"
+  rr?: string;       // "18 /min"
+  spo2?: string;     // "98 %"
+  weight?: string;   // "70 kg"
+  height?: string;   // "170 cm"
+}
+
 // ── Clinical examination data ──────────────────────────────────────────────────
 export const EXAM_MODULES: ExamModule[] = [
   {
     id: 'general_examination',
     label: 'General Examination',
     items: [
+      {
+        category: 'Weight',
+        type: 'free_numeric_text',
+        placeholder: 'e.g. 70 kg',
+        vitalKey: 'weight',
+      },
+      {
+        category: 'Height',
+        type: 'free_numeric_text',
+        placeholder: 'e.g. 170 cm',
+        vitalKey: 'height',
+      },
+      {
+        category: 'Temperature',
+        type: 'free_numeric_text',
+        placeholder: 'e.g. 37.2 °C',
+        vitalKey: 'temp',
+      },
       {
         category: 'Consciousness',
         type: 'single_select',
@@ -69,16 +100,22 @@ export const EXAM_MODULES: ExamModule[] = [
     label: 'Cardiovascular System',
     items: [
       {
-        category: 'Pulse',
+        category: 'Blood Pressure',
+        type: 'free_numeric_text',
+        placeholder: 'e.g. 120/80 mmHg',
+        vitalKey: 'bp',
+      },
+      {
+        category: 'Pulse Rate',
+        type: 'free_numeric_text',
+        placeholder: 'e.g. 88 bpm',
+        vitalKey: 'hr',
+      },
+      {
+        category: 'Pulse Rhythm',
         type: 'single_select',
         options: ['Regular', 'Irregularly irregular', 'Regularly irregular'],
         default: 'Regular',
-      },
-      {
-        category: 'Pulse Volume',
-        type: 'single_select',
-        options: ['Normal volume', 'Low volume', 'High volume'],
-        default: 'Normal volume',
       },
       {
         category: 'JVP',
@@ -100,18 +137,20 @@ export const EXAM_MODULES: ExamModule[] = [
       {
         category: 'Murmurs',
         type: 'single_select',
-        options: ['No murmurs', 'Systolic murmur', 'Diastolic murmur', 'Continuous murmur'],
+        options: ['No murmurs', 'Systolic murmur', 'Diastolic murmur', 'Pansystolic murmur'],
         default: 'No murmurs',
       },
       {
         category: 'Peripheral Pulses',
         type: 'single_select',
         options: [
-          'Peripheral pulses present bilaterally',
-          'Peripheral pulses reduced',
-          'Peripheral pulses absent',
+          'Present bilaterally',
+          'Reduced on right',
+          'Reduced on left',
+          'Absent on right',
+          'Absent on left',
         ],
-        default: 'Peripheral pulses present bilaterally',
+        default: 'Present bilaterally',
       },
     ],
   },
@@ -121,23 +160,20 @@ export const EXAM_MODULES: ExamModule[] = [
     items: [
       {
         category: 'Respiratory Rate',
-        type: 'single_select',
-        options: [
-          'Normal (12–20/min)',
-          'Tachypnoeic (>20/min)',
-          'Bradypnoeic (<12/min)',
-        ],
-        default: 'Normal (12–20/min)',
+        type: 'free_numeric_text',
+        placeholder: 'e.g. 18 /min',
+        vitalKey: 'rr',
+      },
+      {
+        category: 'SpO₂',
+        type: 'free_numeric_text',
+        placeholder: 'e.g. 98 %',
+        vitalKey: 'spo2',
       },
       {
         category: 'Chest Expansion',
         type: 'single_select',
-        options: [
-          'Symmetrical',
-          'Reduced on right',
-          'Reduced on left',
-          'Reduced bilaterally',
-        ],
+        options: ['Symmetrical', 'Reduced on right', 'Reduced on left', 'Reduced bilaterally'],
         default: 'Symmetrical',
       },
       {
@@ -149,12 +185,7 @@ export const EXAM_MODULES: ExamModule[] = [
       {
         category: 'Percussion Note',
         type: 'single_select',
-        options: [
-          'Resonant bilaterally',
-          'Dull on right',
-          'Dull on left',
-          'Hyper-resonant',
-        ],
+        options: ['Resonant bilaterally', 'Dull on right', 'Dull on left', 'Hyper-resonant'],
         default: 'Resonant bilaterally',
       },
       {
@@ -172,23 +203,13 @@ export const EXAM_MODULES: ExamModule[] = [
       {
         category: 'Breath Sounds',
         type: 'single_select',
-        options: [
-          'Vesicular breath sounds',
-          'Bronchial breathing',
-          'Reduced breath sounds',
-        ],
-        default: 'Vesicular breath sounds',
+        options: ['Vesicular', 'Bronchial breathing', 'Reduced'],
+        default: 'Vesicular',
       },
       {
         category: 'Added Sounds',
         type: 'multi_select',
-        options: [
-          'No added sounds',
-          'Fine crackles',
-          'Coarse crackles',
-          'Wheeze',
-          'Pleural rub',
-        ],
+        options: ['No added sounds', 'Fine crackles', 'Coarse crackles', 'Wheeze', 'Pleural rub'],
         default_selected: ['No added sounds'],
       },
     ],
@@ -204,64 +225,37 @@ export const EXAM_MODULES: ExamModule[] = [
         default: 'Flat',
       },
       {
-        category: 'Tenderness',
-        type: 'single_select',
+        category: 'Tenderness / Guarding',
+        type: 'multi_select',
         options: [
           'No tenderness',
+          'Epigastric tenderness',
           'Right upper quadrant tenderness',
           'Left upper quadrant tenderness',
           'Right lower quadrant tenderness',
           'Left lower quadrant tenderness',
           'Central tenderness',
           'Generalised tenderness',
-          'Guarding present',
-          'Rigidity present',
+          'Guarding',
+          'Rigidity',
+          'Rebound tenderness',
         ],
-        default: 'No tenderness',
+        default_selected: ['No tenderness'],
       },
       {
         category: 'Liver',
-        type: 'single_select',
-        options: [
-          'Not palpable',
-          'Hepatomegaly — 2cm below costal margin',
-          'Hepatomegaly — 4cm below costal margin',
-          'Hepatomegaly — >4cm below costal margin',
-          'Tender hepatomegaly',
-        ],
-        default: 'Not palpable',
+        type: 'free_numeric_text',
+        placeholder: 'e.g. Not palpable / 2 cm below RCM',
       },
       {
         category: 'Spleen',
-        type: 'single_select',
-        options: [
-          'Not palpable',
-          'Splenomegaly — mild',
-          'Splenomegaly — moderate',
-          'Massive splenomegaly',
-        ],
-        default: 'Not palpable',
-      },
-      {
-        category: 'Kidneys',
-        type: 'single_select',
-        options: [
-          'Not ballotable',
-          'Right kidney ballotable',
-          'Left kidney ballotable',
-          'Bilateral kidneys ballotable',
-        ],
-        default: 'Not ballotable',
+        type: 'free_numeric_text',
+        placeholder: 'e.g. Not palpable / mild splenomegaly',
       },
       {
         category: 'Bowel Sounds',
         type: 'single_select',
-        options: [
-          'Present and normoactive',
-          'Hyperactive',
-          'Hypoactive',
-          'Absent',
-        ],
+        options: ['Present and normoactive', 'Hyperactive', 'Hypoactive', 'Absent'],
         default: 'Present and normoactive',
       },
     ],
@@ -297,9 +291,9 @@ export const EXAM_MODULES: ExamModule[] = [
         type: 'single_select',
         options: [
           '5/5 bilaterally',
-          'Reduced on right (upper)',
-          'Reduced on left (upper)',
-          'Reduced bilaterally (upper)',
+          'Reduced on right',
+          'Reduced on left',
+          'Reduced bilaterally',
         ],
         default: '5/5 bilaterally',
       },
@@ -308,22 +302,16 @@ export const EXAM_MODULES: ExamModule[] = [
         type: 'single_select',
         options: [
           '5/5 bilaterally',
-          'Reduced on right (lower)',
-          'Reduced on left (lower)',
-          'Reduced bilaterally (lower)',
+          'Reduced on right',
+          'Reduced on left',
+          'Reduced bilaterally',
         ],
         default: '5/5 bilaterally',
       },
       {
         category: 'Tone',
         type: 'single_select',
-        options: [
-          'Normal tone',
-          'Hypotonia',
-          'Hypertonia (spastic)',
-          'Hypertonia (rigid)',
-          'Clonus present',
-        ],
+        options: ['Normal tone', 'Hypotonia', 'Hypertonia (spastic)', 'Hypertonia (rigid)'],
         default: 'Normal tone',
       },
       {
@@ -334,109 +322,19 @@ export const EXAM_MODULES: ExamModule[] = [
           'Hyperreflexia',
           'Hyporeflexia',
           'Absent reflexes',
-          'Plantar — flexor bilaterally',
-          'Plantar — extensor (right)',
-          'Plantar — extensor (left)',
         ],
         default: 'Normal deep tendon reflexes',
       },
       {
-        category: 'Cerebellar Signs',
+        category: 'Plantar Response',
         type: 'single_select',
         options: [
-          'No cerebellar signs',
-          'Dysdiadochokinesia',
-          'Past-pointing',
-          'Intention tremor',
-          'Ataxic gait',
+          'Flexor bilaterally',
+          'Extensor (right)',
+          'Extensor (left)',
+          'Extensor bilaterally',
         ],
-        default: 'No cerebellar signs',
-      },
-    ],
-  },
-  {
-    id: 'ent_examination',
-    label: 'ENT Examination',
-    items: [
-      {
-        category: 'Ears',
-        type: 'multi_select',
-        options: [
-          'Ears — normal',
-          'Ear discharge (right)',
-          'Ear discharge (left)',
-          'Mastoid tenderness (right)',
-          'Mastoid tenderness (left)',
-          'Reduced hearing (right)',
-          'Reduced hearing (left)',
-        ],
-        default_selected: ['Ears — normal'],
-      },
-      {
-        category: 'Nose',
-        type: 'multi_select',
-        options: [
-          'Nose — normal',
-          'Nasal discharge',
-          'Nasal congestion',
-          'Deviated nasal septum',
-          'Nasal polyp',
-        ],
-        default_selected: ['Nose — normal'],
-      },
-      {
-        category: 'Throat/Tonsils',
-        type: 'single_select',
-        options: [
-          'Throat clear',
-          'Oropharyngeal erythema',
-          'Tonsillar enlargement',
-          'Tonsillar exudate',
-          'Peritonsillar abscess',
-        ],
-        default: 'Throat clear',
-      },
-    ],
-  },
-  {
-    id: 'ophthalmology_examination',
-    label: 'Ophthalmology Examination',
-    items: [
-      {
-        category: 'Conjunctiva',
-        type: 'single_select',
-        options: [
-          'Normal',
-          'Pale conjunctiva',
-          'Injected conjunctiva',
-          'Subconjunctival haemorrhage',
-        ],
-        default: 'Normal',
-      },
-      {
-        category: 'Pupils',
-        type: 'single_select',
-        options: [
-          'Equal, round, reactive to light (PERL)',
-          'Unequal pupils',
-          'Dilated and fixed (right)',
-          'Dilated and fixed (left)',
-          'Dilated and fixed bilaterally',
-          'Miosis',
-        ],
-        default: 'Equal, round, reactive to light (PERL)',
-      },
-      {
-        category: 'Fundi',
-        type: 'single_select',
-        options: [
-          'Not assessed',
-          'Normal fundi bilaterally',
-          'Papilloedema',
-          'Hypertensive retinopathy',
-          'Diabetic retinopathy',
-        ],
-        default: 'Not assessed',
+        default: 'Flexor bilaterally',
       },
     ],
   },

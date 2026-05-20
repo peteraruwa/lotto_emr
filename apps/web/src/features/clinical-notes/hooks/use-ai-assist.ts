@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useCallback } from 'react';
+import type { VitalsSnapshot } from '../data/exam-data';
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 export interface IcdCode {
@@ -28,6 +29,7 @@ export function useAiAssist() {
   const [isSearchingIcd, setIsSearchingIcd] = useState(false);
   const [isGeneratingPlan, setIsGeneratingPlan] = useState(false);
   const [isConvertingExam, setIsConvertingExam] = useState(false);
+  const [isLoadingAlerts, setIsLoadingAlerts] = useState(false);
 
   /**
    * Expands a clinical section's text using AI.
@@ -145,16 +147,44 @@ export function useAiAssist() {
     []
   );
 
+  /**
+   * Generates clinical decision support alerts based on vitals.
+   * Returns an array of alert strings, or empty array on failure.
+   */
+  const getAiAlerts = useCallback(async (vitals: VitalsSnapshot): Promise<string[]> => {
+    setIsLoadingAlerts(true);
+    try {
+      const response = await fetch('/api/ai-assist', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'suggest-alerts',
+          vitals,
+        }),
+      });
+
+      if (!response.ok) return [];
+      const data = await response.json() as { alerts?: string[] };
+      return data.alerts ?? [];
+    } catch {
+      return [];
+    } finally {
+      setIsLoadingAlerts(false);
+    }
+  }, []);
+
   return {
     expandSection,
     searchIcd,
     suggestPlan,
     convertExamToNarrative,
+    getAiAlerts,
     loadingSection,
     icdResults,
     setIcdResults,
     isSearchingIcd,
     isGeneratingPlan,
     isConvertingExam,
+    isLoadingAlerts,
   };
 }
