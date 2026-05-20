@@ -5,29 +5,41 @@ import { Role, ROLES } from './roles';
 
 const ROLE_TAG_SYSTEM = 'https://lotto-hospital.local/fhir/role';
 
-/**
- * Returns the current user's Role by reading the role tag from their
- * ProjectMembership resource.
- *
- * The tag is set during user creation / seeding:
- *   meta.tag = [{ system: ROLE_TAG_SYSTEM, code: 'doctor' }]
- *
- * Returns undefined if the user is not authenticated or the role cannot be determined.
- */
-export function useRole(): Role | undefined {
-  const medplum = useMedplum();
-  const membership = medplum.getProjectMembership();
+export type RoleState =
+  | { status: 'loading' }
+  | { status: 'unauthenticated' }
+  | { status: 'no-tag' }          // logged in but no role tag assigned
+  | { status: 'resolved'; role: Role };
 
-  if (!membership) return undefined;
+/**
+ * Returns the current user's role state.
+ * Distinguishes between "still initialising", "not logged in",
+ * "logged in but no role tag", and "role resolved".
+ */
+export function useRoleState(): RoleState {
+  const medplum = useMedplum();
+
+  if (medplum.isLoading()) return { status: 'loading' };
+
+  const profile = medplum.getProfile();
+  if (!profile) return { status: 'unauthenticated' };
+
+  const membership = medplum.getProjectMembership();
+  if (!membership) return { status: 'no-tag' };
 
   const roleTag = membership.meta?.tag?.find((t) => t.system === ROLE_TAG_SYSTEM);
   const roleCode = roleTag?.code;
-
-  // Validate against the known role values
   const validRoles = Object.values(ROLES) as string[];
+
   if (roleCode && validRoles.includes(roleCode)) {
-    return roleCode as Role;
+    return { status: 'resolved', role: roleCode as Role };
   }
 
-  return undefined;
+  return { status: 'no-tag' };
+}
+
+/** Convenience hook — returns the resolved Role or undefined. */
+export function useRole(): Role | undefined {
+  const state = useRoleState();
+  return state.status === 'resolved' ? state.role : undefined;
 }
