@@ -3,42 +3,13 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { format } from 'date-fns';
-import {
-  Search, Bell, Calendar, Users, ClipboardList,
-  Activity, FlaskConical, Plus, X,
-} from 'lucide-react';
-import { Card, CardContent, Badge, Button, Input } from '@lotto-emr/ui';
+import { Search, Bell, Plus } from 'lucide-react';
+import { Button, Input } from '@lotto-emr/ui';
 import { useMedplum } from '@medplum/react';
 import { useDoctorDashboardData, type AppointmentRow } from '../hooks/use-dashboard-data';
 import { PatientQueue } from './patient-queue';
 import { ConsultationView } from './consultation-view';
 import { RightPanel } from './right-panel';
-
-// ── Stat card ─────────────────────────────────────────────────────────────────
-
-function StatCard({
-  label, value, icon: Icon, color, href, loading,
-}: {
-  label: string; value: number; icon: React.ElementType;
-  color: string; href?: string; loading: boolean;
-}) {
-  const inner = (
-    <Card className="hover:shadow-md transition-shadow">
-      <CardContent className="p-3 flex items-center gap-3">
-        <div className={`p-2 rounded-lg ${color} flex-shrink-0`}>
-          <Icon className="h-4 w-4 text-white" />
-        </div>
-        <div>
-          <p className="text-xl font-bold leading-tight">
-            {loading ? <span className="text-gray-200">—</span> : value}
-          </p>
-          <p className="text-xs text-muted-foreground leading-tight">{label}</p>
-        </div>
-      </CardContent>
-    </Card>
-  );
-  return href ? <Link href={href}>{inner}</Link> : inner;
-}
 
 // ── Top bar ───────────────────────────────────────────────────────────────────
 
@@ -59,19 +30,21 @@ function TopBar({
   }
 
   return (
-    <div className="flex items-center gap-3 pb-2 border-b mb-1">
-      {/* Greeting */}
-      <div className="hidden sm:block flex-shrink-0">
-        <p className="text-sm font-semibold text-gray-900">{greeting}, Dr. {firstName}</p>
-        <p className="text-xs text-muted-foreground">{format(new Date(), 'EEE, d MMM yyyy')}</p>
+    <div className="flex items-center justify-between px-4 py-2.5 border-b bg-white flex-shrink-0">
+      <div className="hidden sm:block">
+        <p className="text-sm font-semibold text-gray-900">
+          {greeting}, Dr. {firstName}
+        </p>
+        <p className="text-xs text-muted-foreground">
+          {format(new Date(), 'EEE d MMM yyyy')}
+        </p>
       </div>
 
-      {/* Search */}
-      <form onSubmit={handleSearch} className="flex-1 max-w-xs">
+      <form onSubmit={handleSearch} className="flex-1 max-w-sm mx-4">
         <div className="relative">
-          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground pointer-events-none" />
           <Input
-            placeholder="Search patients…"
+            placeholder="Search patient (name, MRN, phone)…"
             className="pl-8 h-8 text-sm"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -79,24 +52,39 @@ function TopBar({
         </div>
       </form>
 
-      <div className="ml-auto flex items-center gap-2">
-        {/* Notifications bell */}
-        <Link href="/results" className="relative p-1.5 rounded-lg hover:bg-gray-100 transition-colors">
+      <div className="flex items-center gap-2">
+        <Link
+          href="/results"
+          className="relative p-1.5 rounded-lg hover:bg-gray-100 transition-colors"
+          aria-label="Pending results"
+        >
           <Bell className="h-5 w-5 text-gray-600" />
           {pendingCount > 0 && (
-            <span className="absolute -top-0.5 -right-0.5 w-4 h-4 rounded-full bg-red-500 text-white text-[10px] font-bold flex items-center justify-center">
+            <span className="absolute -top-0.5 -right-0.5 min-w-[16px] h-4 px-0.5 rounded-full bg-red-500 text-white text-[10px] font-bold flex items-center justify-center">
               {pendingCount > 9 ? '9+' : pendingCount}
             </span>
           )}
         </Link>
-
-        {/* Quick actions */}
-        <Button asChild size="sm" className="h-8 text-xs">
+        <Button asChild size="sm" className="h-8 text-xs hidden sm:flex">
           <Link href="/patients/new">
             <Plus className="h-3.5 w-3.5 mr-1" />New Patient
           </Link>
         </Button>
       </div>
+    </div>
+  );
+}
+
+// ── Empty consultation placeholder ────────────────────────────────────────────
+
+function NoPatientSelected() {
+  return (
+    <div className="h-full flex flex-col items-center justify-center text-center p-8 text-gray-400">
+      <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center mb-4">
+        <Search className="h-7 w-7 text-gray-300" />
+      </div>
+      <p className="font-medium text-gray-500">No patient selected</p>
+      <p className="text-sm mt-1">Select a patient from the queue to begin consultation</p>
     </div>
   );
 }
@@ -114,63 +102,59 @@ export function DoctorDashboard() {
   const greeting  = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
 
   return (
-    <div className="space-y-4">
+    // Escape AppShell padding (-m-4 / -m-6) so we can control our own layout.
+    // h-[calc(100%+Xrem)] compensates for the removed top+bottom padding.
+    <div className="-m-4 md:-m-6 h-[calc(100%+2rem)] md:h-[calc(100%+3rem)] flex flex-col bg-gray-50">
 
-      {/* Top bar */}
+      {/* ── Top bar ─────────────────────────────────────────────────────── */}
       <TopBar
         pendingCount={data?.pendingResultsCount ?? 0}
         firstName={firstName}
         greeting={greeting}
       />
 
-      {/* Stat strip */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-        <StatCard label="Today's Appts"    value={data?.todayAppointments   ?? 0} icon={Calendar}      color="bg-hospital-600" href="/schedule" loading={isLoading} />
-        <StatCard label="Active Encounters" value={data?.activeEncounters    ?? 0} icon={Activity}      color="bg-green-600"                    loading={isLoading} />
-        <StatCard label="Pending Results"  value={data?.pendingResultsCount ?? 0} icon={FlaskConical}  color="bg-amber-500"    href="/results"  loading={isLoading} />
-        <StatCard label="Pending Orders"   value={data?.pendingOrdersCount  ?? 0} icon={ClipboardList} color="bg-purple-600"  href="/orders"   loading={isLoading} />
-      </div>
+      {/* ── Three-column body ────────────────────────────────────────────── */}
+      <div className="flex flex-1 overflow-hidden min-h-0">
 
-      {/* Main workspace: queue / consultation + right panel */}
-      <div className="grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-4">
-
-        {/* Left: patient queue OR consultation */}
-        <div>
-          {activeAppt ? (
-            <ConsultationView
-              appointment={activeAppt}
-              onBack={() => setActiveAppt(null)}
+        {/* Left: patient queue — always visible, fixed width */}
+        <div className="w-64 xl:w-72 flex-shrink-0 border-r bg-white overflow-y-auto">
+          <div className="px-3 pt-3 pb-1 border-b">
+            <h2 className="font-semibold text-sm">Today's Queue</h2>
+            {(data?.todayAppointments ?? 0) > 0 && (
+              <p className="text-xs text-muted-foreground">
+                {data!.todayAppointments} appointment{data!.todayAppointments !== 1 ? 's' : ''}
+              </p>
+            )}
+          </div>
+          <div className="p-2">
+            <PatientQueue
+              rows={data?.schedule ?? []}
+              loading={isLoading}
+              todayCount={data?.todayAppointments ?? 0}
+              activeApptId={activeAppt?.id}
+              onOpenPatient={setActiveAppt}
             />
+          </div>
+        </div>
+
+        {/* Center: active consultation */}
+        <div className="flex-1 overflow-y-auto bg-gray-50">
+          {activeAppt ? (
+            <div className="p-4">
+              <ConsultationView
+                appointment={activeAppt}
+                onBack={() => setActiveAppt(null)}
+              />
+            </div>
           ) : (
-            <Card>
-              <div className="flex items-center justify-between px-4 pt-4 pb-2">
-                <h2 className="font-semibold text-sm flex items-center gap-2">
-                  <Calendar className="h-4 w-4 text-hospital-600" />
-                  Today's Patient Queue
-                  {(data?.todayAppointments ?? 0) > 0 && (
-                    <span className="ml-1 text-xs bg-hospital-100 text-hospital-700 px-1.5 py-0.5 rounded-full font-medium">
-                      {data!.todayAppointments}
-                    </span>
-                  )}
-                </h2>
-                <Link href="/schedule" className="text-xs text-hospital-600 hover:underline">
-                  Manage schedule →
-                </Link>
-              </div>
-              <CardContent className="px-4 pb-4">
-                <PatientQueue
-                  rows={data?.schedule ?? []}
-                  loading={isLoading}
-                  todayCount={data?.todayAppointments ?? 0}
-                  onOpenPatient={(appt) => setActiveAppt(appt)}
-                />
-              </CardContent>
-            </Card>
+            <NoPatientSelected />
           )}
         </div>
 
-        {/* Right panel: alerts + recent patients + tasks */}
-        <RightPanel data={data} isLoading={isLoading} />
+        {/* Right: results, recent patients, tasks */}
+        <div className="w-64 xl:w-72 flex-shrink-0 border-l bg-white overflow-y-auto">
+          <RightPanel data={data} isLoading={isLoading} />
+        </div>
 
       </div>
     </div>

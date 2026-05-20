@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { format } from 'date-fns';
 import {
-  ArrowLeft, Activity, AlertTriangle, Pill, ClipboardList,
+  Activity, AlertTriangle, Pill, ClipboardList,
   FlaskConical, Scan, Stethoscope, CheckCircle, Loader2,
 } from 'lucide-react';
 import { Badge, Button, Card, CardContent, CardHeader, CardTitle } from '@lotto-emr/ui';
@@ -25,10 +25,10 @@ const VITAL_LABELS: Record<string, string> = {
 
 interface ConsultationViewProps {
   appointment: AppointmentRow;
-  onBack: () => void;
+  onBack?: () => void;
 }
 
-export function ConsultationView({ appointment, onBack }: ConsultationViewProps) {
+export function ConsultationView({ appointment }: ConsultationViewProps) {
   const medplum = useMedplum();
   const patientId = appointment.patientRef?.replace('Patient/', '') ?? null;
   const { data: snap, isLoading } = usePatientSnapshot(patientId);
@@ -77,28 +77,24 @@ export function ConsultationView({ appointment, onBack }: ConsultationViewProps)
   return (
     <div className="space-y-4">
       {/* Header */}
-      <div className="flex items-center gap-3">
-        <Button variant="ghost" size="sm" onClick={onBack} className="text-muted-foreground">
-          <ArrowLeft className="h-4 w-4 mr-1" /> Patient Queue
-        </Button>
-        <div className="h-4 w-px bg-gray-200" />
+      <div className="flex items-center gap-2 pb-3 border-b">
         <div className="flex-1 min-w-0">
-          <h2 className="font-bold text-lg leading-tight">{appointment.patientName}</h2>
+          <h2 className="font-bold text-base leading-tight">{appointment.patientName}</h2>
           <p className="text-xs text-muted-foreground">{appointment.visitType} · {timeStr}</p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-shrink-0">
           {patientId && (
-            <Button asChild size="sm" variant="outline">
+            <Button asChild size="sm" variant="outline" className="h-7 text-xs">
               <Link href={`/patients/${patientId}`}>Full Chart</Link>
             </Button>
           )}
           {snap?.activeEncounterId && !completed && (
-            <Button size="sm" variant="destructive" onClick={completeEncounter} disabled={completing}>
-              {completing ? <Loader2 className="h-3.5 w-3.5 animate-spin mr-1" /> : <CheckCircle className="h-3.5 w-3.5 mr-1" />}
+            <Button size="sm" variant="destructive" className="h-7 text-xs" onClick={completeEncounter} disabled={completing}>
+              {completing ? <Loader2 className="h-3 w-3 animate-spin mr-1" /> : <CheckCircle className="h-3 w-3 mr-1" />}
               Complete
             </Button>
           )}
-          {completed && <Badge variant="completed" className="text-xs">Encounter closed</Badge>}
+          {completed && <Badge variant="completed" className="text-xs">Closed</Badge>}
         </div>
       </div>
 
