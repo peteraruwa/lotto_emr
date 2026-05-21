@@ -71,3 +71,19 @@ export const FHIR_SYSTEMS = {
   CONDITION_CLINICAL: 'http://terminology.hl7.org/CodeSystem/condition-clinical',
   DOC_CAT:            'http://hl7.org/fhir/us/core/CodeSystem/us-core-documentreference-category',
 } as const;
+
+// ── ANC-Specific LOINC Codes ─────────────────────────────────────────────────
+// Codes used specifically within the Antenatal Care (ANC) module.
+export const LOINC_ANC = {
+  FETAL_HEART_RATE:      '55283-6',   // Fetal heart rate (/min)
+  FUNDAL_HEIGHT:         '11881-0',   // Uterus fundal height (cm)
+  FETAL_PRESENTATION:    '73761-6',   // Fetal presentation
+  URINE_PROTEIN:         '5804-0',    // Protein in urine
+  URINE_GLUCOSE:         '25428-4',   // Glucose in urine
+  PCV_HEMATOCRIT:        '20570-8',   // Hematocrit (PCV) %
+  BLOOD_GLUCOSE_FASTING: '1558-6',    // Fasting glucose mg/dL
+  APGAR_1MIN:            '9274-2',    // APGAR score 1 minute
+  APGAR_5MIN:            '9271-8',    // APGAR score 5 minutes
+  BIRTH_WEIGHT:          '8339-4',    // Birth weight (kg)
+  GESTATIONAL_AGE_OBS:   '18185-9',   // Gestational age in weeks
+} as const;
