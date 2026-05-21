@@ -261,6 +261,116 @@ export const EXAM_MODULES: ExamModule[] = [
     ],
   },
   {
+    id: 'ent',
+    label: 'Ear, Nose & Throat (ENT)',
+    items: [
+      {
+        category: 'Hearing',
+        type: 'single_select',
+        options: ['Normal bilaterally', 'Reduced — right ear', 'Reduced — left ear', 'Reduced bilaterally'],
+        default: 'Normal bilaterally',
+      },
+      {
+        category: 'Otoscopy',
+        type: 'multi_select',
+        options: [
+          'Normal tympanic membranes',
+          'Wax impaction — right',
+          'Wax impaction — left',
+          'Perforated TM — right',
+          'Perforated TM — left',
+          'Otorrhoea — right',
+          'Otorrhoea — left',
+        ],
+        default_selected: ['Normal tympanic membranes'],
+      },
+      {
+        category: 'Nasal Septum',
+        type: 'single_select',
+        options: ['Central', 'Deviated to right', 'Deviated to left'],
+        default: 'Central',
+      },
+      {
+        category: 'Nasal Mucosa',
+        type: 'multi_select',
+        options: ['Normal', 'Congested', 'Pale / boggy', 'Purulent discharge', 'Blood-stained discharge'],
+        default_selected: ['Normal'],
+      },
+      {
+        category: 'Oropharynx',
+        type: 'multi_select',
+        options: [
+          'Normal oropharynx',
+          'Pharyngeal erythema',
+          'Tonsillar enlargement',
+          'Tonsillar exudate',
+          'Uvular deviation',
+        ],
+        default_selected: ['Normal oropharynx'],
+      },
+      {
+        category: 'Voice',
+        type: 'single_select',
+        options: ['Normal', 'Hoarse', 'Muffled', 'Aphonic'],
+        default: 'Normal',
+      },
+    ],
+  },
+  {
+    id: 'ophthalmology',
+    label: 'Ophthalmology',
+    items: [
+      {
+        category: 'Visual Acuity (Right)',
+        type: 'free_numeric_text',
+        placeholder: 'e.g. 6/6',
+      },
+      {
+        category: 'Visual Acuity (Left)',
+        type: 'free_numeric_text',
+        placeholder: 'e.g. 6/6',
+      },
+      {
+        category: 'Pupils',
+        type: 'single_select',
+        options: [
+          'Equal, round, reactive to light bilaterally',
+          'Anisocoria',
+          'Fixed dilated — right',
+          'Fixed dilated — left',
+          'Fixed dilated bilaterally',
+          'Pinpoint bilaterally',
+        ],
+        default: 'Equal, round, reactive to light bilaterally',
+      },
+      {
+        category: 'Conjunctiva',
+        type: 'multi_select',
+        options: ['Clear bilaterally', 'Pale', 'Injected / hyperaemic', 'Icteric sclera', 'Discharge present'],
+        default_selected: ['Clear bilaterally'],
+      },
+      {
+        category: 'Cornea',
+        type: 'single_select',
+        options: ['Clear bilaterally', 'Cloudy', 'Corneal ulcer', 'Arcus senilis'],
+        default: 'Clear bilaterally',
+      },
+      {
+        category: 'Fundoscopy',
+        type: 'multi_select',
+        options: [
+          'Normal disc and vessels',
+          'Papilloedema',
+          'Hypertensive retinopathy',
+          'Diabetic retinopathy',
+          'Retinal haemorrhage',
+          'Not performed',
+        ],
+        default_selected: ['Not performed'],
+      },
+    ],
+  },
+  {
     id: 'neurological_system',
     label: 'Neurological System',
     items: [

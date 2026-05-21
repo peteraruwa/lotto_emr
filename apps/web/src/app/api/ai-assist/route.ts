@@ -21,6 +21,10 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'action required' }, { status: 400 });
   }
 
+  if (!process.env.EMR_API_KEY) {
+    return NextResponse.json({ error: 'AI service not configured — EMR_API_KEY missing' }, { status: 503 });
+  }
+
   // convert-exam and suggest-alerts do not require text
   if (!text && action !== 'convert-exam' && action !== 'suggest-alerts') {
     return NextResponse.json({ error: 'action and text required' }, { status: 400 });

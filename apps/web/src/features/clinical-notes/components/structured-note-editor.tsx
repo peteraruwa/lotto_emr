@@ -4,7 +4,11 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Wand2, Search, Loader2, CheckCircle2, BedDouble, CalendarPlus, Eye } from 'lucide-react';
+import {
+  Wand2, Search, Loader2, CheckCircle2, BedDouble, CalendarPlus, Eye,
+  AlertCircle, Clock, BookOpen, Baby, Heart, Users, Pill, List,
+  Stethoscope, Activity, ClipboardList, X,
+} from 'lucide-react';
 import { Badge, Button, Card, CardContent, CardHeader, CardTitle, Input, Label } from '@lotto-emr/ui';
 import { useMedplum } from '@medplum/react';
 import type { Observation } from '@medplum/fhirtypes';
@@ -17,34 +21,27 @@ import type { VitalsSnapshot } from '../data/exam-data';
 import { AdmitPatientModal } from '@/features/ward';
 import { NotePreviewModal } from './note-preview-modal';
 
-// ── LOINC codes (same as use-patient-profile.ts) ───────────────────────────────
+// ── LOINC codes ────────────────────────────────────────────────────────────────
 const VITAL_LOINC = {
-  BP_PANEL: '55284-4',
-  SYSTOLIC: '8480-6',
-  DIASTOLIC: '8462-4',
-  HR: '8867-4',
-  TEMP: '8310-5',
-  SPO2: '59408-5',
-  WEIGHT: '29463-7',
-  HEIGHT: '8302-2',
-  RR: '9279-1',
+  BP_PANEL: '55284-4', SYSTOLIC: '8480-6', DIASTOLIC: '8462-4',
+  HR: '8867-4', TEMP: '8310-5', SPO2: '59408-5',
+  WEIGHT: '29463-7', HEIGHT: '8302-2', RR: '9279-1',
 } as const;
 
-// ── Form data shape ────────────────────────────────────────────────────────────
+// ── Form data ──────────────────────────────────────────────────────────────────
 interface StructuredNoteFormData {
   presentingComplaints: string;
   hpc: string;
   pastMedicalHistory: string;
-  obGynHistory: string;
+  obstetricsHistory: string;
+  gynaecologyHistory: string;
   familySocialHistory: string;
   drugHistory: string;
   reviewOfSystems: string;
   diagnosis: string;
-  // Plan
   plan: string;
 }
 
-// ── Props ──────────────────────────────────────────────────────────────────────
 interface StructuredNoteEditorProps {
   patientId: string;
   patientGender?: string;
@@ -54,7 +51,33 @@ interface StructuredNoteEditorProps {
   latestVitals?: VitalsSnapshot;
 }
 
-// ── Textarea section helper ────────────────────────────────────────────────────
+// ── Section card ───────────────────────────────────────────────────────────────
+function SectionCard({
+  num, icon: Icon, title, accent, children,
+}: {
+  num: number;
+  icon: React.ElementType;
+  title: string;
+  accent: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <Card className={`border-l-4 ${accent} shadow-sm`}>
+      <CardHeader className="pb-3 pt-4">
+        <CardTitle className="text-sm font-semibold text-gray-700 flex items-center gap-2 min-w-0">
+          <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-gray-100 text-[11px] font-bold text-gray-500 shrink-0">
+            {num}
+          </span>
+          <Icon className="h-4 w-4 text-gray-400 shrink-0" />
+          <span className="truncate">{title}</span>
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="pt-0">{children}</CardContent>
+    </Card>
+  );
+}
+
+// ── Section textarea ───────────────────────────────────────────────────────────
 interface SectionTextareaProps {
   id: string;
   label: string;
@@ -68,20 +91,13 @@ interface SectionTextareaProps {
 }
 
 function SectionTextarea({
-  id,
-  label,
-  value,
-  onChange,
-  rows = 4,
-  showAiAssist = true,
-  isAssisting = false,
-  onAiAssist,
-  placeholder,
+  id, label, value, onChange, rows = 4,
+  showAiAssist = true, isAssisting = false, onAiAssist, placeholder,
 }: SectionTextareaProps) {
   return (
     <div className="space-y-1.5">
-      <div className="flex items-center justify-between">
-        <Label htmlFor={id} className="text-sm font-medium text-gray-700">
+      <div className="flex items-center justify-between gap-2 min-w-0">
+        <Label htmlFor={id} className="text-sm font-medium text-gray-600 truncate">
           {label}
         </Label>
         {showAiAssist && onAiAssist && (
@@ -91,14 +107,12 @@ function SectionTextarea({
             size="sm"
             onClick={onAiAssist}
             disabled={isAssisting}
-            className="h-7 text-xs gap-1"
+            className="h-7 text-xs gap-1 shrink-0"
           >
-            {isAssisting ? (
-              <Loader2 className="h-3.5 w-3.5 animate-spin" />
-            ) : (
-              <Wand2 className="h-3.5 w-3.5" />
-            )}
-            {isAssisting ? 'Expanding...' : 'AI Assist'}
+            {isAssisting
+              ? <Loader2 className="h-3 w-3 animate-spin" />
+              : <Wand2 className="h-3 w-3" />}
+            <span className="hidden sm:inline">{isAssisting ? 'Expanding…' : 'AI Assist'}</span>
           </Button>
         )}
       </div>
@@ -107,56 +121,44 @@ function SectionTextarea({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         rows={rows}
-        placeholder={placeholder ?? `Enter ${label.toLowerCase()}...`}
-        className="flex w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring resize-y"
+        placeholder={placeholder ?? `Enter ${label.toLowerCase()}…`}
+        className="flex w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-teal-400 resize-y transition-shadow"
       />
     </div>
   );
 }
 
-// ── Helper: parse vitals from Observation array ────────────────────────────────
+// ── Parse vitals from Observation array ───────────────────────────────────────
 function parseVitalsFromObservations(observations: Observation[]): VitalsSnapshot {
-  const snapshot: VitalsSnapshot = {};
-
+  const snap: VitalsSnapshot = {};
   for (const obs of observations) {
-    const loincCode = obs.code?.coding?.find((c) => c.system === 'http://loinc.org')?.code;
-
-    if (loincCode === VITAL_LOINC.BP_PANEL) {
-      const systolicComp = obs.component?.find((comp) =>
-        comp.code?.coding?.some((c) => c.code === VITAL_LOINC.SYSTOLIC)
-      );
-      const diastolicComp = obs.component?.find((comp) =>
-        comp.code?.coding?.some((c) => c.code === VITAL_LOINC.DIASTOLIC)
-      );
-      if (
-        systolicComp?.valueQuantity?.value !== undefined &&
-        diastolicComp?.valueQuantity?.value !== undefined &&
-        !snapshot.bp
-      ) {
-        snapshot.bp = `${systolicComp.valueQuantity.value}/${diastolicComp.valueQuantity.value} mmHg`;
-      }
-    } else if (loincCode === VITAL_LOINC.HR && !snapshot.hr) {
-      const val = obs.valueQuantity?.value;
-      if (val !== undefined) snapshot.hr = `${val} /min`;
-    } else if (loincCode === VITAL_LOINC.TEMP && !snapshot.temp) {
-      const val = obs.valueQuantity?.value;
-      if (val !== undefined) snapshot.temp = `${val} °C`;
-    } else if (loincCode === VITAL_LOINC.SPO2 && !snapshot.spo2) {
-      const val = obs.valueQuantity?.value;
-      if (val !== undefined) snapshot.spo2 = `${val} %`;
-    } else if (loincCode === VITAL_LOINC.WEIGHT && !snapshot.weight) {
-      const val = obs.valueQuantity?.value;
-      if (val !== undefined) snapshot.weight = `${val} kg`;
-    } else if (loincCode === VITAL_LOINC.HEIGHT && !snapshot.height) {
-      const val = obs.valueQuantity?.value;
-      if (val !== undefined) snapshot.height = `${val} cm`;
-    } else if (loincCode === VITAL_LOINC.RR && !snapshot.rr) {
-      const val = obs.valueQuantity?.value;
-      if (val !== undefined) snapshot.rr = `${val} /min`;
+    const code = obs.code?.coding?.find((c) => c.system === 'http://loinc.org')?.code;
+    if (code === VITAL_LOINC.BP_PANEL) {
+      const sys = obs.component?.find((c) => c.code?.coding?.some((x) => x.code === VITAL_LOINC.SYSTOLIC));
+      const dia = obs.component?.find((c) => c.code?.coding?.some((x) => x.code === VITAL_LOINC.DIASTOLIC));
+      if (sys?.valueQuantity?.value !== undefined && dia?.valueQuantity?.value !== undefined && !snap.bp)
+        snap.bp = `${sys.valueQuantity.value}/${dia.valueQuantity.value} mmHg`;
+    } else if (code === VITAL_LOINC.HR && !snap.hr) {
+      const v = obs.valueQuantity?.value;
+      if (v !== undefined) snap.hr = `${v} /min`;
+    } else if (code === VITAL_LOINC.TEMP && !snap.temp) {
+      const v = obs.valueQuantity?.value;
+      if (v !== undefined) snap.temp = `${v} °C`;
+    } else if (code === VITAL_LOINC.SPO2 && !snap.spo2) {
+      const v = obs.valueQuantity?.value;
+      if (v !== undefined) snap.spo2 = `${v} %`;
+    } else if (code === VITAL_LOINC.WEIGHT && !snap.weight) {
+      const v = obs.valueQuantity?.value;
+      if (v !== undefined) snap.weight = `${v} kg`;
+    } else if (code === VITAL_LOINC.HEIGHT && !snap.height) {
+      const v = obs.valueQuantity?.value;
+      if (v !== undefined) snap.height = `${v} cm`;
+    } else if (code === VITAL_LOINC.RR && !snap.rr) {
+      const v = obs.valueQuantity?.value;
+      if (v !== undefined) snap.rr = `${v} /min`;
     }
   }
-
-  return snapshot;
+  return snap;
 }
 
 // ── Main component ─────────────────────────────────────────────────────────────
@@ -176,34 +178,19 @@ export function StructuredNoteEditor({
   const [previewOpen, setPreviewOpen] = useState(false);
   const diagnosisRef = useRef<HTMLDivElement>(null);
 
-  // ── Exam builder state ────────────────────────────────────────────────────
   const [examFindings, setExamFindings] = useState<ExamBuilderValue>({});
   const [examinationNarrative, setExaminationNarrative] = useState('');
-
-  // ── Vitals state ──────────────────────────────────────────────────────────
   const [latestVitals, setLatestVitals] = useState<VitalsSnapshot | undefined>(undefined);
-
-  // ── AI alerts state ───────────────────────────────────────────────────────
   const [aiAlerts, setAiAlerts] = useState<string[]>([]);
 
   const {
-    expandSection,
-    searchIcd,
-    suggestPlan,
-    convertExamToNarrative,
-    getAiAlerts,
-    loadingSection,
-    icdResults,
-    setIcdResults,
-    isSearchingIcd,
-    isGeneratingPlan,
-    isConvertingExam,
+    expandSection, searchIcd, suggestPlan, convertExamToNarrative, getAiAlerts,
+    loadingSection, icdResults, setIcdResults, isSearchingIcd,
+    isGeneratingPlan, isConvertingExam, aiError, clearAiError,
   } = useAiAssist();
 
-  // ── Fetch latest vitals client-side on mount ──────────────────────────────
   useEffect(() => {
     if (!patientId) return;
-
     medplum
       .searchResources('Observation', {
         patient: `Patient/${patientId}`,
@@ -211,18 +198,14 @@ export function StructuredNoteEditor({
         _sort: '-date',
         _count: '10',
       })
-      .then((observations) => {
-        const snapshot = parseVitalsFromObservations(observations as Observation[]);
-        const hasAnyVital = Object.values(snapshot).some((v) => v !== undefined);
-        if (hasAnyVital) {
-          setLatestVitals(snapshot);
-          // Trigger AI alerts once vitals are ready
-          getAiAlerts(snapshot).then((alerts) => setAiAlerts(alerts));
+      .then((obs) => {
+        const snap = parseVitalsFromObservations(obs as Observation[]);
+        if (Object.values(snap).some(Boolean)) {
+          setLatestVitals(snap);
+          getAiAlerts(snap).then(setAiAlerts);
         }
       })
-      .catch(() => {
-        // Silently ignore — vitals are optional
-      });
+      .catch(() => undefined);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -231,7 +214,8 @@ export function StructuredNoteEditor({
       presentingComplaints: '',
       hpc: '',
       pastMedicalHistory: '',
-      obGynHistory: '',
+      obstetricsHistory: '',
+      gynaecologyHistory: '',
       familySocialHistory: '',
       drugHistory: '',
       reviewOfSystems: '',
@@ -242,10 +226,9 @@ export function StructuredNoteEditor({
 
   const isFemale = patientGender === 'female';
 
-  // ── AI Assist handlers ─────────────────────────────────────────────────────
   async function handleAiAssist(section: keyof StructuredNoteFormData, label: string) {
-    const currentVal = watch(section);
-    const expanded = await expandSection(section, currentVal, { section: label });
+    const val = watch(section);
+    const expanded = await expandSection(section, val, { section: label });
     if (expanded) setValue(section, expanded);
   }
 
@@ -258,41 +241,32 @@ export function StructuredNoteEditor({
 
   function handleIcdSelect(code: IcdCode) {
     const current = watch('diagnosis');
-    const appended = current.trim()
-      ? `${current.trim()} (ICD-10: ${code.code})`
-      : `${code.description} (ICD-10: ${code.code})`;
-    setValue('diagnosis', appended);
+    setValue(
+      'diagnosis',
+      current.trim()
+        ? `${current.trim()} (ICD-10: ${code.code})`
+        : `${code.description} (ICD-10: ${code.code})`
+    );
     setIcdOpen(false);
     setIcdResults([]);
   }
 
   async function handleGeneratePlan() {
     const diagText = watch('diagnosis');
-    const planText = await suggestPlan(diagText, {
-      age: patientAge,
-      gender: patientGender,
-      conditions,
-      medications,
-    });
-    if (planText) setValue('plan', planText);
+    const plan = await suggestPlan(diagText, { age: patientAge, gender: patientGender, conditions, medications });
+    if (plan) setValue('plan', plan);
   }
 
-  // ── Generate exam narrative ────────────────────────────────────────────────
   async function handleGenerateNarrative() {
     const narrative = await convertExamToNarrative(examFindings);
     if (narrative) setExaminationNarrative(narrative);
   }
 
-  // ── Save note ──────────────────────────────────────────────────────────────
   async function saveNote(formData: StructuredNoteFormData, status: 'draft' | 'final') {
     setIsSaving(true);
     try {
       const currentUser = medplum.getProfile();
-      const noteContent = {
-        ...formData,
-        examFindings,
-        examinationNarrative,
-      };
+      const noteContent = { ...formData, examFindings, examinationNarrative };
       const contentBase64 = Buffer.from(JSON.stringify(noteContent), 'utf-8').toString('base64');
 
       const doc: DocumentReference = {
@@ -300,47 +274,30 @@ export function StructuredNoteEditor({
         status: 'current',
         docStatus: status === 'final' ? 'final' : 'preliminary',
         type: {
-          coding: [
-            {
-              system: 'http://loinc.org',
-              code: '11506-3',
-              display: 'Progress Note',
-            },
-          ],
+          coding: [{ system: 'http://loinc.org', code: '11506-3', display: 'Progress Note' }],
           text: 'Structured Clinical Note',
         },
-        category: [
-          {
-            coding: [
-              {
-                system: 'http://hl7.org/fhir/us/core/CodeSystem/us-core-documentreference-category',
-                code: 'clinical-note',
-                display: 'Clinical Note',
-              },
-            ],
-          },
-        ],
+        category: [{
+          coding: [{
+            system: 'http://hl7.org/fhir/us/core/CodeSystem/us-core-documentreference-category',
+            code: 'clinical-note',
+            display: 'Clinical Note',
+          }],
+        }],
         subject: { reference: `Patient/${patientId}` },
         date: new Date().toISOString(),
         author: currentUser?.id
-          ? [
-              {
-                reference: `Practitioner/${currentUser.id}`,
-                display: `${currentUser.name?.[0]?.given?.[0] ?? ''} ${currentUser.name?.[0]?.family ?? ''}`.trim(),
-              },
-            ]
+          ? [{ reference: `Practitioner/${currentUser.id}`, display: `${currentUser.name?.[0]?.given?.[0] ?? ''} ${currentUser.name?.[0]?.family ?? ''}`.trim() }]
           : [],
         description: 'Structured Clinical Note',
-        content: [
-          {
-            attachment: {
-              contentType: 'application/json',
-              data: contentBase64,
-              title: 'Structured Clinical Note',
-              creation: new Date().toISOString(),
-            },
+        content: [{
+          attachment: {
+            contentType: 'application/json',
+            data: contentBase64,
+            title: 'Structured Clinical Note',
+            creation: new Date().toISOString(),
           },
-        ],
+        }],
       };
 
       await medplum.createResource(doc);
@@ -353,14 +310,6 @@ export function StructuredNoteEditor({
     }
   }
 
-  function onDraftSubmit(formData: StructuredNoteFormData) {
-    saveNote(formData, 'draft');
-  }
-
-  function onFinalSubmit(formData: StructuredNoteFormData) {
-    saveNote(formData, 'final');
-  }
-
   if (saveStatus !== 'idle') {
     return (
       <div className="flex flex-col items-center justify-center h-64 gap-3">
@@ -368,42 +317,31 @@ export function StructuredNoteEditor({
         <p className="text-lg font-medium text-gray-900">
           Note {saveStatus === 'final' ? 'signed and saved' : 'saved as draft'}
         </p>
-        <p className="text-sm text-muted-foreground">Redirecting to patient profile...</p>
+        <p className="text-sm text-muted-foreground">Redirecting to patient profile…</p>
       </div>
     );
   }
 
+  // Dynamic section numbering
+  let n = 0;
+  const next = () => ++n;
+
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-start justify-between gap-4">
-        <div>
-          <h1 className="text-xl font-bold text-gray-900">New Clinical Note</h1>
-          <p className="text-sm text-muted-foreground mt-0.5">
-            Structured progress note — review all AI-generated content before signing.
+    <div className="space-y-5">
+
+      {/* ── Header ── */}
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <h1 className="text-xl font-bold text-gray-900 truncate">New Clinical Note</h1>
+          <p className="text-xs text-muted-foreground mt-0.5">
+            Review all AI-generated content before signing.
           </p>
         </div>
         <div className="flex items-center gap-2 shrink-0">
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            onClick={() => setPreviewOpen(true)}
-            className="gap-1.5"
-          >
-            <Eye className="h-4 w-4" />
-            Preview
-          </Button>
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            asChild
-            className="gap-1.5"
-          >
+          <Button type="button" variant="outline" size="sm" asChild className="gap-1.5">
             <Link href={`/schedule?patient=${patientId}`}>
               <CalendarPlus className="h-4 w-4" />
-              Book Appointment
+              <span className="hidden sm:inline">Book Appt</span>
             </Link>
           </Button>
           <Button
@@ -413,278 +351,248 @@ export function StructuredNoteEditor({
             className="bg-teal-600 hover:bg-teal-700 text-white gap-1.5"
           >
             <BedDouble className="h-4 w-4" />
-            Admit Patient
+            <span className="hidden sm:inline">Admit</span>
           </Button>
         </div>
       </div>
 
-      <form className="space-y-5">
+      {/* ── AI error banner ── */}
+      {aiError && (
+        <div className="flex items-start gap-2 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
+          <AlertCircle className="h-4 w-4 mt-0.5 shrink-0 text-red-500" />
+          <div className="flex-1 min-w-0">
+            <span className="font-semibold">AI Assist error: </span>{aiError}
+          </div>
+          <button type="button" onClick={clearAiError} className="shrink-0 text-red-400 hover:text-red-600">
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+      )}
+
+      <form className="space-y-4">
+
         {/* 1. Presenting Complaints */}
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-semibold text-gray-700">
-              1. Presenting Complaints
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Controller
-              control={control}
-              name="presentingComplaints"
-              render={({ field }) => (
-                <SectionTextarea
-                  id="presentingComplaints"
-                  label="Presenting Complaints"
-                  value={field.value}
-                  onChange={field.onChange}
-                  showAiAssist={false}
-                  placeholder="Describe the patient's chief complaints..."
-                  rows={3}
-                />
-              )}
-            />
-          </CardContent>
-        </Card>
+        <SectionCard num={next()} icon={AlertCircle} title="Presenting Complaints" accent="border-l-red-400">
+          <Controller
+            control={control}
+            name="presentingComplaints"
+            render={({ field }) => (
+              <SectionTextarea
+                id="presentingComplaints"
+                label="Chief complaints"
+                value={field.value}
+                onChange={field.onChange}
+                showAiAssist={false}
+                placeholder="Describe the patient's chief complaints…"
+                rows={3}
+              />
+            )}
+          />
+        </SectionCard>
 
         {/* 2. HPC */}
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-semibold text-gray-700">
-              2. History of Presenting Complaints (HPC)
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Controller
-              control={control}
-              name="hpc"
-              render={({ field }) => (
-                <SectionTextarea
-                  id="hpc"
-                  label="HPC"
-                  value={field.value}
-                  onChange={field.onChange}
-                  showAiAssist
-                  isAssisting={loadingSection === 'hpc'}
-                  onAiAssist={() => handleAiAssist('hpc', 'History of Presenting Complaints')}
-                  rows={5}
-                />
-              )}
-            />
-          </CardContent>
-        </Card>
+        <SectionCard num={next()} icon={Clock} title="History of Presenting Complaints" accent="border-l-orange-400">
+          <Controller
+            control={control}
+            name="hpc"
+            render={({ field }) => (
+              <SectionTextarea
+                id="hpc"
+                label="HPC"
+                value={field.value}
+                onChange={field.onChange}
+                showAiAssist
+                isAssisting={loadingSection === 'hpc'}
+                onAiAssist={() => handleAiAssist('hpc', 'History of Presenting Complaints')}
+                rows={5}
+              />
+            )}
+          />
+        </SectionCard>
 
         {/* 3. Past Medical History */}
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-semibold text-gray-700">
-              3. Past Medical History
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Controller
-              control={control}
-              name="pastMedicalHistory"
-              render={({ field }) => (
-                <SectionTextarea
-                  id="pastMedicalHistory"
-                  label="Past Medical History"
-                  value={field.value}
-                  onChange={field.onChange}
-                  showAiAssist
-                  isAssisting={loadingSection === 'pastMedicalHistory'}
-                  onAiAssist={() => handleAiAssist('pastMedicalHistory', 'Past Medical History')}
-                  rows={4}
-                />
-              )}
-            />
-          </CardContent>
-        </Card>
+        <SectionCard num={next()} icon={BookOpen} title="Past Medical History" accent="border-l-amber-400">
+          <Controller
+            control={control}
+            name="pastMedicalHistory"
+            render={({ field }) => (
+              <SectionTextarea
+                id="pastMedicalHistory"
+                label="Past medical history"
+                value={field.value}
+                onChange={field.onChange}
+                showAiAssist
+                isAssisting={loadingSection === 'pastMedicalHistory'}
+                onAiAssist={() => handleAiAssist('pastMedicalHistory', 'Past Medical History')}
+                rows={4}
+              />
+            )}
+          />
+        </SectionCard>
 
-        {/* 4. Ob/Gyn History (female only) */}
+        {/* 4 & 5. Obstetrics + Gynaecology (female only) */}
         {isFemale && (
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-semibold text-gray-700">
-                4. Ob/Gyn History
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
+          <>
+            <SectionCard num={next()} icon={Baby} title="Obstetrics History" accent="border-l-pink-400">
               <Controller
                 control={control}
-                name="obGynHistory"
+                name="obstetricsHistory"
                 render={({ field }) => (
                   <SectionTextarea
-                    id="obGynHistory"
-                    label="Ob/Gyn History"
+                    id="obstetricsHistory"
+                    label="Obstetrics history"
                     value={field.value}
                     onChange={field.onChange}
                     showAiAssist
-                    isAssisting={loadingSection === 'obGynHistory'}
-                    onAiAssist={() => handleAiAssist('obGynHistory', 'Ob/Gyn History')}
+                    isAssisting={loadingSection === 'obstetricsHistory'}
+                    onAiAssist={() => handleAiAssist('obstetricsHistory', 'Obstetrics History')}
+                    placeholder="Gravida/Para, LMP, EDD, previous deliveries, complications…"
                     rows={4}
                   />
                 )}
               />
-            </CardContent>
-          </Card>
+            </SectionCard>
+
+            <SectionCard num={next()} icon={Heart} title="Gynaecology History" accent="border-l-rose-400">
+              <Controller
+                control={control}
+                name="gynaecologyHistory"
+                render={({ field }) => (
+                  <SectionTextarea
+                    id="gynaecologyHistory"
+                    label="Gynaecology history"
+                    value={field.value}
+                    onChange={field.onChange}
+                    showAiAssist
+                    isAssisting={loadingSection === 'gynaecologyHistory'}
+                    onAiAssist={() => handleAiAssist('gynaecologyHistory', 'Gynaecology History')}
+                    placeholder="Menstrual cycle, dysmenorrhoea, vaginal discharge, contraception, cervical smear…"
+                    rows={4}
+                  />
+                )}
+              />
+            </SectionCard>
+          </>
         )}
 
-        {/* 5. Family & Social History */}
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-semibold text-gray-700">
-              {isFemale ? '5' : '4'}. Family &amp; Social History
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Controller
-              control={control}
-              name="familySocialHistory"
-              render={({ field }) => (
-                <SectionTextarea
-                  id="familySocialHistory"
-                  label="Family & Social History"
-                  value={field.value}
-                  onChange={field.onChange}
-                  showAiAssist
-                  isAssisting={loadingSection === 'familySocialHistory'}
-                  onAiAssist={() => handleAiAssist('familySocialHistory', 'Family & Social History')}
-                  rows={4}
-                />
-              )}
-            />
-          </CardContent>
-        </Card>
+        {/* Family & Social History */}
+        <SectionCard num={next()} icon={Users} title="Family &amp; Social History" accent="border-l-green-400">
+          <Controller
+            control={control}
+            name="familySocialHistory"
+            render={({ field }) => (
+              <SectionTextarea
+                id="familySocialHistory"
+                label="Family & social history"
+                value={field.value}
+                onChange={field.onChange}
+                showAiAssist
+                isAssisting={loadingSection === 'familySocialHistory'}
+                onAiAssist={() => handleAiAssist('familySocialHistory', 'Family & Social History')}
+                rows={4}
+              />
+            )}
+          />
+        </SectionCard>
 
-        {/* 6. Drug History */}
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-semibold text-gray-700">
-              {isFemale ? '6' : '5'}. Drug History
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Controller
-              control={control}
-              name="drugHistory"
-              render={({ field }) => (
-                <SectionTextarea
-                  id="drugHistory"
-                  label="Drug History"
-                  value={field.value}
-                  onChange={field.onChange}
-                  showAiAssist
-                  isAssisting={loadingSection === 'drugHistory'}
-                  onAiAssist={() => handleAiAssist('drugHistory', 'Drug History')}
-                  rows={3}
-                />
-              )}
-            />
-          </CardContent>
-        </Card>
+        {/* Drug History */}
+        <SectionCard num={next()} icon={Pill} title="Drug History" accent="border-l-purple-400">
+          <Controller
+            control={control}
+            name="drugHistory"
+            render={({ field }) => (
+              <SectionTextarea
+                id="drugHistory"
+                label="Drug history"
+                value={field.value}
+                onChange={field.onChange}
+                showAiAssist
+                isAssisting={loadingSection === 'drugHistory'}
+                onAiAssist={() => handleAiAssist('drugHistory', 'Drug History')}
+                rows={3}
+              />
+            )}
+          />
+        </SectionCard>
 
-        {/* 7. Review of Systems */}
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-semibold text-gray-700">
-              {isFemale ? '7' : '6'}. Review of Systems
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Controller
-              control={control}
-              name="reviewOfSystems"
-              render={({ field }) => (
-                <SectionTextarea
-                  id="reviewOfSystems"
-                  label="Review of Systems"
-                  value={field.value}
-                  onChange={field.onChange}
-                  showAiAssist
-                  isAssisting={loadingSection === 'reviewOfSystems'}
-                  onAiAssist={() => handleAiAssist('reviewOfSystems', 'Review of Systems')}
-                  rows={5}
-                />
-              )}
-            />
-          </CardContent>
-        </Card>
+        {/* Review of Systems */}
+        <SectionCard num={next()} icon={List} title="Review of Systems" accent="border-l-blue-400">
+          <Controller
+            control={control}
+            name="reviewOfSystems"
+            render={({ field }) => (
+              <SectionTextarea
+                id="reviewOfSystems"
+                label="Review of systems"
+                value={field.value}
+                onChange={field.onChange}
+                showAiAssist
+                isAssisting={loadingSection === 'reviewOfSystems'}
+                onAiAssist={() => handleAiAssist('reviewOfSystems', 'Review of Systems')}
+                rows={5}
+              />
+            )}
+          />
+        </SectionCard>
 
-        {/* 8. Diagnosis / Assessment */}
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-semibold text-gray-700">
-              {isFemale ? '8' : '7'}. Diagnosis / Assessment
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <div className="space-y-1.5">
-              <Label htmlFor="diagnosis" className="text-sm font-medium text-gray-700">
-                Diagnosis
-              </Label>
-              <div className="flex gap-2">
-                <Controller
-                  control={control}
-                  name="diagnosis"
-                  render={({ field }) => (
-                    <Input
-                      id="diagnosis"
-                      value={field.value}
-                      onChange={field.onChange}
-                      placeholder="Enter diagnosis..."
-                      className="flex-1"
-                    />
-                  )}
-                />
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={handleIcdSearch}
-                  disabled={isSearchingIcd}
-                  className="shrink-0 gap-1"
-                >
-                  {isSearchingIcd ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : (
-                    <Search className="h-4 w-4" />
-                  )}
-                  {isSearchingIcd ? 'Searching...' : 'Search ICD-10'}
-                </Button>
-              </div>
-
-              {/* ICD dropdown */}
-              {icdOpen && icdResults.length > 0 && (
-                <div
-                  ref={diagnosisRef}
-                  className="border border-gray-200 rounded-md shadow-md bg-white mt-1 max-h-48 overflow-y-auto z-10 relative"
-                >
-                  {icdResults.map((code) => (
-                    <button
-                      key={code.code}
-                      type="button"
-                      onClick={() => handleIcdSelect(code)}
-                      className="w-full text-left px-3 py-2 hover:bg-teal-50 text-sm flex items-start gap-2 border-b border-gray-100 last:border-0"
-                    >
-                      <Badge variant="outline" className="font-mono text-xs shrink-0 mt-0.5">
-                        {code.code}
-                      </Badge>
-                      <span className="text-gray-700">{code.description}</span>
-                    </button>
-                  ))}
-                </div>
-              )}
+        {/* Diagnosis */}
+        <SectionCard num={next()} icon={Stethoscope} title="Diagnosis / Assessment" accent="border-l-teal-500">
+          <div className="space-y-3">
+            <div className="flex gap-2 min-w-0">
+              <Controller
+                control={control}
+                name="diagnosis"
+                render={({ field }) => (
+                  <Input
+                    id="diagnosis"
+                    value={field.value}
+                    onChange={field.onChange}
+                    placeholder="Enter diagnosis…"
+                    className="flex-1 min-w-0"
+                  />
+                )}
+              />
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={handleIcdSearch}
+                disabled={isSearchingIcd}
+                className="shrink-0 gap-1"
+              >
+                {isSearchingIcd
+                  ? <Loader2 className="h-4 w-4 animate-spin" />
+                  : <Search className="h-4 w-4" />}
+                <span className="hidden sm:inline">{isSearchingIcd ? 'Searching…' : 'ICD-10'}</span>
+              </Button>
             </div>
-          </CardContent>
-        </Card>
 
-        {/* 9. Examination */}
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-semibold text-gray-700">
-              {isFemale ? '9' : '8'}. Examination
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-5">
+            {icdOpen && icdResults.length > 0 && (
+              <div
+                ref={diagnosisRef}
+                className="border border-gray-200 rounded-lg shadow-md bg-white max-h-48 overflow-y-auto z-10 relative"
+              >
+                {icdResults.map((code) => (
+                  <button
+                    key={code.code}
+                    type="button"
+                    onClick={() => handleIcdSelect(code)}
+                    className="w-full text-left px-3 py-2.5 hover:bg-teal-50 text-sm flex items-start gap-2 border-b border-gray-100 last:border-0 transition-colors"
+                  >
+                    <Badge variant="outline" className="font-mono text-xs shrink-0 mt-0.5">
+                      {code.code}
+                    </Badge>
+                    <span className="text-gray-700">{code.description}</span>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        </SectionCard>
+
+        {/* Examination */}
+        <SectionCard num={next()} icon={Activity} title="Physical Examination" accent="border-l-cyan-500">
+          <div className="space-y-5">
             <ExamBuilder
               value={examFindings}
               onChange={setExamFindings}
@@ -694,10 +602,9 @@ export function StructuredNoteEditor({
               aiAlerts={aiAlerts}
             />
 
-            {/* Generated narrative read-only preview */}
             {examinationNarrative && (
               <div className="space-y-1.5">
-                <Label className="text-sm font-medium text-gray-700">
+                <Label className="text-sm font-medium text-gray-600">
                   Generated Examination Narrative
                 </Label>
                 <textarea
@@ -707,21 +614,16 @@ export function StructuredNoteEditor({
                   className="flex w-full rounded-md border border-teal-200 bg-teal-50/40 px-3 py-2 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-teal-400 resize-y text-gray-800"
                 />
                 <p className="text-xs text-muted-foreground">
-                  Review this AI-generated narrative before signing. Edit directly if needed.
+                  AI-generated — review and edit as needed before signing.
                 </p>
               </div>
             )}
-          </CardContent>
-        </Card>
+          </div>
+        </SectionCard>
 
-        {/* 10. Plan */}
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-semibold text-gray-700">
-              {isFemale ? '10' : '9'}. Plan
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
+        {/* Plan */}
+        <SectionCard num={next()} icon={ClipboardList} title="Management Plan" accent="border-l-indigo-400">
+          <div className="space-y-3">
             <div className="flex justify-end">
               <Button
                 type="button"
@@ -729,14 +631,12 @@ export function StructuredNoteEditor({
                 size="sm"
                 onClick={handleGeneratePlan}
                 disabled={isGeneratingPlan}
-                className="gap-1"
+                className="gap-1.5"
               >
-                {isGeneratingPlan ? (
-                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                ) : (
-                  <Wand2 className="h-3.5 w-3.5" />
-                )}
-                {isGeneratingPlan ? 'Generating...' : 'Generate Plan'}
+                {isGeneratingPlan
+                  ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                  : <Wand2 className="h-3.5 w-3.5" />}
+                <span>{isGeneratingPlan ? 'Generating…' : 'Generate Plan'}</span>
               </Button>
             </div>
             <Controller
@@ -745,49 +645,63 @@ export function StructuredNoteEditor({
               render={({ field }) => (
                 <SectionTextarea
                   id="plan"
-                  label="Management Plan"
+                  label="Management plan"
                   value={field.value}
                   onChange={field.onChange}
                   showAiAssist={false}
                   rows={6}
-                  placeholder="Enter management plan..."
+                  placeholder="Enter management plan…"
                 />
               )}
             />
-          </CardContent>
-        </Card>
+          </div>
+        </SectionCard>
 
-        {/* Action buttons */}
-        <div className="flex flex-wrap justify-end gap-3 pb-8">
+        {/* ── Footer actions ── */}
+        <div className="flex flex-wrap items-center justify-between gap-3 pb-8 pt-2">
           <Button
             type="button"
-            variant="outline"
+            variant="ghost"
+            size="sm"
             onClick={() => router.push(`/patients/${patientId}`)}
+            className="text-gray-500"
           >
             Cancel
           </Button>
-          <Button
-            type="button"
-            variant="outline"
-            onClick={handleSubmit(onDraftSubmit)}
-            disabled={isSaving}
-          >
-            {isSaving ? (
-              <Loader2 className="h-4 w-4 animate-spin mr-2" />
-            ) : null}
-            Save Draft
-          </Button>
-          <Button
-            type="button"
-            onClick={handleSubmit(onFinalSubmit)}
-            disabled={isSaving}
-            className="bg-teal-600 hover:bg-teal-700 text-white"
-          >
-            {isSaving ? (
-              <Loader2 className="h-4 w-4 animate-spin mr-2" />
-            ) : null}
-            Sign Note
-          </Button>
+
+          <div className="flex flex-wrap items-center gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => setPreviewOpen(true)}
+              className="gap-1.5"
+            >
+              <Eye className="h-4 w-4" />
+              Preview
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={handleSubmit((data) => saveNote(data, 'draft'))}
+              disabled={isSaving}
+              className="gap-1.5"
+            >
+              {isSaving ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : null}
+              Save Draft
+            </Button>
+            <Button
+              type="button"
+              size="sm"
+              onClick={handleSubmit((data) => saveNote(data, 'final'))}
+              disabled={isSaving}
+              className="bg-teal-600 hover:bg-teal-700 text-white gap-1.5"
+            >
+              {isSaving ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <CheckCircle2 className="h-3.5 w-3.5" />}
+              Sign &amp; Save
+            </Button>
+          </div>
         </div>
       </form>
 
@@ -800,7 +714,8 @@ export function StructuredNoteEditor({
           presentingComplaints: watch('presentingComplaints'),
           hpc: watch('hpc'),
           pastMedicalHistory: watch('pastMedicalHistory'),
-          obGynHistory: watch('obGynHistory'),
+          obstetricsHistory: watch('obstetricsHistory'),
+          gynaecologyHistory: watch('gynaecologyHistory'),
           familySocialHistory: watch('familySocialHistory'),
           drugHistory: watch('drugHistory'),
           reviewOfSystems: watch('reviewOfSystems'),

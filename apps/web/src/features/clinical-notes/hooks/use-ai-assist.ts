@@ -3,7 +3,6 @@
 import { useState, useCallback } from 'react';
 import type { VitalsSnapshot } from '../data/exam-data';
 
-// ── Types ──────────────────────────────────────────────────────────────────────
 export interface IcdCode {
   code: string;
   description: string;
@@ -22,7 +21,6 @@ interface PlanContext {
 
 export type ExamData = Record<string, Record<string, string | string[]>>;
 
-// ── Hook ───────────────────────────────────────────────────────────────────────
 export function useAiAssist() {
   const [loadingSection, setLoadingSection] = useState<string | null>(null);
   const [icdResults, setIcdResults] = useState<IcdCode[]>([]);
@@ -30,147 +28,93 @@ export function useAiAssist() {
   const [isGeneratingPlan, setIsGeneratingPlan] = useState(false);
   const [isConvertingExam, setIsConvertingExam] = useState(false);
   const [isLoadingAlerts, setIsLoadingAlerts] = useState(false);
+  const [aiError, setAiError] = useState<string | null>(null);
 
-  /**
-   * Expands a clinical section's text using AI.
-   * Returns the expanded text, or undefined on failure.
-   */
+  async function callApi(body: Record<string, unknown>): Promise<Record<string, unknown> | null> {
+    setAiError(null);
+    try {
+      const res = await fetch('/api/ai-assist', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+      const data = await res.json() as Record<string, unknown>;
+      if (!res.ok) {
+        const msg = (data.error as string) ?? `HTTP ${res.status}`;
+        setAiError(msg);
+        return null;
+      }
+      return data;
+    } catch (err) {
+      setAiError((err as Error).message ?? 'Network error');
+      return null;
+    }
+  }
+
   const expandSection = useCallback(
     async (section: string, text: string, context?: ExpandContext): Promise<string | undefined> => {
       if (!text.trim()) return undefined;
       setLoadingSection(section);
       try {
-        const response = await fetch('/api/ai-assist', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            action: 'expand-section',
-            text,
-            context: context ?? { section },
-          }),
-        });
-
-        if (!response.ok) return undefined;
-        const data = await response.json() as { expanded?: string };
-        return data.expanded;
-      } catch {
-        return undefined;
+        const data = await callApi({ action: 'expand-section', text, context: context ?? { section } });
+        return (data?.expanded as string | undefined);
       } finally {
         setLoadingSection(null);
       }
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     []
   );
 
-  /**
-   * Searches ICD-10 codes for a given diagnosis text.
-   */
   const searchIcd = useCallback(async (text: string): Promise<IcdCode[]> => {
     if (!text.trim()) return [];
     setIsSearchingIcd(true);
     try {
-      const response = await fetch('/api/ai-assist', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'icd-search', text }),
-      });
-
-      if (!response.ok) return [];
-      const data = await response.json() as { codes?: IcdCode[] };
-      const codes = data.codes ?? [];
+      const data = await callApi({ action: 'icd-search', text });
+      const codes = (data?.codes as IcdCode[] | undefined) ?? [];
       setIcdResults(codes);
       return codes;
-    } catch {
-      return [];
     } finally {
       setIsSearchingIcd(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  /**
-   * Generates a management plan based on the diagnosis and patient context.
-   * Returns the plan text, or undefined on failure.
-   */
   const suggestPlan = useCallback(
     async (diagnosisText: string, context?: PlanContext): Promise<string | undefined> => {
       if (!diagnosisText.trim()) return undefined;
       setIsGeneratingPlan(true);
       try {
-        const response = await fetch('/api/ai-assist', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            action: 'suggest-plan',
-            text: diagnosisText,
-            context,
-          }),
-        });
-
-        if (!response.ok) return undefined;
-        const data = await response.json() as { plan?: string };
-        return data.plan;
-      } catch {
-        return undefined;
+        const data = await callApi({ action: 'suggest-plan', text: diagnosisText, context });
+        return (data?.plan as string | undefined);
       } finally {
         setIsGeneratingPlan(false);
       }
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     },
     []
   );
 
-  /**
-   * Converts structured exam findings into a clinical narrative.
-   * Returns the narrative text, or undefined on failure.
-   */
-  const convertExamToNarrative = useCallback(
-    async (examData: ExamData): Promise<string | undefined> => {
-      setIsConvertingExam(true);
-      try {
-        const response = await fetch('/api/ai-assist', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            action: 'convert-exam',
-            examData,
-          }),
-        });
+  const convertExamToNarrative = useCallback(async (examData: ExamData): Promise<string | undefined> => {
+    setIsConvertingExam(true);
+    try {
+      const data = await callApi({ action: 'convert-exam', examData });
+      return (data?.narrative as string | undefined);
+    } finally {
+      setIsConvertingExam(false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-        if (!response.ok) return undefined;
-        const data = await response.json() as { narrative?: string };
-        return data.narrative;
-      } catch {
-        return undefined;
-      } finally {
-        setIsConvertingExam(false);
-      }
-    },
-    []
-  );
-
-  /**
-   * Generates clinical decision support alerts based on vitals.
-   * Returns an array of alert strings, or empty array on failure.
-   */
   const getAiAlerts = useCallback(async (vitals: VitalsSnapshot): Promise<string[]> => {
     setIsLoadingAlerts(true);
     try {
-      const response = await fetch('/api/ai-assist', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          action: 'suggest-alerts',
-          vitals,
-        }),
-      });
-
-      if (!response.ok) return [];
-      const data = await response.json() as { alerts?: string[] };
-      return data.alerts ?? [];
-    } catch {
-      return [];
+      const data = await callApi({ action: 'suggest-alerts', vitals });
+      return (data?.alerts as string[] | undefined) ?? [];
     } finally {
       setIsLoadingAlerts(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return {
@@ -186,5 +130,7 @@ export function useAiAssist() {
     isGeneratingPlan,
     isConvertingExam,
     isLoadingAlerts,
+    aiError,
+    clearAiError: () => setAiError(null),
   };
 }
