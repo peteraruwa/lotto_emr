@@ -13,7 +13,11 @@ const labelVariants = cva(
  * Accessible label component using Radix UI.
  * Automatically associates with form inputs via htmlFor.
  */
-const Label = React.forwardRef<
+const Label: React.ForwardRefExoticComponent<
+  React.ComponentPropsWithoutRef<typeof LabelPrimitive.Root> &
+    VariantProps<typeof labelVariants> &
+    React.RefAttributes<React.ElementRef<typeof LabelPrimitive.Root>>
+> = React.forwardRef<
   React.ElementRef<typeof LabelPrimitive.Root>,
   React.ComponentPropsWithoutRef<typeof LabelPrimitive.Root> & VariantProps<typeof labelVariants>
 >(({ className, ...props }, ref) => (

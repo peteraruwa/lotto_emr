@@ -47,7 +47,10 @@ export function useNotes(patientId: string | undefined) {
           patientId: patientId ?? '',
           type: noteType,
           title: doc.description ?? doc.type?.text ?? noteType,
-          contentPreview: contentText, // full content — NoteCard handles display truncation
+          contentPreview: contentText,
+          diagnosis: '',
+          presentingComplaints: '',
+          docStatus: doc.docStatus ?? 'preliminary',
           status: doc.status ?? 'current',
           authorName: doc.author?.[0]?.display ?? 'Unknown',
           date: doc.date ?? '',
