@@ -34,7 +34,9 @@ export function useNotes(patientId: string | undefined) {
         const attachment = doc.content?.[0]?.attachment;
         if (attachment?.data) {
           try {
-            contentText = Buffer.from(attachment.data, 'base64').toString('utf-8');
+            // Supports both plain ASCII and UTF-8 encoded via btoa(encodeURIComponent)
+            const raw = Buffer.from(attachment.data, 'base64').toString('binary');
+            try { contentText = decodeURIComponent(escape(raw)); } catch { contentText = raw; }
           } catch {
             contentText = '';
           }
@@ -45,7 +47,7 @@ export function useNotes(patientId: string | undefined) {
           patientId: patientId ?? '',
           type: noteType,
           title: doc.description ?? doc.type?.text ?? noteType,
-          contentPreview: contentText.slice(0, 200),
+          contentPreview: contentText, // full content — NoteCard handles display truncation
           status: doc.status ?? 'current',
           authorName: doc.author?.[0]?.display ?? 'Unknown',
           date: doc.date ?? '',

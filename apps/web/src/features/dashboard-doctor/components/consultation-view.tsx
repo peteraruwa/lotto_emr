@@ -6,11 +6,12 @@ import { format } from 'date-fns';
 import {
   ArrowLeft, Activity, AlertTriangle, Pill, ClipboardList,
   FlaskConical, Scan, Stethoscope, CheckCircle, Loader2,
-  ChevronRight,
+  ChevronRight, FileText,
 } from 'lucide-react';
 import { cn } from '@lotto-emr/ui';
 import { useMedplum } from '@medplum/react';
 import { usePatientSnapshot } from '../hooks/use-patient-snapshot';
+import { SoapNoteEditor } from '@/features/clinical-notes/components/soap-note-editor';
 import type { AppointmentRow } from '../hooks/use-dashboard-data';
 
 const VITAL_LABELS: Record<string, string> = {
@@ -25,14 +26,9 @@ const VITAL_LABELS: Record<string, string> = {
 };
 
 const VITAL_ICONS: Record<string, string> = {
-  '8480-6':  '🩸',
-  '8462-4':  '🩸',
-  '55284-4': '💓',
-  '8867-4':  '❤️',
-  '8310-5':  '🌡️',
-  '59408-5': '🫁',
-  '29463-7': '⚖️',
-  '8302-2':  '📏',
+  '8480-6': '🩸', '8462-4': '🩸', '55284-4': '💓',
+  '8867-4': '❤️', '8310-5': '🌡️', '59408-5': '🫁',
+  '29463-7': '⚖️', '8302-2': '📏',
 };
 
 interface ConsultationViewProps {
@@ -58,13 +54,10 @@ function SectionCard({ icon: Icon, iconColor, iconBg, title, children }: {
 }
 
 export function ConsultationView({ appointment, onBack }: ConsultationViewProps) {
-  const medplum  = useMedplum();
+  const medplum   = useMedplum();
   const patientId = appointment.patientRef?.replace('Patient/', '') ?? null;
   const { data: snap, isLoading } = usePatientSnapshot(patientId);
 
-  const [note, setNote]           = useState('');
-  const [noteSaving, setNoteSaving] = useState(false);
-  const [noteSaved, setNoteSaved]   = useState(false);
   const [completing, setCompleting] = useState(false);
   const [completed, setCompleted]   = useState(false);
 
@@ -73,26 +66,6 @@ export function ConsultationView({ appointment, onBack }: ConsultationViewProps)
 
   const patientInitials = appointment.patientName
     .split(' ').map((w) => w[0]).join('').toUpperCase().slice(0, 2);
-
-  async function saveNote() {
-    if (!note.trim() || !patientId) return;
-    setNoteSaving(true);
-    try {
-      await medplum.createResource({
-        resourceType: 'DocumentReference',
-        status: 'current',
-        type: { coding: [{ system: 'http://loinc.org', code: '11506-3', display: 'Progress note' }], text: 'Progress Note' },
-        subject: { reference: `Patient/${patientId}` },
-        content: [{ attachment: { contentType: 'text/plain', data: btoa(note), title: 'Clinical Note' } }],
-        date: new Date().toISOString(),
-        ...(snap?.activeEncounterId ? { context: { encounter: [{ reference: `Encounter/${snap.activeEncounterId}` }] } } : {}),
-      } as any);
-      setNoteSaved(true);
-      setTimeout(() => setNoteSaved(false), 3000);
-    } catch { /* silent */ } finally {
-      setNoteSaving(false);
-    }
-  }
 
   async function completeEncounter() {
     if (!snap?.activeEncounterId) return;
@@ -109,8 +82,8 @@ export function ConsultationView({ appointment, onBack }: ConsultationViewProps)
   return (
     <div className="p-4 md:p-5 space-y-4 animate-fade-in">
 
-      {/* Header row */}
-      <div className="flex items-center gap-3">
+      {/* ── Header ──────────────────────────────────────────────────────────── */}
+      <div className="flex items-center gap-3 flex-wrap">
         <button
           onClick={onBack}
           className="w-8 h-8 flex items-center justify-center rounded-xl bg-gray-100 text-gray-500 hover:bg-gray-200 hover:text-gray-700 transition-colors flex-shrink-0"
@@ -128,7 +101,7 @@ export function ConsultationView({ appointment, onBack }: ConsultationViewProps)
           </div>
         </div>
 
-        <div className="flex items-center gap-2 flex-shrink-0">
+        <div className="flex items-center gap-2 flex-shrink-0 flex-wrap">
           {patientId && (
             <Link
               href={`/patients/${patientId}`}
@@ -143,9 +116,7 @@ export function ConsultationView({ appointment, onBack }: ConsultationViewProps)
               disabled={completing}
               className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold transition-colors shadow-sm shadow-emerald-600/20"
             >
-              {completing
-                ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                : <CheckCircle className="h-3.5 w-3.5" />}
+              {completing ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <CheckCircle className="h-3.5 w-3.5" />}
               Complete
             </button>
           )}
@@ -157,7 +128,7 @@ export function ConsultationView({ appointment, onBack }: ConsultationViewProps)
         </div>
       </div>
 
-      {/* Loading */}
+      {/* ── Loading ─────────────────────────────────────────────────────────── */}
       {isLoading && (
         <div className="flex items-center justify-center py-16">
           <div className="text-center">
@@ -167,7 +138,7 @@ export function ConsultationView({ appointment, onBack }: ConsultationViewProps)
         </div>
       )}
 
-      {/* Allergy banner */}
+      {/* ── Allergy banner ──────────────────────────────────────────────────── */}
       {!isLoading && snap && snap.allergies.length > 0 && (
         <div className="flex items-start gap-3 px-4 py-3 bg-red-50 border border-red-200 rounded-2xl">
           <div className="w-8 h-8 rounded-xl bg-red-100 flex items-center justify-center flex-shrink-0">
@@ -182,7 +153,7 @@ export function ConsultationView({ appointment, onBack }: ConsultationViewProps)
         </div>
       )}
 
-      {/* Clinical data grid */}
+      {/* ── Clinical data grid ──────────────────────────────────────────────── */}
       {!isLoading && snap && (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
 
@@ -245,26 +216,20 @@ export function ConsultationView({ appointment, onBack }: ConsultationViewProps)
           {/* Quick Orders */}
           <SectionCard icon={ClipboardList} iconColor="text-orange-600" iconBg="bg-orange-50" title="Quick Orders">
             <div className="space-y-2">
-              <Link
-                href={patientId ? `/orders?patient=${patientId}&type=lab` : '/orders'}
-                className="flex items-center gap-2.5 w-full px-3 py-2.5 rounded-xl border border-gray-100 hover:border-amber-200 hover:bg-amber-50 text-xs font-semibold text-gray-700 hover:text-amber-700 transition-all group"
-              >
+              <Link href={patientId ? `/orders?patient=${patientId}&type=lab` : '/orders'}
+                className="flex items-center gap-2.5 w-full px-3 py-2.5 rounded-xl border border-gray-100 hover:border-amber-200 hover:bg-amber-50 text-xs font-semibold text-gray-700 hover:text-amber-700 transition-all group">
                 <FlaskConical className="h-4 w-4 text-amber-500 flex-shrink-0" />
                 <span className="flex-1 min-w-0 truncate">Order Lab Tests</span>
                 <ChevronRight className="h-3 w-3 text-gray-300 group-hover:text-amber-400 flex-shrink-0" />
               </Link>
-              <Link
-                href={patientId ? `/orders?patient=${patientId}&type=imaging` : '/orders'}
-                className="flex items-center gap-2.5 w-full px-3 py-2.5 rounded-xl border border-gray-100 hover:border-blue-200 hover:bg-blue-50 text-xs font-semibold text-gray-700 hover:text-blue-700 transition-all group"
-              >
+              <Link href={patientId ? `/orders?patient=${patientId}&type=imaging` : '/orders'}
+                className="flex items-center gap-2.5 w-full px-3 py-2.5 rounded-xl border border-gray-100 hover:border-blue-200 hover:bg-blue-50 text-xs font-semibold text-gray-700 hover:text-blue-700 transition-all group">
                 <Scan className="h-4 w-4 text-blue-500 flex-shrink-0" />
                 <span className="flex-1 min-w-0 truncate">Request Imaging</span>
                 <ChevronRight className="h-3 w-3 text-gray-300 group-hover:text-blue-400 flex-shrink-0" />
               </Link>
-              <Link
-                href={patientId ? `/orders?patient=${patientId}&type=medication` : '/orders'}
-                className="flex items-center gap-2.5 w-full px-3 py-2.5 rounded-xl border border-gray-100 hover:border-violet-200 hover:bg-violet-50 text-xs font-semibold text-gray-700 hover:text-violet-700 transition-all group"
-              >
+              <Link href={patientId ? `/orders?patient=${patientId}&type=medication` : '/orders'}
+                className="flex items-center gap-2.5 w-full px-3 py-2.5 rounded-xl border border-gray-100 hover:border-violet-200 hover:bg-violet-50 text-xs font-semibold text-gray-700 hover:text-violet-700 transition-all group">
                 <Pill className="h-4 w-4 text-violet-500 flex-shrink-0" />
                 <span className="flex-1 min-w-0 truncate">Prescribe Medication</span>
                 <ChevronRight className="h-3 w-3 text-gray-300 group-hover:text-violet-400 flex-shrink-0" />
@@ -275,43 +240,21 @@ export function ConsultationView({ appointment, onBack }: ConsultationViewProps)
         </div>
       )}
 
-      {/* Clinical Note */}
+      {/* ── SOAP Clinical Note ───────────────────────────────────────────────── */}
       <div className="rounded-2xl border border-gray-100 bg-white overflow-hidden">
         <div className="flex items-center gap-2.5 px-4 py-3 border-b border-gray-100">
-          <div className="w-7 h-7 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0">
-            <ClipboardList className="h-3.5 w-3.5 text-gray-500" />
+          <div className="w-7 h-7 rounded-lg bg-hospital-50 flex items-center justify-center flex-shrink-0">
+            <FileText className="h-3.5 w-3.5 text-hospital-600" />
           </div>
-          <h3 className="text-sm font-semibold text-gray-800">Clinical Note</h3>
+          <h3 className="text-sm font-semibold text-gray-800">SOAP Clinical Note</h3>
+          <span className="ml-auto text-xs text-gray-400">Subjective · Objective · Assessment · Plan</span>
         </div>
-        <div className="p-4 space-y-3">
-          <textarea
-            className="w-full min-h-[140px] text-sm border border-gray-200 rounded-xl p-3.5 bg-gray-50 hover:bg-white focus:bg-white resize-y focus:outline-none focus:ring-2 focus:ring-hospital-400/50 focus:border-hospital-300 transition-all placeholder:text-gray-400"
-            placeholder="S: Patient presents with…&#10;O: Vitals stable…&#10;A: Assessment…&#10;P: Plan…"
-            value={note}
-            onChange={(e) => setNote(e.target.value)}
+        <div className="p-4">
+          <SoapNoteEditor
+            patientId={patientId ?? ''}
+            encounterId={snap?.activeEncounterId}
+            vitals={snap?.vitals ?? []}
           />
-          <div className="flex items-center justify-between">
-            <div>
-              {noteSaved && (
-                <span className="flex items-center gap-1.5 text-xs text-emerald-600 font-medium animate-fade-in">
-                  <CheckCircle className="h-3.5 w-3.5" /> Note saved successfully
-                </span>
-              )}
-            </div>
-            <button
-              onClick={saveNote}
-              disabled={!note.trim() || noteSaving || !patientId}
-              className={cn(
-                'flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold transition-all',
-                note.trim() && patientId && !noteSaving
-                  ? 'bg-hospital-600 hover:bg-hospital-700 text-white shadow-sm shadow-hospital-600/20'
-                  : 'bg-gray-100 text-gray-400 cursor-not-allowed',
-              )}
-            >
-              {noteSaving && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
-              Save Note
-            </button>
-          </div>
         </div>
       </div>
 
