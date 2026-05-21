@@ -15,7 +15,7 @@
  * ─────────────────────────────────────────────────────────────────────────────
  */
 
-export const DEV_PASSWORD = '1234';
+export const DEV_PASSWORD = '123456789';
 
 export interface DevTestUser {
   /** Login username — email is username@lotto.ng */
