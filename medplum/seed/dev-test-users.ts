@@ -6,17 +6,9 @@
  * PASSWORD: "1234" for ALL users — intentionally insecure.
  * This file must NEVER be used in a production or staging environment.
  *
- * ROLE MAPPING NOTES
- *   The system has 7 roles: doctor | nurse | pharmacist | lab |
- *   radiologist | admin | superadmin
- *
- *   HR staff        → role: 'superadmin', department: 'hr-management'
- *                     (superadmin home route includes /hr Employee nav item)
- *
- *   Medical Records → role: 'admin', department: 'medical-records'
- *   Billing / HMO   → role: 'admin', department: 'billing'
- *                     (admin role has full access to /patients, /billing,
- *                      /schedule — covers both MRO and billing workflows)
+ * SYSTEM ROLES (10 total):
+ *   doctor | nurse | pharmacist | lab | radiologist
+ *   admin | hr | records | billing | superadmin
  *
  * Run with:
  *   npx ts-node medplum/seed/dev-seed.ts
@@ -32,7 +24,7 @@ export interface DevTestUser {
   password: string;
   /** Medplum role code stored in ProjectMembership meta.tag */
   role: string;
-  /** Sub-routing hint stored in Practitioner extension; not enforced by auth */
+  /** Department stored in Practitioner extension for routing context */
   department: string;
   displayName: string;
   jobTitle: string;
@@ -60,7 +52,7 @@ export const testUsers: DevTestUser[] = [
     jobTitle:    'General Surgeon',
   },
 
-  // ── NURSES — triage / ward workflows ─────────────────────────────────────
+  // ── NURSES — triage / ward ────────────────────────────────────────────────
   {
     username:    'nurse1',
     email:       'nurse1@test.emr.local',
@@ -80,12 +72,32 @@ export const testUsers: DevTestUser[] = [
     jobTitle:    'Ward Nurse',
   },
 
-  // ── HR STAFF — hr-management (uses superadmin role → /hr nav) ────────────
+  // ── ADMIN — front desk / reception / scheduling ───────────────────────────
+  {
+    username:    'admin1',
+    email:       'admin1@test.emr.local',
+    password:    DEV_PASSWORD,
+    role:        'admin',
+    department:  'administration',
+    displayName: 'Kemi Adeyinka',
+    jobTitle:    'Front Desk Officer',
+  },
+  {
+    username:    'admin2',
+    email:       'admin2@test.emr.local',
+    password:    DEV_PASSWORD,
+    role:        'admin',
+    department:  'administration',
+    displayName: 'Dauda Salihu',
+    jobTitle:    'Scheduling Officer',
+  },
+
+  // ── HR — employee management / staff onboarding ───────────────────────────
   {
     username:    'hr1',
     email:       'hr1@test.emr.local',
     password:    DEV_PASSWORD,
-    role:        'superadmin',
+    role:        'hr',
     department:  'hr-management',
     displayName: 'Chinyere Obiora',
     jobTitle:    'HR Manager',
@@ -94,18 +106,18 @@ export const testUsers: DevTestUser[] = [
     username:    'hr2',
     email:       'hr2@test.emr.local',
     password:    DEV_PASSWORD,
-    role:        'superadmin',
+    role:        'hr',
     department:  'hr-management',
     displayName: 'Musa Lawal',
     jobTitle:    'HR Officer',
   },
 
-  // ── MEDICAL RECORDS OFFICERS — medical-records (uses admin role) ──────────
+  // ── MEDICAL RECORDS — patient files / document management ─────────────────
   {
     username:    'records1',
     email:       'records1@test.emr.local',
     password:    DEV_PASSWORD,
-    role:        'admin',
+    role:        'records',
     department:  'medical-records',
     displayName: 'Amaka Eze',
     jobTitle:    'Medical Records Officer',
@@ -114,18 +126,18 @@ export const testUsers: DevTestUser[] = [
     username:    'records2',
     email:       'records2@test.emr.local',
     password:    DEV_PASSWORD,
-    role:        'admin',
+    role:        'records',
     department:  'medical-records',
     displayName: 'Tunde Fashola',
     jobTitle:    'Medical Records Officer',
   },
 
-  // ── BILLING / HMO OFFICERS — billing (uses admin role) ───────────────────
+  // ── BILLING / HMO — claims, coverage, order authorisation ─────────────────
   {
     username:    'billing1',
     email:       'billing1@test.emr.local',
     password:    DEV_PASSWORD,
-    role:        'admin',
+    role:        'billing',
     department:  'billing',
     displayName: 'Blessing Nwachukwu',
     jobTitle:    'Billing Officer',
@@ -134,7 +146,7 @@ export const testUsers: DevTestUser[] = [
     username:    'billing2',
     email:       'billing2@test.emr.local',
     password:    DEV_PASSWORD,
-    role:        'admin',
+    role:        'billing',
     department:  'billing',
     displayName: 'Uche Okafor',
     jobTitle:    'HMO Liaison Officer',
@@ -200,10 +212,10 @@ export const testUsers: DevTestUser[] = [
     jobTitle:    'Clinical Pharmacist',
   },
 
-  // ── SUPERADMIN — infrastructure / config dashboard (1 user) ──────────────
+  // ── SUPERADMIN — infrastructure / system configuration (1 user) ──────────
   {
-    username:    'admin1',
-    email:       'admin1@test.emr.local',
+    username:    'superadmin1',
+    email:       'superadmin1@test.emr.local',
     password:    DEV_PASSWORD,
     role:        'superadmin',
     department:  'infrastructure',

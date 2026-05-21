@@ -19,6 +19,7 @@ import {
   BarChart2,
   Scan,
   FileText,
+  FolderOpen,
   BedDouble,
   DollarSign,
   LogOut,
@@ -39,6 +40,7 @@ const ICON_MAP: Record<string, React.ElementType> = {
   BarChart2,
   Scan,
   FileText,
+  FolderOpen,
   BedDouble,
   DollarSign,
 };

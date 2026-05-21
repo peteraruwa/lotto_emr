@@ -1,0 +1,13 @@
+{
+  "resourceType": "AccessPolicy",
+  "name": "HR Staff Access Policy",
+  "description": "Employee/staff management only. Can create and update Practitioner records and roles. No access to patient clinical data.",
+  "resource": [
+    { "resourceType": "Practitioner",     "readonly": false },
+    { "resourceType": "PractitionerRole", "readonly": false },
+    { "resourceType": "Organization",     "readonly": false },
+    { "resourceType": "Location",         "readonly": true  },
+    { "resourceType": "Schedule",         "readonly": true  },
+    { "resourceType": "Patient",          "readonly": true  }
+  ]
+}

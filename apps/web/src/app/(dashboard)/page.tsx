@@ -10,6 +10,9 @@ import { PharmacistDashboard } from '@/features/pharmacy';
 import { LabDashboard } from '@/features/lab';
 import { RadiologistDashboard } from '@/features/radiology';
 import { AdminDashboard } from '@/features/dashboard-admin';
+import { HrDashboard } from '@/features/dashboard-hr';
+import { RecordsDashboard } from '@/features/dashboard-records';
+import { BillingDashboard } from '@/features/billing';
 import { SuperadminDashboard } from '@/features/dashboard-superadmin';
 import type { Role } from '@/shared/rbac/roles';
 
@@ -21,6 +24,9 @@ function RoleDashboard({ role }: { role: Role }) {
     case ROLES.LAB:         return <LabDashboard />;
     case ROLES.RADIOLOGIST: return <RadiologistDashboard />;
     case ROLES.ADMIN:       return <AdminDashboard />;
+    case ROLES.HR:          return <HrDashboard />;
+    case ROLES.RECORDS:     return <RecordsDashboard />;
+    case ROLES.BILLING:     return <BillingDashboard />;
     case ROLES.SUPERADMIN:  return <SuperadminDashboard />;
   }
 }
