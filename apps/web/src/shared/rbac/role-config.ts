@@ -30,6 +30,7 @@ export const ROLE_CONFIG: Record<Role, RoleConfig> = {
       { label: 'Orders',       href: '/orders',    icon: 'ClipboardList' },
       { label: 'Results',      href: '/results',   icon: 'FlaskConical' },
       { label: 'Billing',      href: '/billing',   icon: 'DollarSign' },
+      { label: 'Analytics',    href: '/analytics', icon: 'BarChart2' },
     ],
     allowedActions: [
       'patient:read',
@@ -167,11 +168,12 @@ export const ROLE_CONFIG: Record<Role, RoleConfig> = {
   [ROLES.SUPERADMIN]: {
     homeRoute: '/',
     navItems: [
-      { label: 'Dashboard',  href: '/',          icon: 'LayoutDashboard' },
-      { label: 'Employees',  href: '/hr',         icon: 'UsersRound' },
-      { label: 'Patients',   href: '/patients',   icon: 'Users' },
-      { label: 'Schedule',   href: '/schedule',   icon: 'Calendar' },
-      { label: 'Ward',       href: '/ward',       icon: 'BedDouble' },
+      { label: 'Dashboard',  href: '/',            icon: 'LayoutDashboard' },
+      { label: 'Employees',  href: '/hr',           icon: 'UsersRound' },
+      { label: 'Patients',   href: '/patients',     icon: 'Users' },
+      { label: 'Schedule',   href: '/schedule',     icon: 'Calendar' },
+      { label: 'Ward',       href: '/ward',         icon: 'BedDouble' },
+      { label: 'Analytics',  href: '/analytics',    icon: 'BarChart2' },
     ],
     allowedActions: [
       'employee:create', 'employee:read', 'employee:update',
