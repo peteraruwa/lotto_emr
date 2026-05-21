@@ -197,21 +197,19 @@ export function usePatientProfile(patientId: string) {
         enabled: !!patientId,
       },
       {
-        queryKey: ['conditions', patientId, 'active'],
+        queryKey: ['conditions', patientId],
         queryFn: () =>
           medplum.searchResources('Condition', {
             patient: `Patient/${patientId}`,
-            'clinical-status': 'active',
             _count: '20',
           }),
         enabled: !!patientId,
       },
       {
-        queryKey: ['allergies', patientId, 'active'],
+        queryKey: ['allergies', patientId],
         queryFn: () =>
           medplum.searchResources('AllergyIntolerance', {
             patient: `Patient/${patientId}`,
-            'clinical-status': 'active',
           }),
         enabled: !!patientId,
       },
@@ -238,13 +236,12 @@ export function usePatientProfile(patientId: string) {
         enabled: !!patientId,
       },
       {
-        queryKey: ['encounters', patientId, 'active'],
+        queryKey: ['encounters', patientId, 'recent-small'],
         queryFn: () =>
           medplum.searchResources('Encounter', {
             patient: `Patient/${patientId}`,
-            status: 'in-progress,arrived,triaged',
             _sort: '-date',
-            _count: '5',
+            _count: '10',
           }),
         enabled: !!patientId,
       },
@@ -262,8 +259,16 @@ export function usePatientProfile(patientId: string) {
     const coverages = (coverageQ.data ?? []) as Coverage[];
     const encounters = (encountersQ.data ?? []) as Encounter[];
     const activeEncounters = (activeEncountersQ.data ?? []) as Encounter[];
-    const conditions = (conditionsQ.data ?? []) as Condition[];
-    const allergies = (allergiesQ.data ?? []) as AllergyIntolerance[];
+    const allConditions = (conditionsQ.data ?? []) as Condition[];
+    const conditions = allConditions.filter((c) => {
+      const status = (c as any).clinicalStatus?.coding?.[0]?.code;
+      return !status || status === 'active';
+    });
+    const allAllergies = (allergiesQ.data ?? []) as AllergyIntolerance[];
+    const allergies = allAllergies.filter((a) => {
+      const status = (a as any).clinicalStatus?.coding?.[0]?.code;
+      return !status || status === 'active';
+    });
     const observations = (vitalsQ.data ?? []) as Observation[];
     const medications = (medsQ.data ?? []) as MedicationRequest[];
 
