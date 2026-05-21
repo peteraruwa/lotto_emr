@@ -199,6 +199,19 @@ Format: ["Alert 1", "Alert 2"]`,
 
     return NextResponse.json({ error: 'unknown action' }, { status: 400 });
   } catch (err) {
-    return NextResponse.json({ error: (err as Error).message }, { status: 500 });
+    const msg = (err as Error).message ?? 'Unknown error';
+    if (msg.includes('429') || msg.toLowerCase().includes('quota')) {
+      return NextResponse.json(
+        { error: 'AI quota exceeded. Please check your Google AI billing plan or try again later.' },
+        { status: 429 }
+      );
+    }
+    if (msg.includes('403') || msg.toLowerCase().includes('api_key') || msg.toLowerCase().includes('invalid')) {
+      return NextResponse.json(
+        { error: 'Invalid AI API key. Please verify the EMR_API_KEY environment variable.' },
+        { status: 403 }
+      );
+    }
+    return NextResponse.json({ error: msg }, { status: 500 });
   }
 }

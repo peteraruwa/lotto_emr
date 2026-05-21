@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { ChevronDown, ChevronUp, Loader2, Wand2 } from 'lucide-react';
-import { Button } from '@lotto-emr/ui';
+import { Button, Tooltip } from '@lotto-emr/ui';
 import { EXAM_MODULES } from '../data/exam-data';
 import type { ExamModule, ExamOption, VitalsSnapshot } from '../data/exam-data';
 
@@ -343,21 +343,23 @@ export function ExamBuilder({
 
       {/* Generate Narrative button */}
       <div className="flex justify-end pt-2">
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          onClick={onGenerateNarrative}
-          disabled={isGenerating}
-          className="gap-1.5"
-        >
-          {isGenerating ? (
-            <Loader2 className="h-3.5 w-3.5 animate-spin" />
-          ) : (
-            <Wand2 className="h-3.5 w-3.5" />
-          )}
-          {isGenerating ? 'Generating...' : 'Generate Examination Narrative'}
-        </Button>
+        <Tooltip label="Convert the examination findings above into a written clinical narrative">
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={onGenerateNarrative}
+            disabled={isGenerating}
+            className="gap-1.5"
+          >
+            {isGenerating ? (
+              <Loader2 className="h-3.5 w-3.5 animate-spin" />
+            ) : (
+              <Wand2 className="h-3.5 w-3.5" />
+            )}
+            {isGenerating ? 'Generating...' : 'Generate Examination Narrative'}
+          </Button>
+        </Tooltip>
       </div>
     </div>
   );

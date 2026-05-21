@@ -20,3 +20,5 @@ export type { InputProps } from './components/input';
 export { Label } from './components/label';
 
 export { cn } from './lib/utils';
+
+export { Tooltip } from './components/tooltip';

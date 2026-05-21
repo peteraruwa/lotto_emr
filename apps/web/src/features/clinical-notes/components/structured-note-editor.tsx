@@ -9,7 +9,7 @@ import {
   AlertCircle, Clock, BookOpen, Baby, Heart, Users, Pill, List,
   Stethoscope, Activity, ClipboardList, X,
 } from 'lucide-react';
-import { Badge, Button, Card, CardContent, CardHeader, CardTitle, Input, Label } from '@lotto-emr/ui';
+import { Badge, Button, Card, CardContent, CardHeader, CardTitle, Input, Label, Tooltip } from '@lotto-emr/ui';
 import { useMedplum } from '@medplum/react';
 import type { Observation } from '@medplum/fhirtypes';
 import { useAiAssist } from '../hooks/use-ai-assist';
@@ -101,19 +101,21 @@ function SectionTextarea({
           {label}
         </Label>
         {showAiAssist && onAiAssist && (
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            onClick={onAiAssist}
-            disabled={isAssisting}
-            className="h-7 text-xs gap-1 shrink-0"
-          >
-            {isAssisting
-              ? <Loader2 className="h-3 w-3 animate-spin" />
-              : <Wand2 className="h-3 w-3" />}
-            <span className="hidden sm:inline">{isAssisting ? 'Expanding…' : 'AI Assist'}</span>
-          </Button>
+          <Tooltip label="Expand and structure this section using AI">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={onAiAssist}
+              disabled={isAssisting}
+              className="h-7 text-xs gap-1 shrink-0"
+            >
+              {isAssisting
+                ? <Loader2 className="h-3 w-3 animate-spin" />
+                : <Wand2 className="h-3 w-3" />}
+              <span className="hidden sm:inline">{isAssisting ? 'Expanding…' : 'AI Assist'}</span>
+            </Button>
+          </Tooltip>
         )}
       </div>
       <textarea
@@ -338,21 +340,25 @@ export function StructuredNoteEditor({
           </p>
         </div>
         <div className="flex items-center gap-2 shrink-0">
-          <Button type="button" variant="outline" size="sm" asChild className="gap-1.5">
-            <Link href={`/schedule?patient=${patientId}`}>
-              <CalendarPlus className="h-4 w-4" />
-              <span className="hidden sm:inline">Book Appt</span>
-            </Link>
-          </Button>
-          <Button
-            type="button"
-            size="sm"
-            onClick={() => setAdmitModalOpen(true)}
-            className="bg-teal-600 hover:bg-teal-700 text-white gap-1.5"
-          >
-            <BedDouble className="h-4 w-4" />
-            <span className="hidden sm:inline">Admit</span>
-          </Button>
+          <Tooltip label="Book a follow-up appointment for this patient">
+            <Button type="button" variant="outline" size="sm" asChild className="gap-1.5">
+              <Link href={`/schedule?patient=${patientId}`}>
+                <CalendarPlus className="h-4 w-4" />
+                <span className="hidden sm:inline">Book Appt</span>
+              </Link>
+            </Button>
+          </Tooltip>
+          <Tooltip label="Admit this patient to a ward bed">
+            <Button
+              type="button"
+              size="sm"
+              onClick={() => setAdmitModalOpen(true)}
+              className="bg-teal-600 hover:bg-teal-700 text-white gap-1.5"
+            >
+              <BedDouble className="h-4 w-4" />
+              <span className="hidden sm:inline">Admit</span>
+            </Button>
+          </Tooltip>
         </div>
       </div>
 
@@ -552,19 +558,21 @@ export function StructuredNoteEditor({
                   />
                 )}
               />
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={handleIcdSearch}
-                disabled={isSearchingIcd}
-                className="shrink-0 gap-1"
-              >
-                {isSearchingIcd
-                  ? <Loader2 className="h-4 w-4 animate-spin" />
-                  : <Search className="h-4 w-4" />}
-                <span className="hidden sm:inline">{isSearchingIcd ? 'Searching…' : 'ICD-10'}</span>
-              </Button>
+              <Tooltip label="Search ICD-10 codes for this diagnosis using AI">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={handleIcdSearch}
+                  disabled={isSearchingIcd}
+                  className="shrink-0 gap-1"
+                >
+                  {isSearchingIcd
+                    ? <Loader2 className="h-4 w-4 animate-spin" />
+                    : <Search className="h-4 w-4" />}
+                  <span className="hidden sm:inline">{isSearchingIcd ? 'Searching…' : 'ICD-10'}</span>
+                </Button>
+              </Tooltip>
             </div>
 
             {icdOpen && icdResults.length > 0 && (
@@ -625,19 +633,21 @@ export function StructuredNoteEditor({
         <SectionCard num={next()} icon={ClipboardList} title="Management Plan" accent="border-l-indigo-400">
           <div className="space-y-3">
             <div className="flex justify-end">
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={handleGeneratePlan}
-                disabled={isGeneratingPlan}
-                className="gap-1.5"
-              >
-                {isGeneratingPlan
-                  ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                  : <Wand2 className="h-3.5 w-3.5" />}
-                <span>{isGeneratingPlan ? 'Generating…' : 'Generate Plan'}</span>
-              </Button>
+              <Tooltip label="Generate a structured management plan based on the diagnosis above">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={handleGeneratePlan}
+                  disabled={isGeneratingPlan}
+                  className="gap-1.5"
+                >
+                  {isGeneratingPlan
+                    ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                    : <Wand2 className="h-3.5 w-3.5" />}
+                  <span>{isGeneratingPlan ? 'Generating…' : 'Generate Plan'}</span>
+                </Button>
+              </Tooltip>
             </div>
             <Controller
               control={control}
@@ -670,37 +680,43 @@ export function StructuredNoteEditor({
           </Button>
 
           <div className="flex flex-wrap items-center gap-2">
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={() => setPreviewOpen(true)}
-              className="gap-1.5"
-            >
-              <Eye className="h-4 w-4" />
-              Preview
-            </Button>
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={handleSubmit((data) => saveNote(data, 'draft'))}
-              disabled={isSaving}
-              className="gap-1.5"
-            >
-              {isSaving ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : null}
-              Save Draft
-            </Button>
-            <Button
-              type="button"
-              size="sm"
-              onClick={handleSubmit((data) => saveNote(data, 'final'))}
-              disabled={isSaving}
-              className="bg-teal-600 hover:bg-teal-700 text-white gap-1.5"
-            >
-              {isSaving ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <CheckCircle2 className="h-3.5 w-3.5" />}
-              Sign &amp; Save
-            </Button>
+            <Tooltip label="Preview the note as a formatted essay before signing">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => setPreviewOpen(true)}
+                className="gap-1.5"
+              >
+                <Eye className="h-4 w-4" />
+                Preview
+              </Button>
+            </Tooltip>
+            <Tooltip label="Save an unsigned draft — you can continue editing later">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={handleSubmit((data) => saveNote(data, 'draft'))}
+                disabled={isSaving}
+                className="gap-1.5"
+              >
+                {isSaving ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : null}
+                Save Draft
+              </Button>
+            </Tooltip>
+            <Tooltip label="Finalise and sign the note — this cannot be undone">
+              <Button
+                type="button"
+                size="sm"
+                onClick={handleSubmit((data) => saveNote(data, 'final'))}
+                disabled={isSaving}
+                className="bg-teal-600 hover:bg-teal-700 text-white gap-1.5"
+              >
+                {isSaving ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <CheckCircle2 className="h-3.5 w-3.5" />}
+                Sign &amp; Save
+              </Button>
+            </Tooltip>
           </div>
         </div>
       </form>
