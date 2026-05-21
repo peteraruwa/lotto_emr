@@ -12,6 +12,7 @@ interface NotePreviewData {
   gynaecologyHistory: string;
   familySocialHistory: string;
   drugHistory: string;
+  otherHistory: string;
   reviewOfSystems: string;
   diagnosis: string;
   plan: string;
@@ -47,6 +48,7 @@ export function NotePreviewModal({ isOpen, onClose, onEdit, data }: NotePreviewM
     data.gynaecologyHistory,
     data.familySocialHistory,
     data.drugHistory,
+    data.otherHistory,
     data.reviewOfSystems,
     data.diagnosis,
     data.examinationNarrative,
@@ -108,6 +110,7 @@ export function NotePreviewModal({ isOpen, onClose, onEdit, data }: NotePreviewM
               )}
               <Section heading="Family & Social History" content={data.familySocialHistory} />
               <Section heading="Drug History" content={data.drugHistory} />
+              <Section heading="Other History" content={data.otherHistory} />
               <Section heading="Review of Systems" content={data.reviewOfSystems} />
               <Section heading="Diagnosis / Assessment" content={data.diagnosis} />
               <Section heading="Examination" content={data.examinationNarrative} />
