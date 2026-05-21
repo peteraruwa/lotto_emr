@@ -1,0 +1,2704 @@
+{
+  "_comment": "Synthetic patient dataset — Lotto Central Hospital EMR. All data is fictional. NON-PROD only.",
+  "generated": "2026-05-21",
+  "version": "1.0",
+  "patients": [
+    {
+      "id": "PT-001",
+      "mrn": "LCH-2024-001",
+      "profile": {
+        "firstName": "Ibrahim",
+        "lastName": "Aliyu",
+        "dateOfBirth": "1962-03-14",
+        "age": 62,
+        "sex": "Male",
+        "gender": "male",
+        "bloodGroup": "B+",
+        "genotype": "AA",
+        "phoneNumber": "+234-802-341-5670",
+        "address": "14 Murtala Mohammed Way, Nassarawa GRA",
+        "city": "Kano",
+        "state": "Kano State",
+        "hmoProvider": "NHIS / Hygeia HMO",
+        "membershipNumber": "NHIS/2019/KN/00234",
+        "tribe": "Hausa",
+        "religion": "Islam",
+        "maritalStatus": "Married",
+        "occupation": "Retired Civil Servant",
+        "nextOfKin": {
+          "name": "Fatima Ibrahim Aliyu",
+          "relationship": "Wife",
+          "phone": "+234-803-452-6781"
+        },
+        "allergies": [
+          "Penicillin — urticarial rash"
+        ],
+        "knownConditions": [
+          "Hypertension (2019)",
+          "Type 2 Diabetes Mellitus (2024)"
+        ]
+      },
+      "encounters": [
+        {
+          "encounterId": "ENC-001-01",
+          "date": "2024-01-15",
+          "type": "Emergency Outpatient",
+          "department": "Internal Medicine",
+          "attendingDoctor": "Dr. Emeka Okonkwo",
+          "disposition": "Admitted — Medical Ward",
+          "summary": {
+            "chiefComplaint": "Severe headache and blurred vision for 3 days",
+            "historyOfPresentingIllness": "62-year-old Hausa male with a 5-year history of hypertension presents with a 3-day history of throbbing occipital headache and blurred vision, and a 2-month history of polydipsia, polyuria, and weight loss of 6 kg. Non-compliant with antihypertensives for 6 weeks due to financial constraints. No chest pain, no limb weakness, no seizures. Nocturia ×5 per night.",
+            "pastMedicalHistory": "Hypertension diagnosed 2019, no previous diabetes diagnosis.",
+            "familyHistory": "Father: T2DM, died of stroke. Mother: Hypertension.",
+            "socialHistory": "Retired, sedentary, high-carbohydrate diet. Ex-smoker (10 pack-years, quit 2014). No alcohol.",
+            "clinicalAssessment": "Alert, orientated. BP 170/105 mmHg. Fundoscopy: AV nipping, no papilloedema. Heart sounds: S4 gallop. No pedal oedema. No CCF signs.",
+            "diagnosis": [
+              "Hypertensive urgency (ICD-10: I16.0)",
+              "Type 2 Diabetes Mellitus, newly diagnosed (ICD-10: E11.9)"
+            ],
+            "managementPlan": "Admit to medical ward. BP monitoring Q2H. Amlodipine 10mg daily + Lisinopril 10mg daily. Metformin 500mg BD. HbA1c, fasting lipid profile, ECG, CXR. Ophthalmology referral. Diabetic nurse educator. Low-salt diabetic diet."
+          },
+          "clinicalNotes": {
+            "consultationNote": "62-year-old male with hypertensive urgency and newly diagnosed T2DM. HbA1c 9.8% confirms established hyperglycaemia. Commenced on amlodipine 10mg, lisinopril 10mg, metformin 500mg BD. ECG shows LVH pattern. CXR: mild cardiomegaly. Ophthalmology referral placed for retinopathy screening. Patient counselled extensively on compliance.",
+            "nursingNote": "Patient admitted at 14:30, GCS 15/15, orientated. IV access (18G right antecubital). Two-hourly BP monitoring initiated. Diabetes education booklet provided. No known drug allergies to current medications. Wife present and briefed.",
+            "progressNote": "Day 2 (2024-01-16): BP 148/96 mmHg, trending down. FBS 11.8 mmol/L. Tolerating oral medications well. Diabetes educator review completed. Discharge planned if BP sustained <145/95."
+          },
+          "vitalSigns": {
+            "bloodPressure": "170/105 mmHg",
+            "pulseRate": "92 bpm",
+            "respiratoryRate": "20 breaths/min",
+            "temperature": "36.9 °C",
+            "oxygenSaturation": "97%",
+            "painScore": "4/10",
+            "weight": "82 kg",
+            "height": "172 cm",
+            "BMI": "27.7 kg/m²"
+          },
+          "laboratoryResults": {
+            "fbc": {
+              "haemoglobin": "13.2 g/dL",
+              "pcv": "40%",
+              "wbc": "7.8 × 10⁹/L",
+              "neutrophils": "5.1 × 10⁹/L",
+              "lymphocytes": "2.0 × 10⁹/L",
+              "eosinophils": "0.3 × 10⁹/L",
+              "platelets": "188 × 10⁹/L",
+              "mcv": "84 fL",
+              "mch": "28 pg",
+              "mchc": "33 g/dL",
+              "interpretation": "Normal FBC"
+            },
+            "uAndE": {
+              "sodium": "138 mmol/L",
+              "potassium": "4.2 mmol/L",
+              "chloride": "102 mmol/L",
+              "bicarbonate": "22 mmol/L",
+              "urea": "5.8 mmol/L",
+              "creatinine": "98 µmol/L",
+              "eGFR": "62 mL/min/1.73m²",
+              "interpretation": "Mildly reduced eGFR — CKD G2"
+            },
+            "urinalysis": {
+              "appearance": "Yellow, clear",
+              "pH": "5.5",
+              "specificGravity": "1.022",
+              "protein": "Trace",
+              "glucose": "++",
+              "ketones": "Negative",
+              "blood": "Negative",
+              "nitrites": "Negative",
+              "leucocyteEsterase": "Negative",
+              "microscopy": "RBC <3/HPF, WBC <5/HPF, no casts",
+              "interpretation": "Glycosuria consistent with hyperglycaemia"
+            },
+            "bloodGlucose": {
+              "type": "Fasting",
+              "value": "14.2 mmol/L",
+              "interpretation": "Significantly elevated — T2DM"
+            },
+            "additional": {
+              "HbA1c": "9.8% (84 mmol/mol)",
+              "lipidProfile": {
+                "totalCholesterol": "6.2 mmol/L",
+                "LDL": "4.1 mmol/L",
+                "HDL": "0.9 mmol/L",
+                "triglycerides": "2.8 mmol/L"
+              },
+              "ECG": "Sinus rhythm. LVH by Sokolow-Lyon voltage criteria."
+            }
+          },
+          "radiology": [
+            {
+              "type": "Chest X-Ray (PA view)",
+              "date": "2024-01-15",
+              "findings": "Cardiothoracic ratio 0.55. Cardiac silhouette enlarged. Lung fields clear. No pulmonary oedema or effusion. Prominent aortic knuckle.",
+              "impression": "Mild cardiomegaly consistent with hypertensive heart disease."
+            }
+          ]
+        },
+        {
+          "encounterId": "ENC-001-02",
+          "date": "2024-05-20",
+          "type": "Outpatient Follow-up",
+          "department": "Internal Medicine — Diabetes & Hypertension Clinic",
+          "attendingDoctor": "Dr. Emeka Okonkwo",
+          "disposition": "Discharged home",
+          "summary": {
+            "chiefComplaint": "Routine 4-month follow-up; bilateral ankle swelling for 3 weeks",
+            "historyOfPresentingIllness": "Compliant with medications. Home BP readings 140–155/88–98 mmHg. SMBG 9–14 mmol/L. Bilateral ankle oedema for 3 weeks, worse by evening, no dyspnoea or orthopnoea.",
+            "clinicalAssessment": "BP 145/92 mmHg — improving but above target. Pitting oedema +1 bilateral ankles. Likely CCB-induced oedema (amlodipine). No CCF features.",
+            "diagnosis": [
+              "Hypertension — suboptimally controlled (ICD-10: I10)",
+              "T2DM — suboptimally controlled (ICD-10: E11.9)",
+              "CCB-induced ankle oedema (ICD-10: T46.1)"
+            ],
+            "managementPlan": "Switch amlodipine to nifedipine SR 30mg BD. Increase metformin to 1g BD. Add gliclazide MR 60mg morning. Repeat U&E and HbA1c in 3 months. Continue ophthalmology follow-up."
+          },
+          "clinicalNotes": {
+            "consultationNote": "BP has improved from 170/105 to 145/92 mmHg; HbA1c improved to 8.2% from 9.8%. Ankle oedema attributed to amlodipine — switching to nifedipine SR. Glycaemic therapy intensified with addition of gliclazide. ACR 3.5 mg/mmol borderline; monitoring for microalbuminuria.",
+            "nursingNote": "Patient ambulatory, appears well. Weight 83 kg (1 kg gain). Bilateral ankle oedema +1. Medication reconciliation performed. Patient reports home BP monitoring weekly at pharmacy.",
+            "progressNote": "N/A — single outpatient visit"
+          },
+          "vitalSigns": {
+            "bloodPressure": "145/92 mmHg",
+            "pulseRate": "84 bpm",
+            "respiratoryRate": "18 breaths/min",
+            "temperature": "36.6 °C",
+            "oxygenSaturation": "98%",
+            "painScore": "1/10",
+            "weight": "83 kg",
+            "height": "172 cm",
+            "BMI": "28.1 kg/m²"
+          },
+          "laboratoryResults": {
+            "fbc": {
+              "haemoglobin": "13.0 g/dL",
+              "pcv": "39%",
+              "wbc": "7.2 × 10⁹/L",
+              "neutrophils": "4.6 × 10⁹/L",
+              "lymphocytes": "2.1 × 10⁹/L",
+              "platelets": "195 × 10⁹/L",
+              "mcv": "83 fL",
+              "interpretation": "Normal"
+            },
+            "uAndE": {
+              "sodium": "137 mmol/L",
+              "potassium": "4.0 mmol/L",
+              "urea": "5.2 mmol/L",
+              "creatinine": "102 µmol/L",
+              "eGFR": "60 mL/min/1.73m²",
+              "interpretation": "Stable renal function"
+            },
+            "urinalysis": {
+              "appearance": "Yellow, clear",
+              "pH": "6.0",
+              "specificGravity": "1.018",
+              "protein": "Trace",
+              "glucose": "+",
+              "nitrites": "Negative",
+              "interpretation": "Persistent trace glycosuria"
+            },
+            "bloodGlucose": {
+              "type": "Fasting",
+              "value": "11.5 mmol/L",
+              "interpretation": "Elevated — therapy optimisation needed"
+            },
+            "additional": {
+              "HbA1c": "8.2% (66 mmol/mol)",
+              "urineACR": "3.5 mg/mmol — borderline microalbuminuria",
+              "ECG": "Persistent LVH. No ischaemic changes."
+            }
+          },
+          "radiology": []
+        },
+        {
+          "encounterId": "ENC-001-03",
+          "date": "2024-10-08",
+          "type": "Outpatient Annual Review",
+          "department": "Internal Medicine — Diabetes & Hypertension Clinic",
+          "attendingDoctor": "Dr. Emeka Okonkwo",
+          "disposition": "Discharged home — medication adjusted",
+          "summary": {
+            "chiefComplaint": "Annual review; progressive right eye blurring over 2 months",
+            "historyOfPresentingIllness": "9-month follow-up. Home BP now 125–135/80–88 mmHg. SMBG 7–10 mmol/L. Compliant with all medications. Reports worsening blurred vision right eye over 2 months, worse on waking. No neurological deficits.",
+            "clinicalAssessment": "BP 132/84 mmHg — well controlled. Fundoscopy: dot haemorrhages and microaneurysms right eye — background NPDR. Microalbuminuria confirmed on repeat ACR.",
+            "diagnosis": [
+              "Hypertension — controlled (ICD-10: I10)",
+              "T2DM with background diabetic retinopathy, right eye (ICD-10: E11.319)",
+              "Diabetic nephropathy — microalbuminuria (ICD-10: E11.65)"
+            ],
+            "managementPlan": "Increase lisinopril to 20mg daily. Add aspirin 75mg daily. Urgent ophthalmology referral for retinopathy grading. Continue gliclazide and metformin. Annual renal function monitoring. Dietitian referral."
+          },
+          "clinicalNotes": {
+            "consultationNote": "Significant improvement over 9 months — BP at target 132/84, HbA1c 7.5%. Complications now emerging: background NPDR right eye and confirmed microalbuminuria (ACR 6.8 mg/mmol). RAAS blockade optimised with lisinopril dose increase. Aspirin commenced for cardiovascular primary prevention. Urgent ophthalmology placed.",
+            "nursingNote": "Weight stable 81 kg. Ankle oedema resolved. Medication reconciliation confirmed. Foot examination: no ulcers, intact monofilament bilaterally. Visual acuity tested — right 6/12, left 6/6.",
+            "progressNote": "N/A — single outpatient visit"
+          },
+          "vitalSigns": {
+            "bloodPressure": "132/84 mmHg",
+            "pulseRate": "80 bpm",
+            "respiratoryRate": "17 breaths/min",
+            "temperature": "36.5 °C",
+            "oxygenSaturation": "98%",
+            "painScore": "0/10",
+            "weight": "81 kg",
+            "height": "172 cm",
+            "BMI": "27.4 kg/m²"
+          },
+          "laboratoryResults": {
+            "fbc": {
+              "haemoglobin": "12.8 g/dL",
+              "pcv": "38%",
+              "wbc": "7.0 × 10⁹/L",
+              "platelets": "202 × 10⁹/L",
+              "mcv": "82 fL",
+              "interpretation": "Mild anaemia — chronic disease"
+            },
+            "uAndE": {
+              "sodium": "138 mmol/L",
+              "potassium": "4.4 mmol/L",
+              "urea": "6.1 mmol/L",
+              "creatinine": "108 µmol/L",
+              "eGFR": "56 mL/min/1.73m²",
+              "interpretation": "Mild eGFR decline — CKD G3a, diabetic nephropathy"
+            },
+            "urinalysis": {
+              "appearance": "Yellow, slightly turbid",
+              "pH": "6.2",
+              "specificGravity": "1.020",
+              "protein": "+",
+              "glucose": "Trace",
+              "nitrites": "Negative",
+              "interpretation": "Proteinuria — microalbuminuria confirmed"
+            },
+            "bloodGlucose": {
+              "type": "Fasting",
+              "value": "9.1 mmol/L",
+              "interpretation": "Improving — approaching target"
+            },
+            "additional": {
+              "HbA1c": "7.5% (58 mmol/mol)",
+              "urineACR": "6.8 mg/mmol — confirmed microalbuminuria",
+              "ophthalmologyReport": "NPDR right eye — dot haemorrhages and microaneurysms. Left: mild AV nipping. Laser not yet required; 6-monthly review."
+            }
+          },
+          "radiology": [
+            {
+              "type": "Echocardiogram (transthoracic)",
+              "date": "2024-10-08",
+              "findings": "IVS 13mm, posterior wall 12mm. LVEF 58%. Concentric LVH pattern. E/A ratio 0.7. No valvular lesions. Normal pericardium.",
+              "impression": "Hypertensive heart disease — concentric LVH with grade 1 diastolic dysfunction."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "PT-002",
+      "mrn": "LCH-2024-002",
+      "profile": {
+        "firstName": "Chukwudi",
+        "lastName": "Okonkwo",
+        "dateOfBirth": "1996-07-22",
+        "age": 28,
+        "sex": "Male",
+        "gender": "male",
+        "bloodGroup": "O+",
+        "genotype": "SS",
+        "phoneNumber": "+234-806-712-3344",
+        "address": "22 Ogui Road, New Haven",
+        "city": "Enugu",
+        "state": "Enugu State",
+        "hmoProvider": "NHIS / Reliance HMO",
+        "membershipNumber": "NHIS/2020/EN/00891",
+        "tribe": "Igbo",
+        "religion": "Christianity",
+        "maritalStatus": "Single",
+        "occupation": "University Student",
+        "nextOfKin": {
+          "name": "Mrs. Ngozi Okonkwo",
+          "relationship": "Mother",
+          "phone": "+234-803-215-9900"
+        },
+        "allergies": [
+          "NSAIDs — precipitates pain crisis"
+        ],
+        "knownConditions": [
+          "Sickle Cell Disease (Hb-SS) — diagnosed at birth"
+        ]
+      },
+      "encounters": [
+        {
+          "encounterId": "ENC-002-01",
+          "date": "2024-02-10",
+          "type": "Emergency",
+          "department": "Emergency Department → Haematology Ward",
+          "attendingDoctor": "Dr. Amaka Eze",
+          "disposition": "Admitted — Haematology Ward",
+          "summary": {
+            "chiefComplaint": "Severe bone pain — bilateral lower limbs and lower back for 2 days",
+            "historyOfPresentingIllness": "28-year-old male with known SCD (Hb-SS) presents with a 2-day history of severe, bilateral lower limb pain and lower back pain. Pain 8/10, constant, not relieved by paracetamol taken at home. Preceding 3-day history of mild upper respiratory tract infection. No chest pain, no shortness of breath, no jaundice noted by patient. This is his 4th vaso-occlusive crisis this year.",
+            "pastMedicalHistory": "Sickle Cell Disease (Hb-SS), diagnosed at birth. Multiple prior VOC admissions. Folic acid 5mg daily.",
+            "familyHistory": "Father AS, Mother AS.",
+            "clinicalAssessment": "Severe distress, tachycardic, afebrile. Pallor ++. Scleral icterus mild. Tender bilateral thighs and lumbar spine on palpation. Joints: no swelling. CXR clear.",
+            "diagnosis": [
+              "Vaso-occlusive crisis (VOC) in SCD (ICD-10: D57.00)",
+              "Anaemia of SCD — acute on chronic (ICD-10: D57.01)"
+            ],
+            "managementPlan": "Admit. IV fluids (0.9% NaCl at 125ml/hr). Morphine PCA (1mg bolus, 5-min lockout). Paracetamol 1g QDS. Folic acid 5mg daily. O2 via face mask to maintain SpO2 >95%. FBC, blood film, LFTs, LDH, reticulocyte count. Strict fluid balance. Haematology review."
+          },
+          "clinicalNotes": {
+            "consultationNote": "Known SCD (Hb-SS) presenting with typical VOC. Hb 6.8 g/dL, down from his baseline of 7.5 g/dL. Peripheral smear shows sickled cells and nucleated RBCs. LDH 580 IU/L — haemolysis marker elevated. Morphine PCA commenced. NSAIDs strictly avoided. CXR clear — no ACS features currently. Patient and family counselled on avoidance of triggers (dehydration, cold, infection).",
+            "nursingNote": "Patient admitted at 22:10, in severe distress. Pain score 8/10. IV access × 2 (16G bilateral antecubital). Morphine PCA initiated and explained to patient. IV fluids running at 125 ml/hr. O2 4L/min via face mask. SpO2 95%. Hourly pain and SpO2 monitoring. Fluid balance chart commenced.",
+            "progressNote": "Day 3 (2024-02-13): Pain score improved from 8/10 to 4/10. Morphine PCA demand decreasing. Hb today 7.1 g/dL. No chest symptoms. Tolerating oral fluids. SpO2 97% on room air. Plan to step down to oral analgesia and discharge if pain <3/10 tomorrow."
+          },
+          "vitalSigns": {
+            "bloodPressure": "108/70 mmHg",
+            "pulseRate": "118 bpm",
+            "respiratoryRate": "22 breaths/min",
+            "temperature": "37.1 °C",
+            "oxygenSaturation": "95%",
+            "painScore": "8/10",
+            "weight": "64 kg",
+            "height": "175 cm",
+            "BMI": "20.9 kg/m²"
+          },
+          "laboratoryResults": {
+            "fbc": {
+              "haemoglobin": "6.8 g/dL",
+              "pcv": "21%",
+              "wbc": "12.5 × 10⁹/L",
+              "neutrophils": "9.2 × 10⁹/L",
+              "lymphocytes": "2.4 × 10⁹/L",
+              "platelets": "185 × 10⁹/L",
+              "mcv": "78 fL",
+              "mch": "25 pg",
+              "reticulocytes": "12.5%",
+              "interpretation": "Severe anaemia with reticulocytosis — haemolytic component. Leukocytosis likely stress/infection response."
+            },
+            "uAndE": {
+              "sodium": "136 mmol/L",
+              "potassium": "4.1 mmol/L",
+              "urea": "4.8 mmol/L",
+              "creatinine": "78 µmol/L",
+              "eGFR": "102 mL/min/1.73m²",
+              "interpretation": "Normal renal function"
+            },
+            "urinalysis": {
+              "appearance": "Dark yellow, clear",
+              "pH": "5.8",
+              "specificGravity": "1.028",
+              "protein": "Trace",
+              "glucose": "Negative",
+              "blood": "Trace (haemoglobinuria)",
+              "nitrites": "Negative",
+              "interpretation": "Trace haemoglobinuria — intravascular haemolysis"
+            },
+            "bloodGlucose": {
+              "type": "Random",
+              "value": "5.8 mmol/L",
+              "interpretation": "Normal"
+            },
+            "additional": {
+              "bloodFilm": "Sickle cells 35%, target cells, nucleated RBCs, polychromasia.",
+              "LDH": "580 IU/L (elevated — haemolysis marker)",
+              "bilirubinTotal": "52 µmol/L (elevated — indirect 44 µmol/L)",
+              "reticulocyteCount": "12.5% (elevated)",
+              "CXR": "Clear lung fields. No infiltrates."
+            }
+          },
+          "radiology": [
+            {
+              "type": "Chest X-Ray (AP view)",
+              "date": "2024-02-10",
+              "findings": "Lung fields clear. No lobar consolidation, no infiltrates. Cardiomegaly mild (CTR 0.52). Bony thorax unremarkable.",
+              "impression": "No acute cardiopulmonary disease. Mild cardiomegaly — SCD related."
+            }
+          ]
+        },
+        {
+          "encounterId": "ENC-002-02",
+          "date": "2024-06-22",
+          "type": "Emergency",
+          "department": "Emergency → Haematology / HDU",
+          "attendingDoctor": "Dr. Amaka Eze",
+          "disposition": "Admitted — HDU",
+          "summary": {
+            "chiefComplaint": "Chest pain, shortness of breath, fever, and severe limb pain",
+            "historyOfPresentingIllness": "28-year-old with known SCD presents with 1-day history of pleuritic chest pain, progressive dyspnoea, fever (38.9°C), and concurrent bilateral limb pain. SpO2 dropped to 88% at home. He had a dental procedure 4 days prior.",
+            "clinicalAssessment": "Acutely unwell. Tachycardic 132 bpm, febrile 38.9°C. SpO2 88% on room air, 93% on 10L O2 via non-rebreather mask. Bilateral basal crepitations. Chest expansion reduced. CXR bilateral infiltrates — Acute Chest Syndrome.",
+            "diagnosis": [
+              "Acute Chest Syndrome in SCD (ICD-10: D57.01)",
+              "Vaso-occlusive crisis — concurrent (ICD-10: D57.00)"
+            ],
+            "managementPlan": "HDU admission. High-flow O2. IV ceftriaxone 2g daily + azithromycin 500mg daily. IV morphine. Simple transfusion (2 units packed RBCs) targeting Hb 8-9 g/dL. Exchange transfusion if deterioration. Bronchodilators. Incentive spirometry. Strict monitoring."
+          },
+          "clinicalNotes": {
+            "consultationNote": "Life-threatening presentation — ACS in SCD. Bilateral infiltrates on CXR with SpO2 88%. Hb 6.2 g/dL. WBC 18.5 — leukocytosis suggesting infection trigger (post-dental). Commenced IV antibiotics (ceftriaxone + azithromycin). Two units packed RBCs transfused — pre-transfusion Hb 6.2, post-transfusion target 8.5 g/dL. Haematology SpR on standby for exchange transfusion if no improvement.",
+            "nursingNote": "Patient admitted HDU 03:20. SpO2 88% on RA → 93% on 15L NRB mask. Continuous SpO2, ECG, BP monitoring. IV access × 2 (14G). Morphine infusion running. Transfusion (2 units pRBC) commenced — blood group O+ confirmed, crossmatch done. Incentive spirometry bedside.",
+            "progressNote": "Day 2 (2024-06-23): SpO2 improved to 96% on 6L O2. Post-transfusion Hb 8.4 g/dL. Fever resolving (37.2°C). Pain score 5/10. CXR improvement — early resolution of right lower zone infiltrate. Stepped down to ward. Day 5 (2024-06-27): SpO2 98% on room air, discharged."
+          },
+          "vitalSigns": {
+            "bloodPressure": "104/66 mmHg",
+            "pulseRate": "132 bpm",
+            "respiratoryRate": "30 breaths/min",
+            "temperature": "38.9 °C",
+            "oxygenSaturation": "88% (room air)",
+            "painScore": "8/10",
+            "weight": "62 kg",
+            "height": "175 cm",
+            "BMI": "20.2 kg/m²"
+          },
+          "laboratoryResults": {
+            "fbc": {
+              "haemoglobin": "6.2 g/dL",
+              "pcv": "19%",
+              "wbc": "18.5 × 10⁹/L",
+              "neutrophils": "14.8 × 10⁹/L",
+              "lymphocytes": "2.8 × 10⁹/L",
+              "platelets": "130 × 10⁹/L",
+              "reticulocytes": "9.2%",
+              "interpretation": "Severe anaemia, leukocytosis — infection + SCD. Thrombocytopaenia — sequestration."
+            },
+            "uAndE": {
+              "sodium": "134 mmol/L",
+              "potassium": "4.8 mmol/L",
+              "urea": "6.2 mmol/L",
+              "creatinine": "88 µmol/L",
+              "eGFR": "96 mL/min/1.73m²",
+              "interpretation": "Mild hyponatraemia. Renal function preserved."
+            },
+            "urinalysis": {
+              "appearance": "Dark amber",
+              "pH": "5.5",
+              "blood": "+ (haemoglobinuria)",
+              "protein": "Trace",
+              "nitrites": "Negative",
+              "interpretation": "Haemoglobinuria"
+            },
+            "bloodGlucose": {
+              "type": "Random",
+              "value": "7.2 mmol/L",
+              "interpretation": "Stress hyperglycaemia"
+            },
+            "additional": {
+              "ABG_roomAir": "pH 7.42, PO₂ 7.1 kPa (hypoxaemia), PCO₂ 4.2 kPa, HCO₃ 21 mmol/L",
+              "bloodCulture": "Pending (no growth at 48hr)",
+              "LDH": "890 IU/L (markedly elevated)",
+              "bilirubinTotal": "78 µmol/L",
+              "sputumMCS": "Pending",
+              "CXR_report": "Bilateral mid and lower zone alveolar infiltrates, right greater than left. Consistent with Acute Chest Syndrome."
+            }
+          },
+          "radiology": [
+            {
+              "type": "Chest X-Ray (AP view)",
+              "date": "2024-06-22",
+              "findings": "Bilateral alveolar infiltrates predominantly in mid and lower zones, right > left. Cardiomegaly persists (CTR 0.54). No pleural effusion. No pneumothorax.",
+              "impression": "Bilateral pulmonary infiltrates in known SCD — Acute Chest Syndrome. Cardiomegaly."
+            }
+          ]
+        },
+        {
+          "encounterId": "ENC-002-03",
+          "date": "2024-11-14",
+          "type": "Outpatient — Haematology Clinic",
+          "department": "Haematology",
+          "attendingDoctor": "Dr. Amaka Eze",
+          "disposition": "Discharged home — hydroxyurea commenced",
+          "summary": {
+            "chiefComplaint": "Elective review — recurrent crises, consideration of disease-modifying therapy",
+            "historyOfPresentingIllness": "5-month post-ACS review. Patient has had 4 VOC admissions and 1 ACS episode this year. Currently well, no active pain. Reports fatigue and reduced exercise tolerance. Keen to start hydroxyurea after discussion at previous admission.",
+            "clinicalAssessment": "Appears well. Mild pallor. Mild scleral icterus. Spleen not palpable (functional asplenia expected). HR 88, SpO2 97% on room air.",
+            "diagnosis": [
+              "SCD Hb-SS — high frequency of acute events, hydroxyurea candidate (ICD-10: D57.00)",
+              "Chronic anaemia of SCD (ICD-10: D57.01)"
+            ],
+            "managementPlan": "Commence hydroxyurea 500mg daily (15mg/kg/day) — counsel on FBC monitoring, teratogenicity. Continue folic acid 5mg daily. Pneumococcal and influenza vaccines. FBC in 4 weeks to monitor response and toxicity. Avoid NSAIDs."
+          },
+          "clinicalNotes": {
+            "consultationNote": "Patient meets criteria for hydroxyurea initiation: ≥3 VOC per year, ACS episode. Baseline Hb 7.8 g/dL, HbF undetectable on HPLC. FBC, LFT, and creatinine within acceptable range. Hydroxyurea 500mg daily commenced; FBC to be repeated in 4 weeks. Counselled on contraception (hydroxyurea teratogenic), avoiding sun exposure, and reporting any signs of infection. Vaccines updated.",
+            "nursingNote": "Patient attended with mother. Vaccines administered (pneumococcal PPV23, influenza). Hydroxyurea prescription dispensed with patient education leaflet. Contact details given for urgent queries. Next appointment in 6 weeks.",
+            "progressNote": "N/A — single outpatient visit"
+          },
+          "vitalSigns": {
+            "bloodPressure": "110/72 mmHg",
+            "pulseRate": "88 bpm",
+            "respiratoryRate": "18 breaths/min",
+            "temperature": "36.6 °C",
+            "oxygenSaturation": "97%",
+            "painScore": "1/10",
+            "weight": "65 kg",
+            "height": "175 cm",
+            "BMI": "21.2 kg/m²"
+          },
+          "laboratoryResults": {
+            "fbc": {
+              "haemoglobin": "7.8 g/dL",
+              "pcv": "24%",
+              "wbc": "9.2 × 10⁹/L",
+              "neutrophils": "6.0 × 10⁹/L",
+              "lymphocytes": "2.5 × 10⁹/L",
+              "platelets": "220 × 10⁹/L",
+              "reticulocytes": "8.5%",
+              "interpretation": "Stable chronic SCD anaemia. Reticulocytosis."
+            },
+            "uAndE": {
+              "sodium": "137 mmol/L",
+              "potassium": "4.2 mmol/L",
+              "urea": "5.0 mmol/L",
+              "creatinine": "80 µmol/L",
+              "eGFR": "99 mL/min/1.73m²",
+              "interpretation": "Normal renal function — hydroxyurea safe to commence"
+            },
+            "urinalysis": {
+              "appearance": "Pale yellow, clear",
+              "pH": "6.0",
+              "protein": "Negative",
+              "blood": "Trace",
+              "nitrites": "Negative",
+              "interpretation": "Trace haematuria — SCD nephropathy"
+            },
+            "bloodGlucose": {
+              "type": "Random",
+              "value": "5.1 mmol/L",
+              "interpretation": "Normal"
+            },
+            "additional": {
+              "HPLC_haemoglobin": "HbS 92%, HbA₂ 3.5%, HbF <1% — confirms Hb-SS phenotype",
+              "LFTs": "ALT 32 IU/L, AST 48 IU/L, bilirubin 38 µmol/L — mild haemolytic jaundice",
+              "ferritin": "485 µg/L — elevated (multiple transfusions)"
+            }
+          },
+          "radiology": [
+            {
+              "type": "Abdominal Ultrasound",
+              "date": "2024-11-14",
+              "findings": "Liver: normal size, echogenicity mildly increased. Gallbladder: multiple small echogenic foci consistent with pigment gallstones, no cholecystitis. Spleen: 6.5 cm — small (autosplenectomy). Kidneys: normal size and echotexture bilaterally.",
+              "impression": "Autosplenectomy. Pigment gallstones — asymptomatic. No other acute findings."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "PT-003",
+      "mrn": "LCH-2024-003",
+      "profile": {
+        "firstName": "Adaeze",
+        "lastName": "Nwosu",
+        "dateOfBirth": "1999-04-05",
+        "age": 25,
+        "sex": "Female",
+        "gender": "female",
+        "bloodGroup": "A+",
+        "genotype": "AA",
+        "phoneNumber": "+234-808-556-2211",
+        "address": "7 Zik Avenue, Uwani",
+        "city": "Enugu",
+        "state": "Enugu State",
+        "hmoProvider": "NHIS / Total Health Trust",
+        "membershipNumber": "NHIS/2023/EN/04512",
+        "tribe": "Igbo",
+        "religion": "Christianity",
+        "maritalStatus": "Married",
+        "occupation": "Secondary School Teacher",
+        "lmpDate": "2023-10-15",
+        "edd": "2024-07-22",
+        "gravida": 1,
+        "para": 0,
+        "abortus": 0,
+        "nextOfKin": {
+          "name": "Chidubem Nwosu",
+          "relationship": "Husband",
+          "phone": "+234-805-331-9987"
+        },
+        "allergies": [
+          "None known"
+        ],
+        "knownConditions": [
+          "G1P0 — first pregnancy"
+        ]
+      },
+      "encounters": [
+        {
+          "encounterId": "ENC-003-01",
+          "date": "2024-01-08",
+          "type": "Outpatient — ANC Booking Visit",
+          "department": "Obstetrics & Gynaecology",
+          "attendingDoctor": "Dr. Fatima Hassan",
+          "disposition": "Discharged home — routine ANC",
+          "summary": {
+            "chiefComplaint": "First ANC visit — 12 weeks gestation",
+            "historyOfPresentingIllness": "25-year-old primigravida, LMP 15 October 2023, EDD 22 July 2024. Gestational age 12+3 weeks by dates. Currently well. Mild nausea in morning, no vomiting. No vaginal bleeding, no abdominal pain. No previous pregnancies.",
+            "clinicalAssessment": "BP 110/70 mmHg. Uterus palpable 12-week size. Fetal heart rate 158 bpm on Doppler. USS: singleton pregnancy, crown-rump length consistent with 12+3 weeks, nuchal translucency 1.2mm (normal).",
+            "diagnosis": [
+              "Primigravida at 12+3 weeks gestation — low risk (ICD-10: Z34.12)"
+            ],
+            "managementPlan": "Routine ANC schedule (WHO 8-visit). Folic acid 5mg daily, ferrous sulphate 200mg BD, calcium 1g daily. Malaria prophylaxis (IPTp SP at 16 weeks). HIV, VDRL, hepatitis B, blood group, sickle cell screen, FBC, OGTT at 24–28 weeks. Tetanus toxoid schedule. USS anomaly scan at 20 weeks. Return at 16 weeks."
+          },
+          "clinicalNotes": {
+            "consultationNote": "First ANC booking for 25-year-old primigravida at 12+3 weeks. USS confirms viable singleton. NT 1.2mm — low risk for chromosomal abnormality. HIV: non-reactive. VDRL: non-reactive. Hepatitis B: negative. Blood group A+, Hb 11.2 g/dL — mild anaemia of early pregnancy. Sickle cell screen negative. Commenced on folic acid, ferrous sulphate, calcium. IPTp-SP scheduled from 16 weeks. Anomaly scan booked for 20 weeks.",
+            "nursingNote": "Patient attended with husband. BP 110/70, weight 58 kg, height 162 cm (BMI 22.1). FHR 158 bpm on Doppler. FBC and booking bloods taken. Iron and folic acid tablets dispensed with written instructions. Antenatal record card issued. Tetanus toxoid dose 1 administered. Education given on diet, danger signs, and hospital delivery.",
+            "progressNote": "N/A — single outpatient visit"
+          },
+          "vitalSigns": {
+            "bloodPressure": "110/70 mmHg",
+            "pulseRate": "82 bpm",
+            "respiratoryRate": "18 breaths/min",
+            "temperature": "36.4 °C",
+            "oxygenSaturation": "99%",
+            "painScore": "0/10",
+            "weight": "58 kg",
+            "height": "162 cm",
+            "BMI": "22.1 kg/m²",
+            "fetalHeartRate": "158 bpm",
+            "fundusHeight": "12 cm",
+            "presentation": "Cephalic"
+          },
+          "laboratoryResults": {
+            "fbc": {
+              "haemoglobin": "11.2 g/dL",
+              "pcv": "33%",
+              "wbc": "10.5 × 10⁹/L",
+              "neutrophils": "7.2 × 10⁹/L",
+              "lymphocytes": "2.4 × 10⁹/L",
+              "platelets": "240 × 10⁹/L",
+              "mcv": "76 fL",
+              "mch": "25 pg",
+              "interpretation": "Mild anaemia — physiological, iron deficiency pattern (microcytic)"
+            },
+            "uAndE": {
+              "sodium": "135 mmol/L",
+              "potassium": "3.8 mmol/L",
+              "urea": "3.2 mmol/L",
+              "creatinine": "58 µmol/L",
+              "eGFR": ">90 mL/min/1.73m²",
+              "interpretation": "Normal — pregnancy haemodilution effect"
+            },
+            "urinalysis": {
+              "appearance": "Yellow, clear",
+              "pH": "6.5",
+              "specificGravity": "1.015",
+              "protein": "Negative",
+              "glucose": "Negative",
+              "nitrites": "Negative",
+              "leucocyteEsterase": "Negative",
+              "interpretation": "Normal"
+            },
+            "bloodGlucose": {
+              "type": "Fasting",
+              "value": "4.8 mmol/L",
+              "interpretation": "Normal"
+            },
+            "additional": {
+              "HIV": "Non-reactive",
+              "VDRL": "Non-reactive",
+              "hepatitisB_sAg": "Negative",
+              "bloodGroup": "A Rh D positive",
+              "sickleCellScreen": "Negative — AA confirmed",
+              "OGTT_1hr_50g": "Not yet done — scheduled 24–28 weeks"
+            }
+          },
+          "radiology": [
+            {
+              "type": "Obstetric Ultrasound (1st trimester)",
+              "date": "2024-01-08",
+              "findings": "Singleton intrauterine pregnancy. CRL 58mm consistent with 12+3 weeks gestation. FHR 158 bpm. Nuchal translucency 1.2mm (normal <3mm). Placenta posterior, grade 0. Liquor adequate. No uterine or adnexal abnormality.",
+              "impression": "Viable singleton intrauterine pregnancy at 12+3 weeks. Low risk nuchal translucency."
+            }
+          ]
+        },
+        {
+          "encounterId": "ENC-003-02",
+          "date": "2024-04-15",
+          "type": "Outpatient — ANC Visit 4 (26 weeks)",
+          "department": "Obstetrics & Gynaecology",
+          "attendingDoctor": "Dr. Fatima Hassan",
+          "disposition": "Discharged home — dietary modification for GDM risk",
+          "summary": {
+            "chiefComplaint": "Routine ANC — 26 weeks; mild ankle swelling",
+            "historyOfPresentingIllness": "26-week review. Generally well. Mild bilateral ankle swelling for 2 weeks, worse by evening. No headache, no visual disturbances, no epigastric pain. Good fetal movements. Weight gain 8 kg since booking.",
+            "clinicalAssessment": "BP 118/76 mmHg. Fundus 26 cm. FHR 148 bpm. Presentation cephalic. Mild bilateral ankle oedema +1. OGTT results show GDM (2-hour value 8.4 mmol/L).",
+            "diagnosis": [
+              "Intrauterine pregnancy at 26 weeks (ICD-10: Z34.22)",
+              "Gestational Diabetes Mellitus (ICD-10: O24.419)"
+            ],
+            "managementPlan": "Dietary GDM management — refer to dietitian. SMBG QDS. If fasting glucose consistently >5.3 mmol/L or 2-hour >6.7 mmol/L, consider metformin. Anomaly USS (if not done). Cardiotocograph at 32 weeks. Repeat OGTT at 28 weeks if borderline. Return at 28 weeks."
+          },
+          "clinicalNotes": {
+            "consultationNote": "26-week routine ANC. Anomaly scan at 20 weeks was normal (reported). OGTT performed: FBS 5.2 mmol/L, 1-hour 9.8 mmol/L (elevated), 2-hour 8.4 mmol/L (above 7.8 diagnostic threshold) — GDM confirmed. Dietary counselling commenced. SMBG initiated. Weight gain 8 kg over 14 weeks — within acceptable range. BP normal. Mild physiological ankle oedema, no proteinuria.",
+            "nursingNote": "BP 118/76, FHR 148, fundal height 26 cm, presentation cephalic. Weight 66 kg. Ankle oedema +1 bilateral — physiological. Blood glucose meter provided and training given on SMBG. GDM dietary advice leaflet given. Next appointment: 28 weeks.",
+            "progressNote": "N/A — single outpatient visit"
+          },
+          "vitalSigns": {
+            "bloodPressure": "118/76 mmHg",
+            "pulseRate": "88 bpm",
+            "respiratoryRate": "18 breaths/min",
+            "temperature": "36.5 °C",
+            "oxygenSaturation": "99%",
+            "painScore": "0/10",
+            "weight": "66 kg",
+            "fetalHeartRate": "148 bpm",
+            "fundusHeight": "26 cm",
+            "presentation": "Cephalic"
+          },
+          "laboratoryResults": {
+            "fbc": {
+              "haemoglobin": "10.8 g/dL",
+              "pcv": "32%",
+              "wbc": "11.2 × 10⁹/L",
+              "platelets": "228 × 10⁹/L",
+              "mcv": "74 fL",
+              "interpretation": "Mild anaemia — physiological haemodilution + iron deficiency. Increase ferrous sulphate."
+            },
+            "uAndE": {
+              "sodium": "133 mmol/L",
+              "potassium": "3.6 mmol/L",
+              "urea": "2.8 mmol/L",
+              "creatinine": "52 µmol/L",
+              "eGFR": ">90 mL/min/1.73m²",
+              "interpretation": "Pregnancy-related haemodilution. Normal."
+            },
+            "urinalysis": {
+              "appearance": "Yellow, clear",
+              "pH": "6.0",
+              "specificGravity": "1.012",
+              "protein": "Negative",
+              "glucose": "Trace",
+              "nitrites": "Negative",
+              "interpretation": "Trace glycosuria — consistent with GDM and lowered renal threshold"
+            },
+            "bloodGlucose": {
+              "type": "75g OGTT",
+              "fasting": "5.2 mmol/L",
+              "oneHour": "9.8 mmol/L",
+              "twoHour": "8.4 mmol/L",
+              "interpretation": "GDM confirmed — 2-hour value 8.4 mmol/L exceeds 7.8 mmol/L threshold"
+            },
+            "additional": {
+              "midStreamUrine_MCS": "No growth",
+              "IPTp_SP_dose2": "Given at this visit"
+            }
+          },
+          "radiology": [
+            {
+              "type": "Obstetric Ultrasound (anomaly scan — 20 weeks, reported at this visit)",
+              "date": "2024-03-04",
+              "findings": "Singleton live intrauterine pregnancy. BPD 50mm, FL 35mm, AC 175mm — consistent with 20+2 weeks. Normal fetal anatomy: CNS, cardiac, abdominal wall, limbs all normal. Posterior placenta, grade 0, not low-lying. Liquor normal. Cervical length 38mm.",
+              "impression": "Normal fetal anatomy at 20 weeks. Low-lying placenta excluded."
+            }
+          ]
+        },
+        {
+          "encounterId": "ENC-003-03",
+          "date": "2024-07-20",
+          "type": "Emergency — ANC",
+          "department": "Obstetrics & Gynaecology / Labour Ward",
+          "attendingDoctor": "Dr. Fatima Hassan",
+          "disposition": "Admitted — Labour Ward (pre-eclampsia protocol)",
+          "summary": {
+            "chiefComplaint": "Severe headache, visual blurring, and facial swelling — 36 weeks gestation",
+            "historyOfPresentingIllness": "36-week G1P0 with known GDM presents with 1-day history of severe frontal headache, visual floaters, and progressive facial oedema. Home SMBG readings have been elevated despite dietary control (FBS 6.8–7.2 mmol/L). No per vaginal bleeding, good fetal movements.",
+            "clinicalAssessment": "BP 148/96 mmHg on two readings 4 hours apart. Proteinuria 3+ on dipstick. Oedema facial and pedal ++. FHR 142 bpm, cardiotocograph reactive. Fundus 36 cm. Vertex presentation, 2/5 palpable. USS: BPP 8/8.",
+            "diagnosis": [
+              "Pre-eclampsia at 36 weeks (ICD-10: O14.00)",
+              "Gestational Diabetes Mellitus — suboptimally controlled (ICD-10: O24.419)"
+            ],
+            "managementPlan": "Admit labour ward. MgSO4 prophylaxis (4g IV loading then 1g/hr maintenance). Labetalol 200mg orally; if BP >160/110, IV labetalol. Dexamethasone 12mg IM 12-hourly × 2 doses (lung maturity). Continuous CTG. Urinary catheter for fluid balance. Delivery within 48 hours — cervical assessment. MDT (neonatology, anaesthesia). Metformin for GDM."
+          },
+          "clinicalNotes": {
+            "consultationNote": "Pre-eclampsia at 36 weeks — BP 148/96, proteinuria 3+, severe headache and visual symptoms. MgSO4 loading dose given. IV labetalol not yet required (BP <160/110 currently). Two doses dexamethasone given for fetal lung maturity. Neonatology notified. Anaesthesia reviewed for possible CS. Induction of labour planned in 24 hours — cervix unfavourable, Bishop score 4. GDM: metformin 500mg BD commenced; fasting glucose last reading 7.0 mmol/L.",
+            "nursingNote": "Patient admitted 09:45. BP 148/96, repeated 150/98. Continuous CTG commenced — reactive, no decelerations. Urinary catheter inserted, strict fluid balance. IV access established (16G). MgSO4 loading dose (4g in 100mL over 20 min) given per protocol, now on 1g/hr maintenance. Knee reflexes checked Q1H. Urine output 45 ml/hr. Fetal movement count requested.",
+            "progressNote": "Day 2 (2024-07-21): BP ranging 142–152/90–98 mmHg. Proteinuria 3+. Cervix ripening — Bishop score improving with Foley catheter. Fetal CTG reactive. MgSO4 continued. Induction of labour commenced at 08:00 with oxytocin. Delivery expected today."
+          },
+          "vitalSigns": {
+            "bloodPressure": "148/96 mmHg",
+            "pulseRate": "92 bpm",
+            "respiratoryRate": "20 breaths/min",
+            "temperature": "36.7 °C",
+            "oxygenSaturation": "99%",
+            "painScore": "5/10 (headache)",
+            "weight": "74 kg",
+            "fetalHeartRate": "142 bpm",
+            "fundusHeight": "36 cm",
+            "presentation": "Vertex, 2/5 palpable"
+          },
+          "laboratoryResults": {
+            "fbc": {
+              "haemoglobin": "10.2 g/dL",
+              "pcv": "31%",
+              "wbc": "12.8 × 10⁹/L",
+              "platelets": "145 × 10⁹/L",
+              "mcv": "73 fL",
+              "interpretation": "Mild anaemia. Borderline thrombocytopenia — monitor for HELLP."
+            },
+            "uAndE": {
+              "sodium": "136 mmol/L",
+              "potassium": "3.9 mmol/L",
+              "urea": "4.8 mmol/L",
+              "creatinine": "72 µmol/L",
+              "eGFR": ">90 mL/min/1.73m²",
+              "interpretation": "Renal function preserved. Creatinine rising from baseline."
+            },
+            "urinalysis": {
+              "appearance": "Yellow, frothy",
+              "pH": "6.5",
+              "specificGravity": "1.025",
+              "protein": "+++",
+              "glucose": "+",
+              "nitrites": "Negative",
+              "interpretation": "Significant proteinuria — pre-eclampsia. Glycosuria — GDM."
+            },
+            "bloodGlucose": {
+              "type": "Fasting",
+              "value": "7.0 mmol/L",
+              "interpretation": "GDM suboptimally controlled — above fasting target of 5.3 mmol/L"
+            },
+            "additional": {
+              "urineACR": "280 mg/mmol — significant proteinuria",
+              "LFTs": "ALT 42 IU/L, AST 55 IU/L, LDH 480 IU/L — mild elevation, monitor HELLP",
+              "uricAcid": "398 µmol/L (elevated — pre-eclampsia marker)",
+              "coagulationScreen": "PT 12.2s, APTT 28s, fibrinogen 4.8 g/L — normal",
+              "CTG": "Reactive, no decelerations. Good baseline variability."
+            }
+          },
+          "radiology": [
+            {
+              "type": "Obstetric Ultrasound (biophysical profile)",
+              "date": "2024-07-20",
+              "findings": "Singleton live intrauterine pregnancy. EFW 2680g — appropriate for gestational age. BPP 8/8. AFI 8.5 cm (normal). Placenta fundal, grade 2. Vertex presentation. Umbilical artery Doppler: normal S/D ratio 2.4.",
+              "impression": "Reassuring fetal surveillance. Appropriate for gestational age at 36 weeks. Normal umbilical Doppler."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "PT-004",
+      "mrn": "LCH-2024-004",
+      "profile": {
+        "firstName": "Olayinka",
+        "lastName": "Afolabi",
+        "dateOfBirth": "2002-09-18",
+        "age": 22,
+        "sex": "Male",
+        "gender": "male",
+        "bloodGroup": "O+",
+        "genotype": "AS",
+        "phoneNumber": "+234-816-490-0231",
+        "address": "45 Agodi GRA",
+        "city": "Ibadan",
+        "state": "Oyo State",
+        "hmoProvider": "Uninsured — Out-of-pocket",
+        "membershipNumber": "N/A",
+        "tribe": "Yoruba",
+        "religion": "Christianity",
+        "maritalStatus": "Single",
+        "occupation": "University Student",
+        "nextOfKin": {
+          "name": "Mr. Babatunde Afolabi",
+          "relationship": "Father",
+          "phone": "+234-803-678-2210"
+        },
+        "allergies": [
+          "None known"
+        ],
+        "knownConditions": [
+          "Recurrent malaria (4 episodes in past 2 years)",
+          "Genotype AS — carrier"
+        ]
+      },
+      "encounters": [
+        {
+          "encounterId": "ENC-004-01",
+          "date": "2024-03-05",
+          "type": "Outpatient",
+          "department": "General Medicine",
+          "attendingDoctor": "Dr. Biodun Adeleke",
+          "disposition": "Discharged home",
+          "summary": {
+            "chiefComplaint": "Fever, rigors, headache, and vomiting for 3 days",
+            "historyOfPresentingIllness": "22-year-old male with 3-day history of high fever with rigors, throbbing headache, generalised body aches, nausea, and two episodes of vomiting. No respiratory symptoms. No altered consciousness. Lives near stagnant drainage. No recent prophylaxis.",
+            "clinicalAssessment": "Febrile (39.2°C), jaundiced. HR 108 bpm. Pallor ++. Liver mildly enlarged, tender. Spleen tip palpable. RDT: Plasmodium falciparum POSITIVE. Parasitaemia 2+.",
+            "diagnosis": [
+              "Uncomplicated falciparum malaria (ICD-10: B50.9)"
+            ],
+            "managementPlan": "Artemether-lumefantrine (AL) 80/480mg BD × 3 days (weight-based). Oral rehydration. Paracetamol 1g QDS for fever. Haematinics (ferrous sulphate). Insecticide-treated bednet counselling. Review if no improvement in 48 hours."
+          },
+          "clinicalNotes": {
+            "consultationNote": "Typical uncomplicated falciparum malaria. RDT positive, thick film confirms Pf parasitaemia 2+. Hb 10.5 g/dL — mild malarial anaemia. Platelets 85 × 10⁹/L — thrombocytopaenia typical of malaria. Liver enzymes mildly elevated. No cerebral symptoms, no haemoglobinuria, no respiratory distress — uncomplicated disease. Commenced on artemether-lumefantrine 3-day course.",
+            "nursingNote": "Patient appears unwell, febrile. Temperature 39.2°C. Tepid sponging performed. AL dispensed with verbal and written instructions (take with food, complete full course). Oral rehydration sachets given. Patient advised to return immediately if drowsiness, difficulty breathing, or convulsions occur.",
+            "progressNote": "N/A — outpatient"
+          },
+          "vitalSigns": {
+            "bloodPressure": "110/72 mmHg",
+            "pulseRate": "108 bpm",
+            "respiratoryRate": "22 breaths/min",
+            "temperature": "39.2 °C",
+            "oxygenSaturation": "98%",
+            "painScore": "5/10",
+            "weight": "72 kg",
+            "height": "178 cm",
+            "BMI": "22.7 kg/m²"
+          },
+          "laboratoryResults": {
+            "fbc": {
+              "haemoglobin": "10.5 g/dL",
+              "pcv": "32%",
+              "wbc": "4.2 × 10⁹/L",
+              "neutrophils": "2.1 × 10⁹/L",
+              "lymphocytes": "1.6 × 10⁹/L",
+              "monocytes": "0.4 × 10⁹/L",
+              "platelets": "85 × 10⁹/L",
+              "interpretation": "Mild anaemia. Leucopenia. Severe thrombocytopaenia — characteristic of malaria."
+            },
+            "uAndE": {
+              "sodium": "136 mmol/L",
+              "potassium": "3.7 mmol/L",
+              "urea": "5.5 mmol/L",
+              "creatinine": "82 µmol/L",
+              "eGFR": "99 mL/min/1.73m²",
+              "interpretation": "Normal"
+            },
+            "urinalysis": {
+              "appearance": "Dark yellow, clear",
+              "pH": "5.5",
+              "blood": "Negative",
+              "nitrites": "Negative",
+              "interpretation": "Concentrated — adequate hydration needed"
+            },
+            "bloodGlucose": {
+              "type": "Random",
+              "value": "5.2 mmol/L",
+              "interpretation": "Normal"
+            },
+            "additional": {
+              "malariaRDT": "POSITIVE — Plasmodium falciparum HRP2 antigen",
+              "thickAndThinFilm": "Plasmodium falciparum ring trophozoites, parasitaemia 2+ (~1,500 parasites/µL)",
+              "LFTs": "ALT 58 IU/L, AST 72 IU/L, bilirubin 42 µmol/L — mildly elevated (hepatic involvement)"
+            }
+          },
+          "radiology": []
+        },
+        {
+          "encounterId": "ENC-004-02",
+          "date": "2024-07-18",
+          "type": "Outpatient",
+          "department": "General Medicine",
+          "attendingDoctor": "Dr. Biodun Adeleke",
+          "disposition": "Admitted — Medical Ward (IV antibiotics)",
+          "summary": {
+            "chiefComplaint": "Stepwise fever for 2 weeks, severe headache, abdominal pain, constipation",
+            "historyOfPresentingIllness": "22-year-old male with 14-day history of progressive fever that starts low (37.5°C) and rises daily (now 40°C). Severe frontal headache, diffuse abdominal discomfort worse in right iliac fossa, constipation for 5 days. Relative bradycardia noted. No vomiting. Malaria RDT done at pharmacy — negative. Attended community naming ceremony 16 days ago where food was shared.",
+            "clinicalAssessment": "Unwell. Temperature 39.8°C. Pulse 78 bpm — relative bradycardia. Mild jaundice. Tongue coated white. Abdomen: right iliac fossa tenderness, no guarding. Rose spots not visible. Spleen enlarged 2cm below costal margin. Widal test positive.",
+            "diagnosis": [
+              "Typhoid fever (enteric fever) — Salmonella typhi (ICD-10: A01.00)"
+            ],
+            "managementPlan": "Admit for IV ceftriaxone 2g daily × 10 days. Paracetamol for fever. IV fluids. High-protein diet, soft foods. Blood culture (3 sets). Stool culture. Monitor for complications: intestinal perforation, encephalopathy. Educate on hygiene."
+          },
+          "clinicalNotes": {
+            "consultationNote": "Classic typhoid fever presentation — stepwise fever, relative bradycardia, abdominal pain, leucopenia. Widal O antigen titre 1:160 (diagnostic); H antigen 1:80. Blood culture collected × 3 — pending. Malaria RDT and thick film both negative. Commencing IV ceftriaxone 2g daily; will review culture sensitivities when available. Monitoring for intestinal perforation (abdominal emergency) — counsel patient to report worsening abdominal pain.",
+            "nursingNote": "Patient admitted to medical ward. Temperature chart commenced Q4H. IV access established. Strict hand hygiene and stool hygiene precautions in place. Patient educated on typhoid transmission and prevention. IV ceftriaxone commenced. Fluid balance monitored.",
+            "progressNote": "Day 4 (2024-07-22): Blood culture Day 3 — Salmonella typhi isolated, sensitive to ceftriaxone and ciprofloxacin. Fever reducing (38.1°C today). Abdominal symptoms improving. No signs of perforation. Day 10: Afebrile for 48 hrs, tolerating soft diet, completing IV course. Plan: switch to oral ciprofloxacin 500mg BD × 5 days on discharge."
+          },
+          "vitalSigns": {
+            "bloodPressure": "112/70 mmHg",
+            "pulseRate": "78 bpm",
+            "respiratoryRate": "20 breaths/min",
+            "temperature": "39.8 °C",
+            "oxygenSaturation": "98%",
+            "painScore": "4/10",
+            "weight": "70 kg",
+            "height": "178 cm",
+            "BMI": "22.1 kg/m²"
+          },
+          "laboratoryResults": {
+            "fbc": {
+              "haemoglobin": "11.0 g/dL",
+              "pcv": "33%",
+              "wbc": "3.8 × 10⁹/L",
+              "neutrophils": "1.8 × 10⁹/L",
+              "lymphocytes": "1.5 × 10⁹/L",
+              "platelets": "95 × 10⁹/L",
+              "interpretation": "Leucopenia with relative lymphocytosis — classic typhoid pattern. Mild anaemia."
+            },
+            "uAndE": {
+              "sodium": "132 mmol/L",
+              "potassium": "3.4 mmol/L",
+              "urea": "6.8 mmol/L",
+              "creatinine": "88 µmol/L",
+              "eGFR": "97 mL/min/1.73m²",
+              "interpretation": "Mild hyponatraemia and hypokalaemia — replace electrolytes."
+            },
+            "urinalysis": {
+              "appearance": "Yellow, slightly turbid",
+              "pH": "5.8",
+              "protein": "Trace",
+              "nitrites": "Negative",
+              "interpretation": "Minor proteinuria — systemic infection"
+            },
+            "bloodGlucose": {
+              "type": "Random",
+              "value": "4.9 mmol/L",
+              "interpretation": "Normal"
+            },
+            "additional": {
+              "widalTest": "Salmonella O antigen 1:160 (positive), Salmonella H antigen 1:80",
+              "bloodCulture": "Salmonella typhi isolated (Day 3) — sensitive to: ceftriaxone, ciprofloxacin, azithromycin. Resistant to: ampicillin, TMP-SMX.",
+              "LFTs": "ALT 88 IU/L, AST 96 IU/L, bilirubin 48 µmol/L — typhoid hepatitis",
+              "malariaFilm": "Negative"
+            }
+          },
+          "radiology": [
+            {
+              "type": "Abdominal X-Ray (erect)",
+              "date": "2024-07-18",
+              "findings": "No free gas under diaphragm. Normal bowel gas pattern. No obstruction. Soft tissue shadows normal.",
+              "impression": "No evidence of intestinal perforation."
+            }
+          ]
+        },
+        {
+          "encounterId": "ENC-004-03",
+          "date": "2024-11-02",
+          "type": "Emergency",
+          "department": "Emergency → Medical Ward",
+          "attendingDoctor": "Dr. Biodun Adeleke",
+          "disposition": "Admitted — Blood transfusion + IV artesunate",
+          "summary": {
+            "chiefComplaint": "High fever, altered consciousness, and severe weakness for 1 day",
+            "historyOfPresentingIllness": "22-year-old presenting with 1-day history of sudden high fever (40.2°C), episodes of confusion, severe generalised weakness, and inability to walk. Vomited × 5. No recent prophylaxis. Lives in malaria-endemic area. Last episode of malaria 4 months ago.",
+            "clinicalAssessment": "Acutely unwell. GCS 13/15 (E4V3M6). Temperature 40.2°C. Pallor +++. HR 130 bpm, BP 90/60 mmHg. Jaundice. RDT: POSITIVE. Parasitaemia 5+ (hyperparasitaemia). SpO2 94%.",
+            "diagnosis": [
+              "Severe falciparum malaria (ICD-10: B50.0)",
+              "Hyperparasitaemia with cerebral features and severe malarial anaemia"
+            ],
+            "managementPlan": "Admit to medical ward. IV artesunate 2.4mg/kg at 0, 12, 24 hours then daily. Blood transfusion 2 units packed RBCs (Hb 7.2 — severe anaemia). IV fluids (cautious — risk of pulmonary oedema). IV dextrose for hypoglycaemia prevention. Broad-spectrum antibiotics (ceftriaxone) empirically. Strict fluid balance and neuro monitoring. ICU if GCS drops further."
+          },
+          "clinicalNotes": {
+            "consultationNote": "Severe malaria with hyperparasitaemia (5+), altered consciousness (GCS 13), severe anaemia (Hb 7.2 g/dL), and haemodynamic compromise (BP 90/60). IV artesunate commenced immediately. Blood transfusion 2 units pRBC. IV ceftriaxone for concurrent bacterial infection. Blood glucose 3.1 mmol/L — IV dextrose 10% commenced. Close neurological monitoring. ICU on standby.",
+            "nursingNote": "Patient admitted semi-conscious, GCS 13/15. Airway maintained. High-flow O2 commenced (10L NRB). IV access × 2 (16G). Blood glucose 3.1 mmol/L — IV 10% dextrose commenced. Blood transfusion (Group O+ × 2 units) commenced. IV artesunate and ceftriaxone running. Hourly GCS, BP, and SpO2 monitoring. Urinary catheter inserted.",
+            "progressNote": "Day 2 (2024-11-03): GCS improved to 15/15. Fever settling (38.2°C). Post-transfusion Hb 9.5 g/dL. SpO2 97% on RA. Haemodynamics stable (BP 105/70). Parasitaemia reducing on repeat film. Oral artesunate-amodiaquine commenced today. Day 5: Clinically well, afebrile, RDT turning negative. Discharged with oral ACT to complete, iron supplementation, and long-lasting insecticide-treated bednet."
+          },
+          "vitalSigns": {
+            "bloodPressure": "90/60 mmHg",
+            "pulseRate": "130 bpm",
+            "respiratoryRate": "28 breaths/min",
+            "temperature": "40.2 °C",
+            "oxygenSaturation": "94%",
+            "painScore": "6/10",
+            "GCS": "13/15 (E4V3M6)",
+            "weight": "71 kg"
+          },
+          "laboratoryResults": {
+            "fbc": {
+              "haemoglobin": "7.2 g/dL",
+              "pcv": "22%",
+              "wbc": "4.8 × 10⁹/L",
+              "neutrophils": "3.2 × 10⁹/L",
+              "lymphocytes": "1.0 × 10⁹/L",
+              "platelets": "42 × 10⁹/L",
+              "interpretation": "Severe anaemia. Marked thrombocytopaenia. Severe malaria picture."
+            },
+            "uAndE": {
+              "sodium": "130 mmol/L",
+              "potassium": "3.2 mmol/L",
+              "urea": "9.8 mmol/L",
+              "creatinine": "122 µmol/L",
+              "eGFR": "68 mL/min/1.73m²",
+              "interpretation": "Hyponatraemia, hypokalaemia. Creatinine rising — early AKI (pre-renal)."
+            },
+            "urinalysis": {
+              "appearance": "Coca-cola coloured",
+              "blood": "+++",
+              "protein": "+",
+              "interpretation": "Haemoglobinuria — intravascular haemolysis (blackwater fever features)"
+            },
+            "bloodGlucose": {
+              "type": "Random",
+              "value": "3.1 mmol/L",
+              "interpretation": "Hypoglycaemia — a criterion for severe malaria"
+            },
+            "additional": {
+              "malariaFilm": "Plasmodium falciparum, parasitaemia 5+ (>2% RBC parasitised — hyperparasitaemia)",
+              "malariaRDT": "POSITIVE — strongly reactive",
+              "LFTs": "ALT 112 IU/L, AST 158 IU/L, bilirubin 98 µmol/L — severe hepatic involvement",
+              "bloodCulture": "Negative at 48hrs",
+              "creatinine_AKI_stage": "AKI Stage 1 (KDIGO criteria)"
+            }
+          },
+          "radiology": [
+            {
+              "type": "Chest X-Ray (AP view)",
+              "date": "2024-11-02",
+              "findings": "Lung fields clear. No pulmonary oedema. No consolidation. Heart size upper limit of normal.",
+              "impression": "No acute pulmonary complications. Monitor for pulmonary oedema during IV fluid therapy."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "PT-005",
+      "mrn": "LCH-2024-005",
+      "profile": {
+        "firstName": "Aisha",
+        "lastName": "Yusuf",
+        "dateOfBirth": "1979-11-30",
+        "age": 45,
+        "sex": "Female",
+        "gender": "female",
+        "bloodGroup": "A+",
+        "genotype": "AA",
+        "phoneNumber": "+234-703-882-1100",
+        "address": "Plot 18, Wuse Zone 5",
+        "city": "Abuja",
+        "state": "FCT Abuja",
+        "hmoProvider": "Hygeia HMO",
+        "membershipNumber": "HYG/FCT/2021/08821",
+        "tribe": "Hausa",
+        "religion": "Islam",
+        "maritalStatus": "Married",
+        "occupation": "Civil Servant — Federal Ministry",
+        "nextOfKin": {
+          "name": "Musa Yusuf",
+          "relationship": "Husband",
+          "phone": "+234-805-442-3318"
+        },
+        "allergies": [
+          "Aspirin — gastric irritation"
+        ],
+        "knownConditions": [
+          "Peptic Ulcer Disease (2024)",
+          "Dyspepsia (intermittent, 3-year history)"
+        ]
+      },
+      "encounters": [
+        {
+          "encounterId": "ENC-005-01",
+          "date": "2024-02-20",
+          "type": "Outpatient",
+          "department": "Gastroenterology",
+          "attendingDoctor": "Dr. Emeka Okonkwo",
+          "disposition": "Discharged home — triple H. pylori eradication therapy",
+          "summary": {
+            "chiefComplaint": "Epigastric pain for 6 weeks, worse at night, relieved by food",
+            "historyOfPresentingIllness": "45-year-old female with 3-year history of intermittent dyspepsia, now presenting with 6-week history of worsening gnawing epigastric pain, worse 2–4 hours after meals and at night, partially relieved by food and antacids. No haematemesis, no melena, no weight loss. Regular NSAID use for chronic back pain — ibuprofen 400mg TDS for 4 months.",
+            "clinicalAssessment": "Mild epigastric tenderness on deep palpation. No guarding, no rebound tenderness. PR examination: no melena. H. pylori stool antigen test: POSITIVE. Upper GI endoscopy: 1.5cm antral ulcer.",
+            "diagnosis": [
+              "Peptic ulcer disease — antral gastric ulcer, H. pylori positive (ICD-10: K25.9)",
+              "NSAID-related gastropathy (ICD-10: K29.70)"
+            ],
+            "managementPlan": "Triple therapy: omeprazole 20mg BD + amoxicillin 1g BD + clarithromycin 500mg BD × 14 days. Discontinue all NSAIDs — use paracetamol for analgesia. Continue PPI 20mg daily for 8 weeks post-eradication. Soft diet, avoid alcohol and spicy foods. H. pylori stool antigen test to confirm eradication at 4 weeks post-treatment."
+          },
+          "clinicalNotes": {
+            "consultationNote": "45-year-old female with peptic ulcer disease — antral ulcer 1.5cm on OGD, H. pylori positive (stool antigen). Chronic NSAID use for back pain is a significant contributing factor. Triple eradication therapy commenced (omeprazole/amoxicillin/clarithromycin × 14 days). Patient strongly advised to discontinue ibuprofen — rheumatology referral for back pain management. PPI to be continued after eradication for 8 weeks.",
+            "nursingNote": "Patient reviewed as outpatient. Medications explained — triple therapy complex regimen. Patient given written schedule. Aspirin allergy confirmed — aspirin avoided. NSAIDs stopped and paracetamol prescribed. Return appointment set for 6 weeks with UBT for eradication check.",
+            "progressNote": "N/A — outpatient"
+          },
+          "vitalSigns": {
+            "bloodPressure": "122/78 mmHg",
+            "pulseRate": "76 bpm",
+            "respiratoryRate": "17 breaths/min",
+            "temperature": "36.5 °C",
+            "oxygenSaturation": "99%",
+            "painScore": "3/10",
+            "weight": "68 kg",
+            "height": "160 cm",
+            "BMI": "26.6 kg/m²"
+          },
+          "laboratoryResults": {
+            "fbc": {
+              "haemoglobin": "12.2 g/dL",
+              "pcv": "37%",
+              "wbc": "8.5 × 10⁹/L",
+              "neutrophils": "5.8 × 10⁹/L",
+              "lymphocytes": "2.0 × 10⁹/L",
+              "platelets": "220 × 10⁹/L",
+              "mcv": "80 fL",
+              "interpretation": "Mildly low Hb (low-normal for female). Iron stores may be depleted."
+            },
+            "uAndE": {
+              "sodium": "139 mmol/L",
+              "potassium": "4.1 mmol/L",
+              "urea": "5.5 mmol/L",
+              "creatinine": "72 µmol/L",
+              "eGFR": "82 mL/min/1.73m²",
+              "interpretation": "Normal"
+            },
+            "urinalysis": {
+              "appearance": "Yellow, clear",
+              "protein": "Negative",
+              "nitrites": "Negative",
+              "interpretation": "Normal"
+            },
+            "bloodGlucose": {
+              "type": "Random",
+              "value": "6.2 mmol/L",
+              "interpretation": "Normal (non-fasting)"
+            },
+            "additional": {
+              "hPyloriStoolAntigen": "POSITIVE",
+              "OGD_report": "Antral gastric ulcer, 1.5cm diameter, regular margins, no stigmata of recent haemorrhage. Antral erythema and nodularity consistent with H. pylori gastritis. No Barrett's oesophagus.",
+              "ferritin": "12 µg/L (low — depleted iron stores)"
+            }
+          },
+          "radiology": []
+        },
+        {
+          "encounterId": "ENC-005-02",
+          "date": "2024-06-10",
+          "type": "Emergency",
+          "department": "Emergency → GI Endoscopy Unit → Surgical Ward",
+          "attendingDoctor": "Dr. Emeka Okonkwo",
+          "disposition": "Admitted — Surgical Ward (post-endoscopic haemostasis)",
+          "summary": {
+            "chiefComplaint": "Vomiting of blood and passage of black stools since yesterday evening",
+            "historyOfPresentingIllness": "45-year-old female with known PUD presenting with acute haematemesis (two large episodes of fresh blood vomiting last night), followed by three episodes of melena this morning. Dizziness and feeling faint on standing. Had been taking triple therapy 4 months ago — unsure of compliance. Recently restarted ibuprofen for back pain 3 weeks ago.",
+            "clinicalAssessment": "Acutely unwell. Pale +++. BP 95/65 mmHg (postural drop to 80/55 on standing). PR 120 bpm, weak. Cold extremities. Abdomen: mild epigastric tenderness. PR: melena. Urgent endoscopy: actively bleeding duodenal ulcer (Forrest class Ia — spurting arterial bleed).",
+            "diagnosis": [
+              "Upper gastrointestinal haemorrhage — bleeding duodenal ulcer (ICD-10: K26.0)",
+              "Haemorrhagic shock — moderate (ICD-10: R57.1)"
+            ],
+            "managementPlan": "Emergency resuscitation: 2× large-bore IVs, O2, IV crystalloid 1L stat. Urgent crossmatch 4 units pRBC — transfuse 2 units immediately. IV omeprazole 80mg bolus then 8mg/hr infusion. Urgent OGD with haemostasis (dual therapy: adrenaline injection + haemoclip). ICU-level monitoring overnight. NBM. Surgical backup. H. pylori testing and re-eradication post-stability."
+          },
+          "clinicalNotes": {
+            "consultationNote": "Acute upper GI haemorrhage with haemodynamic instability. Hb 7.8 g/dL — dropped from 12.2 g/dL. Endoscopy performed under sedation: actively bleeding duodenal ulcer (Forrest Ia). Dual haemostasis achieved: adrenaline 1:10,000 injection (4 × 0.5mL) + haemoclip × 2. Post-procedure haemostasis confirmed. IV omeprazole infusion continued. Two units pRBC transfused — post-transfusion Hb 9.6 g/dL. NSAID absolutely contraindicated. Repeat endoscopy in 24 hours.",
+            "nursingNote": "Patient brought in by husband at 09:15. BP 95/65, HR 120 — shock protocol activated. IV access × 2 (14G bilateral). O2 10L NRB. IV crystalloid running fast. Blood transfusion commenced after crossmatch. Urinary catheter for strict fluid balance. NBM sign posted. Constant monitoring — BP Q30 min, HR Q15 min. Endoscopy consent signed. Family informed.",
+            "progressNote": "Day 2 (2024-06-11): BP stable 115/75 mmHg. No further haematemesis or melena. Hb 9.6 g/dL post-transfusion. Abdomen soft. Repeat endoscopy: no rebleeding, clot visible, haemoclips in situ. Step-down from ICU-level monitoring to surgical ward. Commencing sips of clear fluids. IV PPI to switch to oral PPI omeprazole 40mg BD. Day 5 (2024-06-15): Tolerating soft diet. Discharged home."
+          },
+          "vitalSigns": {
+            "bloodPressure": "95/65 mmHg",
+            "pulseRate": "120 bpm",
+            "respiratoryRate": "24 breaths/min",
+            "temperature": "36.2 °C",
+            "oxygenSaturation": "96%",
+            "painScore": "4/10",
+            "weight": "65 kg"
+          },
+          "laboratoryResults": {
+            "fbc": {
+              "haemoglobin": "7.8 g/dL",
+              "pcv": "24%",
+              "wbc": "12.0 × 10⁹/L",
+              "neutrophils": "9.2 × 10⁹/L",
+              "platelets": "180 × 10⁹/L",
+              "mcv": "78 fL",
+              "interpretation": "Significant haemorrhagic anaemia (Hb dropped from 12.2 → 7.8). Leukocytosis — physiological stress response."
+            },
+            "uAndE": {
+              "sodium": "136 mmol/L",
+              "potassium": "3.8 mmol/L",
+              "urea": "12.5 mmol/L",
+              "creatinine": "88 µmol/L",
+              "eGFR": "74 mL/min/1.73m²",
+              "interpretation": "Raised urea — blood in GI tract (digested blood absorbs → urea production). Cr normal — pre-renal picture."
+            },
+            "urinalysis": {
+              "appearance": "Yellow",
+              "protein": "Trace",
+              "interpretation": "Trace protein — pre-renal state"
+            },
+            "bloodGlucose": {
+              "type": "Random",
+              "value": "8.2 mmol/L",
+              "interpretation": "Mild stress hyperglycaemia"
+            },
+            "additional": {
+              "coagulationScreen": "PT 13.5s, APTT 32s, INR 1.1 — normal",
+              "crossmatch": "A+ — 4 units pRBC crossmatched, 2 transfused",
+              "rockallScore": "6 — moderate risk of rebleed (age 45, haemodynamic compromise, duodenal ulcer, Forrest Ia)",
+              "OGD_report": "Forrest Ia (spurting arterial bleed) duodenal ulcer, posterior bulbar wall, 1.2cm. Haemostasis achieved with dual therapy. Second-look endoscopy (Day 2): haemoclips in situ, no rebleeding."
+            }
+          },
+          "radiology": [
+            {
+              "type": "Chest X-Ray (erect PA — pre-endoscopy)",
+              "date": "2024-06-10",
+              "findings": "No free gas under diaphragm. Lung fields clear. No consolidation. Heart size normal.",
+              "impression": "No evidence of perforation. No pulmonary complications."
+            }
+          ]
+        },
+        {
+          "encounterId": "ENC-005-03",
+          "date": "2024-10-01",
+          "type": "Outpatient — Gastroenterology Review",
+          "department": "Gastroenterology",
+          "attendingDoctor": "Dr. Emeka Okonkwo",
+          "disposition": "Discharged home — maintenance therapy continued",
+          "summary": {
+            "chiefComplaint": "3-month post-GI bleed review; mild intermittent epigastric discomfort",
+            "historyOfPresentingIllness": "Well recovery after GI haemorrhage in June. Completed omeprazole 8-week course. Has mild occasional epigastric discomfort rated 1–2/10, no haematemesis, no melena. No NSAID use since discharge. H. pylori UBT done at 4 weeks post-antibiotics.",
+            "clinicalAssessment": "Well-appearing. Abdomen soft, mild epigastric tenderness on deep palpation. Hb recovered. H. pylori UBT: NEGATIVE (eradication confirmed). OGD: ulcer healed.",
+            "diagnosis": [
+              "Healed duodenal ulcer — post H. pylori eradication (ICD-10: K26.7)",
+              "Dyspepsia — post-ulcer (ICD-10: K30)"
+            ],
+            "managementPlan": "Reduce omeprazole to 20mg daily (maintenance). Continue strict NSAID avoidance — paracetamol only. Antacid PRN for breakthrough symptoms. Repeat OGD only if symptoms recur. Annual H. pylori surveillance."
+          },
+          "clinicalNotes": {
+            "consultationNote": "Excellent outcome — ulcer healed on OGD, H. pylori eradicated on UBT. Hb recovered to 11.8 g/dL. Ongoing mild dyspepsia may be functional post-ulcer. Reducing PPI to maintenance dose. Ferrous sulphate continued for iron repletion. Absolute NSAID contraindication reinforced.",
+            "nursingNote": "Patient appears well, no pallor. BP 120/78, weight stable 67 kg. H. pylori UBT result negative confirmed and explained to patient. Medication doses updated. Patient verbally reports no more ibuprofen use. Follow-up appointment: 6 months.",
+            "progressNote": "N/A — outpatient"
+          },
+          "vitalSigns": {
+            "bloodPressure": "120/78 mmHg",
+            "pulseRate": "74 bpm",
+            "respiratoryRate": "17 breaths/min",
+            "temperature": "36.5 °C",
+            "oxygenSaturation": "99%",
+            "painScore": "1/10",
+            "weight": "67 kg",
+            "height": "160 cm",
+            "BMI": "26.2 kg/m²"
+          },
+          "laboratoryResults": {
+            "fbc": {
+              "haemoglobin": "11.8 g/dL",
+              "pcv": "35%",
+              "wbc": "7.2 × 10⁹/L",
+              "platelets": "210 × 10⁹/L",
+              "mcv": "82 fL",
+              "interpretation": "Hb recovering — iron stores replenishing. Continue ferrous sulphate."
+            },
+            "uAndE": {
+              "sodium": "139 mmol/L",
+              "potassium": "4.2 mmol/L",
+              "urea": "4.8 mmol/L",
+              "creatinine": "70 µmol/L",
+              "eGFR": "85 mL/min/1.73m²",
+              "interpretation": "Normal"
+            },
+            "urinalysis": {
+              "appearance": "Yellow, clear",
+              "protein": "Negative",
+              "interpretation": "Normal"
+            },
+            "bloodGlucose": {
+              "type": "Random",
+              "value": "5.8 mmol/L",
+              "interpretation": "Normal"
+            },
+            "additional": {
+              "hPyloriUBT": "NEGATIVE — eradication confirmed",
+              "ferritin": "28 µg/L (low-normal — continue iron supplementation)",
+              "OGD_report": "Healed duodenal ulcer — residual scar at posterior bulbar wall. No active ulceration. Normal oesophagus and stomach."
+            }
+          },
+          "radiology": []
+        }
+      ]
+    },
+    {
+      "id": "PT-006",
+      "mrn": "LCH-2024-006",
+      "profile": {
+        "firstName": "Emeka",
+        "lastName": "Obi",
+        "dateOfBirth": "1957-05-12",
+        "age": 67,
+        "sex": "Male",
+        "gender": "male",
+        "bloodGroup": "AB+",
+        "genotype": "AA",
+        "phoneNumber": "+234-803-229-4410",
+        "address": "11 Trans-Ekulu Road",
+        "city": "Enugu",
+        "state": "Enugu State",
+        "hmoProvider": "NHIS / Anchor HMO",
+        "membershipNumber": "NHIS/2018/EN/00034",
+        "tribe": "Igbo",
+        "religion": "Christianity",
+        "maritalStatus": "Married",
+        "occupation": "Retired Teacher",
+        "nextOfKin": {
+          "name": "Mrs. Chioma Obi",
+          "relationship": "Wife",
+          "phone": "+234-806-114-8890"
+        },
+        "allergies": [
+          "None known"
+        ],
+        "knownConditions": [
+          "COPD (GOLD Grade 3, diagnosed 2020)",
+          "Hypertension (2018)",
+          "Ex-smoker — 35 pack-years, quit 2010"
+        ]
+      },
+      "encounters": [
+        {
+          "encounterId": "ENC-006-01",
+          "date": "2024-01-22",
+          "type": "Emergency Outpatient",
+          "department": "Respiratory Medicine",
+          "attendingDoctor": "Dr. Biodun Adeleke",
+          "disposition": "Admitted — Medical Ward",
+          "summary": {
+            "chiefComplaint": "Worsening breathlessness, increased sputum production, and wheeze for 4 days",
+            "historyOfPresentingIllness": "67-year-old ex-smoker with known COPD (GOLD 3) presents with a 4-day history of increased dyspnoea (now breathless at rest), change in sputum character to purulent yellow-green with increased volume, and wheeze. No chest pain, no haemoptysis. Unable to complete sentences.",
+            "clinicalAssessment": "Tachypnoeic (RR 28), SpO2 91% on room air. Barrel-shaped chest. Resonant to percussion. Bilateral wheeze with prolonged expiration. Reduced air entry at bases. BP 158/94 mmHg. No pedal oedema. CXR: hyperinflated with flattened diaphragm.",
+            "diagnosis": [
+              "Acute exacerbation of COPD — GOLD Grade 3 (ICD-10: J44.1)",
+              "Hypertension — uncontrolled (ICD-10: I10)"
+            ],
+            "managementPlan": "Admit. Controlled O2 (24% Venturi — target SpO2 88–92%). Salbutamol 2.5mg + ipratropium 0.5mg nebulisation Q4H. Prednisolone 40mg PO × 5 days. Amoxicillin-clavulanate 625mg TDS × 7 days (purulent sputum). Sputum MCS. ABG. Spirometry (when stable). Antihypertensives continued."
+          },
+          "clinicalNotes": {
+            "consultationNote": "Acute infective exacerbation of COPD — purulent sputum, worsening dyspnoea, SpO2 91%. ABG (room air): pH 7.38, PO₂ 7.2 kPa, PCO₂ 5.0 kPa — mild hypoxaemia without hypercapnia at this stage. Sputum MCS sent. Commenced on controlled O2, regular nebulisations, systemic corticosteroids, and antibiotics. Spirometry on file: FEV1/FVC 0.56, FEV1 45% predicted — confirms GOLD Grade 3.",
+            "nursingNote": "Patient admitted 11:30, tachypnoeic, using accessory muscles. SpO2 91% RA, improved to 93% on 24% Venturi. Nebulisations Q4H commenced. Position of comfort (upright). BP monitoring. Sputum specimen obtained and labelled. O2 saturation target 88–92% strictly enforced.",
+            "progressNote": "Day 3 (2024-01-25): SpO2 94% on 24% Venturi. Sputum MCS: Haemophilus influenzae — sensitive to amoxicillin-clavulanate. Dyspnoea improving. Able to complete sentences. Step down to PRN nebulisations. Day 5: SpO2 93% on RA. Discharged on tiotropium, salbutamol PRN inhaler, and maintenance oral prednisolone dose."
+          },
+          "vitalSigns": {
+            "bloodPressure": "158/94 mmHg",
+            "pulseRate": "102 bpm",
+            "respiratoryRate": "28 breaths/min",
+            "temperature": "37.6 °C",
+            "oxygenSaturation": "91%",
+            "painScore": "2/10",
+            "weight": "76 kg",
+            "height": "168 cm",
+            "BMI": "26.9 kg/m²"
+          },
+          "laboratoryResults": {
+            "fbc": {
+              "haemoglobin": "14.8 g/dL",
+              "pcv": "46%",
+              "wbc": "11.5 × 10⁹/L",
+              "neutrophils": "8.8 × 10⁹/L",
+              "lymphocytes": "1.8 × 10⁹/L",
+              "platelets": "210 × 10⁹/L",
+              "mcv": "88 fL",
+              "interpretation": "Secondary polycythaemia — chronic hypoxia. Neutrophilia — infective exacerbation."
+            },
+            "uAndE": {
+              "sodium": "140 mmol/L",
+              "potassium": "4.0 mmol/L",
+              "urea": "6.8 mmol/L",
+              "creatinine": "148 µmol/L",
+              "eGFR": "42 mL/min/1.73m²",
+              "interpretation": "Reduced eGFR — CKD G3b (co-morbid, likely hypertensive)"
+            },
+            "urinalysis": {
+              "appearance": "Yellow, clear",
+              "protein": "Trace",
+              "nitrites": "Negative",
+              "interpretation": "Trace proteinuria — hypertensive nephropathy"
+            },
+            "bloodGlucose": {
+              "type": "Random",
+              "value": "7.8 mmol/L",
+              "interpretation": "Borderline — steroid-related hyperglycaemia possible"
+            },
+            "additional": {
+              "ABG_roomAir": "pH 7.38, PO₂ 7.2 kPa, PCO₂ 5.0 kPa, HCO₃ 22 mmol/L — type 1 respiratory failure",
+              "sputumMCS": "Haemophilus influenzae — sensitive to amoxicillin-clavulanate",
+              "spirometry_previous": "FEV1/FVC 0.56, FEV1 45% predicted — GOLD Grade 3"
+            }
+          },
+          "radiology": [
+            {
+              "type": "Chest X-Ray (PA view)",
+              "date": "2024-01-22",
+              "findings": "Hyperinflated lungs — low flat diaphragm at level of 7th rib anteriorly. Increased retrosternal airspace. No consolidation. No pleural effusion. Prominent hilar vasculature.",
+              "impression": "COPD — hyperinflation. No acute consolidation. No cor pulmonale signs."
+            }
+          ]
+        },
+        {
+          "encounterId": "ENC-006-02",
+          "date": "2024-05-15",
+          "type": "Emergency",
+          "department": "Emergency → Respiratory HDU",
+          "attendingDoctor": "Dr. Biodun Adeleke",
+          "disposition": "Admitted — HDU",
+          "summary": {
+            "chiefComplaint": "Worsening breathlessness with cyanosis and confusion",
+            "historyOfPresentingIllness": "67-year-old with COPD returns 4 months after last exacerbation. Progressive dyspnoea over 5 days, now severe at rest. Wife reports increasing confusion over last 12 hours. Sputum green and profuse. Ankle swelling for 1 week. Febrile 38.5°C.",
+            "clinicalAssessment": "Confused (GCS 13). Cyanosis peripheral and central. SpO2 88% on room air. Jugular venous distension. Right heart failure signs: pedal oedema, raised JVP. Cor pulmonale developing. CXR: small right pleural effusion.",
+            "diagnosis": [
+              "Severe acute exacerbation of COPD with type 2 respiratory failure (ICD-10: J44.1)",
+              "Cor pulmonale — developing (ICD-10: I26.9)",
+              "AKI stage 1 on CKD (ICD-10: N17.9)"
+            ],
+            "managementPlan": "HDU admission. NIV (BiPAP): IPAP 14, EPAP 5, FiO2 28%. IV methylprednisolone 125mg daily. IV co-amoxiclav + azithromycin. IV furosemide 40mg. Echocardiogram. Daily U&E. Target SpO2 88–92%."
+          },
+          "clinicalNotes": {
+            "consultationNote": "Severe COPD exacerbation with type 2 respiratory failure (ABG: pH 7.33, PO₂ 6.5, PCO₂ 6.8 — respiratory acidosis with hypercapnia). GCS 13 — confusion from CO₂ retention. Cor pulmonale suspected: JVD, pedal oedema, right heart strain on ECG. CKD worsening: Cr 195 from 148 in January. BiPAP initiated. IV steroids and antibiotics. Furosemide for fluid overload.",
+            "nursingNote": "HDU admission 14:20. GCS 13/15. BiPAP mask fitted — patient initially resistant, reassured and settled. SpO2 88% → 92% on BiPAP. Continuous monitoring. IV access × 2. Strict fluid balance. Urinary catheter inserted. Family briefed regarding severity.",
+            "progressNote": "Day 2 (2024-05-16): GCS improved to 15/15 — CO₂ clearance. SpO2 93% on BiPAP. ABG improving (pH 7.38, PCO₂ 5.8). Creatinine 195 → slightly improving with diuresis. Still requiring NIV. Furosemide response good (urine output 1.8L/24hr)."
+          },
+          "vitalSigns": {
+            "bloodPressure": "165/100 mmHg",
+            "pulseRate": "110 bpm",
+            "respiratoryRate": "30 breaths/min",
+            "temperature": "38.5 °C",
+            "oxygenSaturation": "88%",
+            "painScore": "3/10",
+            "GCS": "13/15",
+            "weight": "80 kg"
+          },
+          "laboratoryResults": {
+            "fbc": {
+              "haemoglobin": "15.2 g/dL",
+              "pcv": "48%",
+              "wbc": "14.5 × 10⁹/L",
+              "neutrophils": "11.8 × 10⁹/L",
+              "platelets": "188 × 10⁹/L",
+              "interpretation": "Worsening polycythaemia. Marked neutrophilia — infective exacerbation."
+            },
+            "uAndE": {
+              "sodium": "132 mmol/L",
+              "potassium": "5.2 mmol/L",
+              "urea": "10.2 mmol/L",
+              "creatinine": "195 µmol/L",
+              "eGFR": "32 mL/min/1.73m²",
+              "interpretation": "AKI on CKD — Cr risen from 148 to 195. Hyperkalaemia — hold ACE inhibitor."
+            },
+            "urinalysis": {
+              "protein": "+",
+              "blood": "Trace",
+              "interpretation": "Worsening proteinuria — CKD + AKI"
+            },
+            "bloodGlucose": {
+              "type": "Random",
+              "value": "10.2 mmol/L",
+              "interpretation": "Steroid-related hyperglycaemia"
+            },
+            "additional": {
+              "ABG_roomAir": "pH 7.33, PO₂ 6.5 kPa, PCO₂ 6.8 kPa, HCO₃ 26 mmol/L — type 2 respiratory failure with respiratory acidosis",
+              "ECG": "P pulmonale, right axis deviation, right ventricular hypertrophy pattern — cor pulmonale",
+              "BNP": "820 pg/mL (elevated — right heart strain)"
+            }
+          },
+          "radiology": [
+            {
+              "type": "Chest X-Ray (AP view)",
+              "date": "2024-05-15",
+              "findings": "Hyperinflated lungs. Small right pleural effusion. Prominent pulmonary arteries suggesting pulmonary hypertension. No dense consolidation. Cardiomegaly (CTR 0.58).",
+              "impression": "COPD with worsening hyperinflation. Small right pleural effusion. Features consistent with developing cor pulmonale."
+            }
+          ]
+        },
+        {
+          "encounterId": "ENC-006-03",
+          "date": "2024-09-30",
+          "type": "Emergency → ICU",
+          "department": "ICU",
+          "attendingDoctor": "Dr. Biodun Adeleke",
+          "disposition": "Admitted — ICU",
+          "summary": {
+            "chiefComplaint": "Acute severe dyspnoea, drowsiness — cannot be roused fully",
+            "historyOfPresentingIllness": "67-year-old brought by family. Drowsy, unable to give history. Wife reports sudden worsening of breathing over 6 hours, preceded by 3-day URTI. GCS dropped from 15 to 10 at home.",
+            "clinicalAssessment": "GCS 10/15. Central cyanosis. SpO2 86% on 4L O2. RR 34. HR 118. BP 175/108. Severe intercostal recession. Drowning in secretions. ABG: pH 7.28 — severe respiratory acidosis. Type 2 failure with hypercapnic coma.",
+            "diagnosis": [
+              "Life-threatening COPD exacerbation — hypercapnic respiratory failure (ICD-10: J44.1)",
+              "CKD G4 — further deterioration (ICD-10: N18.4)"
+            ],
+            "managementPlan": "ICU admission. BiPAP escalation (IPAP 18, EPAP 6). If BiPAP fails in 1 hour → intubation and mechanical ventilation. IV methylprednisolone, IV meropenem (broad-spectrum empiric). Continuous monitoring. Nephrology review for CKD management."
+          },
+          "clinicalNotes": {
+            "consultationNote": "Critical presentation — hypercapnic coma (pH 7.28, PCO₂ 8.2 kPa). GCS 10, requiring immediate airway protection strategy. BiPAP commenced at IPAP 18/EPAP 6. Anaesthesia standby for intubation. CKD now G4 (eGFR 25, Cr 245). Phosphate elevated 2.4 mmol/L — CKD-MBD developing. Hyperkalaemia 5.8 mmol/L — calcium gluconate and salbutamol nebulisation given. Nephrology urgently contacted.",
+            "nursingNote": "ICU admission 19:45. GCS 10/15. BiPAP applied. SpO2 86% → 89% within 20 min of BiPAP. Two IV lines (14G). Arterial line left radial. Continuous ABG monitoring. Urinary catheter. Family at bedside — ICU consent and treatment goals discussion initiated.",
+            "progressNote": "Day 2 (2024-10-01): GCS improved to 14 on BiPAP — intubation avoided. ABG improving: pH 7.36, PCO₂ 6.5. SpO2 91% on BiPAP 18/6 28% O2. Avoiding intubation remains priority. Cr stabilised at 245. Awaiting nephrology review re: RRT timing."
+          },
+          "vitalSigns": {
+            "bloodPressure": "175/108 mmHg",
+            "pulseRate": "118 bpm",
+            "respiratoryRate": "34 breaths/min",
+            "temperature": "38.8 °C",
+            "oxygenSaturation": "86%",
+            "painScore": "N/A — altered consciousness",
+            "GCS": "10/15",
+            "weight": "82 kg"
+          },
+          "laboratoryResults": {
+            "fbc": {
+              "haemoglobin": "15.8 g/dL",
+              "pcv": "50%",
+              "wbc": "18.0 × 10⁹/L",
+              "neutrophils": "15.2 × 10⁹/L",
+              "platelets": "172 × 10⁹/L",
+              "interpretation": "Polycythaemia worsening. Marked neutrophilia — severe infection."
+            },
+            "uAndE": {
+              "sodium": "128 mmol/L",
+              "potassium": "5.8 mmol/L",
+              "urea": "18.5 mmol/L",
+              "creatinine": "245 µmol/L",
+              "eGFR": "25 mL/min/1.73m²",
+              "interpretation": "Hyponatraemia, hyperkalaemia, uraemia — CKD G4 with AKI. Monitor for dialysis need."
+            },
+            "urinalysis": {
+              "protein": "++",
+              "blood": "+",
+              "interpretation": "Worsening proteinuria and haematuria — CKD progression"
+            },
+            "bloodGlucose": {
+              "type": "Random",
+              "value": "11.8 mmol/L",
+              "interpretation": "Steroid hyperglycaemia — monitor closely"
+            },
+            "additional": {
+              "ABG_roomAir": "pH 7.28, PO₂ 6.0 kPa, PCO₂ 8.2 kPa, HCO₃ 29 mmol/L — severe type 2 respiratory failure",
+              "phosphate": "2.4 mmol/L (elevated — CKD-MBD)",
+              "calcium": "1.98 mmol/L (corrected — low — CKD)",
+              "PTH": "180 pg/mL (elevated — secondary hyperparathyroidism)"
+            }
+          },
+          "radiology": [
+            {
+              "type": "Chest X-Ray (AP, portable)",
+              "date": "2024-09-30",
+              "findings": "Severe hyperinflation. Bilateral perihilar haziness. Right pleural effusion increased (moderate). Prominent pulmonary vasculature. Cardiomegaly CTR 0.60.",
+              "impression": "Severe COPD with acute decompensation. Moderate right pleural effusion. Worsening cor pulmonale. Pulmonary hypertension."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "PT-007",
+      "mrn": "LCH-2024-007",
+      "profile": {
+        "firstName": "Chidinma",
+        "lastName": "Eze",
+        "dateOfBirth": "1972-08-25",
+        "age": 52,
+        "sex": "Female",
+        "gender": "female",
+        "bloodGroup": "B+",
+        "genotype": "AA",
+        "phoneNumber": "+234-807-663-0912",
+        "address": "33 Independence Layout",
+        "city": "Enugu",
+        "state": "Enugu State",
+        "hmoProvider": "Reliance HMO",
+        "membershipNumber": "REL/EN/2022/11920",
+        "tribe": "Igbo",
+        "religion": "Christianity",
+        "maritalStatus": "Widowed",
+        "occupation": "Trader",
+        "nextOfKin": {
+          "name": "Kelechi Eze",
+          "relationship": "Son",
+          "phone": "+234-812-445-1234"
+        },
+        "allergies": [
+          "Sulfonamides — rash"
+        ],
+        "knownConditions": [
+          "Systemic Lupus Erythematosus (SLE, diagnosed 2020)",
+          "Hypertension (2021)",
+          "CKD — lupus nephritis (2024)"
+        ]
+      },
+      "encounters": [
+        {
+          "encounterId": "ENC-007-01",
+          "date": "2024-02-14",
+          "type": "Outpatient — Nephrology Referral",
+          "department": "Nephrology",
+          "attendingDoctor": "Dr. Amaka Eze",
+          "disposition": "Admitted — Medical Ward",
+          "summary": {
+            "chiefComplaint": "Fatigue, bilateral ankle swelling, and frothy urine for 3 months",
+            "historyOfPresentingIllness": "52-year-old with known SLE on hydroxychloroquine presents with 3-month history of progressive fatigue, bilateral ankle oedema, and frothy urine. Increasing creatinine found on routine SLE monitoring bloods. No haematuria visible. BP increasingly difficult to control.",
+            "clinicalAssessment": "BP 152/98 mmHg. Pallor ++. Pedal oedema +2 bilateral. Facial puffiness. No lupus rash currently. No joint swelling. Urine protein 3+. Cr 185 µmol/L. eGFR 32.",
+            "diagnosis": [
+              "CKD Stage G3b (eGFR 32) — lupus nephritis (ICD-10: N08, M32.14)",
+              "Hypertension — SLE-related (ICD-10: I10)",
+              "Nephrotic-range proteinuria (ICD-10: N04.9)"
+            ],
+            "managementPlan": "Admit for renal biopsy evaluation and stabilisation. Lisinopril 10mg daily (RAAS protection). Furosemide 40mg daily. Continue hydroxychloroquine. ESA (erythropoietin) for anaemia. Restrict fluid and protein. Nephrology and rheumatology MDT. Renal biopsy — ISN/RPS lupus nephritis class typing."
+          },
+          "clinicalNotes": {
+            "consultationNote": "CKD G3b secondary to lupus nephritis — Cr 185, eGFR 32. Significant proteinuria (ACR 480 mg/mmol) in nephrotic range. ANA 1:640, anti-dsDNA 185 IU/mL — high, confirming SLE activity. C3 0.42 g/L and C4 0.06 g/L both low — complement consumption (active nephritis). Renal biopsy performed and sent — awaiting histology. Commenced lisinopril and furosemide.",
+            "nursingNote": "Patient admitted. BP 152/98, weight 68 kg, significant bilateral pitting oedema. Strict fluid balance. Low-protein, low-salt diet commenced. Post-renal biopsy: pressure applied, vital signs Q30 min for 4 hours, haematuria monitoring.",
+            "progressNote": "Day 3 (2024-02-17): Renal biopsy result — Class III lupus nephritis (focal proliferative). Rheumatology review: commence mycophenolate mofetil (MMF) 1g BD + methylprednisolone pulse 500mg IV × 3 days followed by prednisolone 0.5mg/kg. Proteinuria slightly improving (protein 2+). Cr 180 µmol/L."
+          },
+          "vitalSigns": {
+            "bloodPressure": "152/98 mmHg",
+            "pulseRate": "82 bpm",
+            "respiratoryRate": "18 breaths/min",
+            "temperature": "36.6 °C",
+            "oxygenSaturation": "98%",
+            "painScore": "1/10",
+            "weight": "68 kg",
+            "height": "158 cm",
+            "BMI": "27.2 kg/m²"
+          },
+          "laboratoryResults": {
+            "fbc": {
+              "haemoglobin": "9.8 g/dL",
+              "pcv": "30%",
+              "wbc": "5.8 × 10⁹/L",
+              "lymphocytes": "1.0 × 10⁹/L",
+              "platelets": "182 × 10⁹/L",
+              "mcv": "80 fL",
+              "interpretation": "Normocytic anaemia of CKD. Lymphopaenia — SLE-associated."
+            },
+            "uAndE": {
+              "sodium": "138 mmol/L",
+              "potassium": "4.6 mmol/L",
+              "urea": "9.8 mmol/L",
+              "creatinine": "185 µmol/L",
+              "eGFR": "32 mL/min/1.73m²",
+              "interpretation": "CKD G3b — significant decline. Mildly elevated K."
+            },
+            "urinalysis": {
+              "appearance": "Frothy, yellow",
+              "protein": "+++",
+              "blood": "++",
+              "nitrites": "Negative",
+              "leucocyteEsterase": "Negative",
+              "microscopy": "RBC casts present — active glomerulonephritis",
+              "interpretation": "Nephrotic-nephritic urine — red cell casts confirm active glomerulonephritis"
+            },
+            "bloodGlucose": {
+              "type": "Random",
+              "value": "6.8 mmol/L",
+              "interpretation": "Normal (non-fasting)"
+            },
+            "additional": {
+              "ANA": "1:640 (positive, homogeneous pattern)",
+              "antiDsDNA": "185 IU/mL (elevated)",
+              "complement_C3": "0.42 g/L (low — active SLE)",
+              "complement_C4": "0.06 g/L (low)",
+              "urineACR": "480 mg/mmol — nephrotic range",
+              "renalBiopsy": "Class III lupus nephritis (focal proliferative) — ISN/RPS 2003 classification. Active lesions with endocapillary hypercellularity."
+            }
+          },
+          "radiology": [
+            {
+              "type": "Renal Ultrasound",
+              "date": "2024-02-14",
+              "findings": "Right kidney 9.2 cm, left kidney 8.8 cm — bilaterally reduced. Increased cortical echogenicity bilaterally. Normal pelvicalyceal systems. No hydronephrosis. No renal calculi. Bladder normal.",
+              "impression": "Bilaterally small kidneys with increased echogenicity — consistent with chronic parenchymal disease (lupus nephritis)."
+            }
+          ]
+        },
+        {
+          "encounterId": "ENC-007-02",
+          "date": "2024-06-25",
+          "type": "Outpatient — Nephrology Clinic",
+          "department": "Nephrology",
+          "attendingDoctor": "Dr. Amaka Eze",
+          "disposition": "Admitted — Medical Ward (electrolyte management)",
+          "summary": {
+            "chiefComplaint": "Increased fatigue, reduced urine output, worsening oedema",
+            "historyOfPresentingIllness": "4-month follow-up. On MMF, prednisolone (tapering), lisinopril, furosemide, hydroxychloroquine. Fatigue worsening despite treatment. Urine output decreased. Oedema worsening despite furosemide. Persistent nausea and reduced appetite.",
+            "clinicalAssessment": "BP 162/104 mmHg. Periorbital oedema. Ascites (shifting dullness). Pedal oedema +3. Cr 247 — CKD progressed to G4. Hyperkalaemia K 5.8.",
+            "diagnosis": [
+              "CKD Stage G4 — lupus nephritis, progressive (ICD-10: N18.4)",
+              "Fluid overload with hyponatraemia and hyperkalaemia",
+              "SLE — partial remission (ICD-10: M32.9)"
+            ],
+            "managementPlan": "Admit. Increase furosemide to 80mg BD. Restrict fluid 1L/day, K+ <2g/day. Hold lisinopril (K 5.8, Cr rising — risk of further AKI). Calcium resonium for hyperkalaemia. IV methylprednisolone pulse re-induction. Nephrologist to discuss dialysis planning. AV fistula referral."
+          },
+          "clinicalNotes": {
+            "consultationNote": "CKD progressed from G3b to G4 (Cr 247, eGFR 24) despite MMF and steroids. Lupus nephritis remains active — anti-dsDNA still 120 IU/mL, complements still low. Fluid overload evident — ascites, anasarca developing. Electrolyte disturbance: K 5.8, Na 132. Lisinopril held — risk of worsening hyperkalaemia and AKI. Calcium resonium commenced. IV steroid pulse re-started. Dialysis planning discussion initiated with patient and family.",
+            "nursingNote": "Admitted for electrolyte management and fluid control. Fluid restriction 1L/day commenced. Daily weight monitoring (baseline 71 kg with oedema). Potassium dietary restriction leaflet given. Calcium resonium sachets dispensed. 24-hour urine for creatinine clearance collected.",
+            "progressNote": "Day 3 (2024-06-28): K improved to 5.1 mmol/L. Na 135. Urine output increasing on higher dose furosemide. Weight down 2.5 kg (fluid loss). Cr 240 — slight improvement. Ascites reducing clinically. Continuing discussions re: AV fistula and dialysis readiness."
+          },
+          "vitalSigns": {
+            "bloodPressure": "162/104 mmHg",
+            "pulseRate": "88 bpm",
+            "respiratoryRate": "20 breaths/min",
+            "temperature": "36.7 °C",
+            "oxygenSaturation": "97%",
+            "painScore": "2/10",
+            "weight": "71 kg"
+          },
+          "laboratoryResults": {
+            "fbc": {
+              "haemoglobin": "8.8 g/dL",
+              "pcv": "27%",
+              "wbc": "6.5 × 10⁹/L",
+              "platelets": "165 × 10⁹/L",
+              "interpretation": "Worsening normocytic anaemia of CKD — ESA dose may need adjustment."
+            },
+            "uAndE": {
+              "sodium": "132 mmol/L",
+              "potassium": "5.8 mmol/L",
+              "urea": "15.5 mmol/L",
+              "creatinine": "247 µmol/L",
+              "eGFR": "24 mL/min/1.73m²",
+              "interpretation": "CKD G4. Hyponatraemia, hyperkalaemia, significant uraemia — approaching dialysis thresholds."
+            },
+            "urinalysis": {
+              "protein": "+++",
+              "blood": "+",
+              "interpretation": "Persistent heavy proteinuria and haematuria — ongoing nephritis"
+            },
+            "bloodGlucose": {
+              "type": "Fasting",
+              "value": "5.8 mmol/L",
+              "interpretation": "Normal"
+            },
+            "additional": {
+              "antiDsDNA": "120 IU/mL — still elevated but lower than February",
+              "complement_C3": "0.55 g/L — slight improvement",
+              "urineACR": "820 mg/mmol — worsening",
+              "albumin": "22 g/L (low — nephrotic syndrome hypoalbuminaemia)",
+              "phosphate": "2.0 mmol/L (elevated — CKD-MBD starting)"
+            }
+          },
+          "radiology": [
+            {
+              "type": "Renal Ultrasound",
+              "date": "2024-06-25",
+              "findings": "Kidneys further reduced: right 8.5 cm, left 8.2 cm. Cortical echogenicity increased. Small volume ascites seen. No hydronephrosis.",
+              "impression": "Progressive renal atrophy. Small-volume ascites — likely hypoalbuminaemia/fluid overload. Consistent with advanced lupus nephritis."
+            }
+          ]
+        },
+        {
+          "encounterId": "ENC-007-03",
+          "date": "2024-11-05",
+          "type": "Outpatient — Nephrology Clinic",
+          "department": "Nephrology",
+          "attendingDoctor": "Dr. Amaka Eze",
+          "disposition": "Admitted — dialysis preparation",
+          "summary": {
+            "chiefComplaint": "Pruritus, nausea, vomiting, severe lethargy — uraemic symptoms",
+            "historyOfPresentingIllness": "5-month review. Worsening generalized pruritus, persistent nausea and vomiting, profound fatigue limiting daily activities, and muscle cramps especially at night. Reduced urine output to approximately 600 mL/day.",
+            "clinicalAssessment": "Uraemic complexion (sallow), scratch marks on limbs. BP 175/108 mmHg. Peripheral oedema. Foetor uraemicus. Cr 312, eGFR 18 — CKD G4–5 border.",
+            "diagnosis": [
+              "CKD Stage G4–G5 border — approaching dialysis threshold (ICD-10: N18.4)",
+              "Uraemic syndrome (ICD-10: N19)",
+              "Secondary hyperparathyroidism and CKD-MBD (ICD-10: E21.1)"
+            ],
+            "managementPlan": "Admit urgently. AV fistula formation — surgical referral (ideally 6 weeks pre-dialysis). Sevelamer 800mg TDS for hyperphosphataemia. Increase ESA dose (darbepoetin alfa 60mcg SC weekly). Calcitriol 0.25 mcg daily. Low-K, low-phosphate diet. Dialysis commencement target within 2–4 weeks. Palliative care team discussion re: goals of care."
+          },
+          "clinicalNotes": {
+            "consultationNote": "Advanced CKD G4–5 with uraemic symptoms now meeting dialysis indication criteria. Cr 312, eGFR 18. Phosphate 2.8 mmol/L, PTH 320 pg/mL — established CKD-MBD. Albumin 18 g/L — severe hypoalbuminaemia, risk of fluid overload. Surgical review for AV fistula today. Sevelamer and calcitriol commenced. Patient and family counselled regarding renal replacement therapy — haemodialysis preferred. Palliative care consulted.",
+            "nursingNote": "Patient visibly unwell, sallow complexion. Excoriation marks on bilateral arms from pruritus. Emollient prescribed. Strict fluid restriction 750 mL/day. Low-K, low-phosphate meal trays ordered. AV fistula surgery consent obtained. Patient expressed anxiety about dialysis — emotional support provided, peer support group contact given.",
+            "progressNote": "Day 2 (2024-11-06): Surgical review completed — AV fistula planned for right forearm in 3 days. K 6.2 — resonium repeated. Urine output 550 mL/24hr. Fluid balance: intake 750 mL, output 550 mL + insensible — near zero balance. Phosphate 2.8 — dietary compliance poor. Renal dietitian review."
+          },
+          "vitalSigns": {
+            "bloodPressure": "175/108 mmHg",
+            "pulseRate": "92 bpm",
+            "respiratoryRate": "22 breaths/min",
+            "temperature": "36.8 °C",
+            "oxygenSaturation": "97%",
+            "painScore": "3/10 (pruritus-related discomfort)",
+            "weight": "74 kg"
+          },
+          "laboratoryResults": {
+            "fbc": {
+              "haemoglobin": "7.2 g/dL",
+              "pcv": "22%",
+              "wbc": "6.0 × 10⁹/L",
+              "platelets": "150 × 10⁹/L",
+              "interpretation": "Severe normocytic anaemia of CKD — ESA resistance likely. Consider EPO dose increase."
+            },
+            "uAndE": {
+              "sodium": "130 mmol/L",
+              "potassium": "6.2 mmol/L",
+              "urea": "28.5 mmol/L",
+              "creatinine": "312 µmol/L",
+              "eGFR": "18 mL/min/1.73m²",
+              "interpretation": "CKD G4/G5 border. Severe uraemia, hyperkalaemia, hyponatraemia — dialysis indicated."
+            },
+            "urinalysis": {
+              "appearance": "Frothy, pale",
+              "protein": "+++",
+              "blood": "+",
+              "interpretation": "Persistent heavy proteinuria"
+            },
+            "bloodGlucose": {
+              "type": "Random",
+              "value": "6.0 mmol/L",
+              "interpretation": "Normal"
+            },
+            "additional": {
+              "albumin": "18 g/L (severe hypoalbuminaemia)",
+              "phosphate": "2.8 mmol/L (elevated)",
+              "calcium_corrected": "1.85 mmol/L (low)",
+              "PTH": "320 pg/mL (markedly elevated — secondary hyperparathyroidism)",
+              "bicarbonate": "14 mmol/L (metabolic acidosis)",
+              "urineOutput_24hr": "550 mL (oliguria)"
+            }
+          },
+          "radiology": [
+            {
+              "type": "Chest X-Ray (PA view)",
+              "date": "2024-11-05",
+              "findings": "Bilateral pleural effusions (small, right > left). Pulmonary vascular congestion. Cardiomegaly (CTR 0.58). No consolidation.",
+              "impression": "Fluid overload with bilateral pleural effusions and pulmonary vascular congestion. Consistent with uraemic fluid retention."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "PT-008",
+      "mrn": "LCH-2024-008",
+      "profile": {
+        "firstName": "Kayode",
+        "lastName": "Adeleke",
+        "dateOfBirth": "2001-02-14",
+        "age": 23,
+        "sex": "Male",
+        "gender": "male",
+        "bloodGroup": "A+",
+        "genotype": "AA",
+        "phoneNumber": "+234-816-204-5500",
+        "address": "Plot 9, Bodija Estate",
+        "city": "Ibadan",
+        "state": "Oyo State",
+        "hmoProvider": "Uninsured — Out-of-pocket",
+        "membershipNumber": "N/A",
+        "tribe": "Yoruba",
+        "religion": "Christianity",
+        "maritalStatus": "Single",
+        "occupation": "IT Student",
+        "nextOfKin": {
+          "name": "Mrs. Folake Adeleke",
+          "relationship": "Mother",
+          "phone": "+234-803-765-4321"
+        },
+        "allergies": [
+          "Aspirin — bronchospasm (NSAID-sensitive asthma)"
+        ],
+        "knownConditions": [
+          "Bronchial asthma — moderate persistent (diagnosed age 12)",
+          "Allergic rhinitis",
+          "Eczema (childhood, resolved)"
+        ]
+      },
+      "encounters": [
+        {
+          "encounterId": "ENC-008-01",
+          "date": "2024-03-10",
+          "type": "Emergency Outpatient",
+          "department": "Respiratory Medicine",
+          "attendingDoctor": "Dr. Biodun Adeleke",
+          "disposition": "Admitted — Medical Ward (24-hour observation)",
+          "summary": {
+            "chiefComplaint": "Acute wheeze and shortness of breath — 2 hours duration",
+            "historyOfPresentingIllness": "23-year-old with known asthma presents with acute wheeze and dyspnoea after exposure to dust during room cleaning. Using salbutamol inhaler PRN — took 6 puffs at home with partial relief. Has not been on regular inhaled corticosteroid. PEFR at home 210 L/min (60% predicted).",
+            "clinicalAssessment": "Tachypnoeic. SpO2 94% on room air. Audible wheeze. Bilateral expiratory polyphonic wheeze on auscultation. Air entry reduced bilaterally. Speaking in short sentences. PEFR 180 L/min (53% predicted).",
+            "diagnosis": [
+              "Acute moderate asthma exacerbation (BTS Step 3) (ICD-10: J45.40)"
+            ],
+            "managementPlan": "Salbutamol 5mg + ipratropium 0.5mg nebulised Q20min × 3. Prednisolone 40mg PO immediately. O2 to maintain SpO2 >94%. CXR to exclude pneumothorax. Hourly PEFR. Admit for 24 hours. On discharge: start beclomethasone 200mcg/formoterol inhaler. Asthma action plan."
+          },
+          "clinicalNotes": {
+            "consultationNote": "Moderate acute asthma exacerbation — PEFR 53% predicted, speaking in short sentences, SpO2 94%. CXR: mild hyperinflation, no consolidation, no pneumothorax. Responded well to first set of nebulisations — PEFR improved to 68% after 3 doses. Starting controller therapy on discharge (ICS/LABA). Aspirin sensitivity noted — NSAID avoidance card provided.",
+            "nursingNote": "Patient alert, sitting upright in tripod position. Nebulisations commenced. SpO2 monitoring continuous. O2 4L/min face mask. PEFR Q1H recorded. Patient shown correct PEFR technique. Following 3 sets of nebs: SpO2 98%, PEFR 68% predicted. Stepped down to 2-hourly observations.",
+            "progressNote": "Day 1 PM: PEFR 75% predicted. SpO2 98% on room air. Wheeze resolved. Discharged with ICS/LABA inhaler, written asthma action plan, and follow-up in 2 weeks."
+          },
+          "vitalSigns": {
+            "bloodPressure": "118/76 mmHg",
+            "pulseRate": "108 bpm",
+            "respiratoryRate": "26 breaths/min",
+            "temperature": "36.7 °C",
+            "oxygenSaturation": "94%",
+            "painScore": "2/10",
+            "PEFR": "180 L/min (53% predicted)",
+            "weight": "74 kg",
+            "height": "180 cm",
+            "BMI": "22.8 kg/m²"
+          },
+          "laboratoryResults": {
+            "fbc": {
+              "haemoglobin": "14.8 g/dL",
+              "pcv": "44%",
+              "wbc": "9.5 × 10⁹/L",
+              "eosinophils": "0.85 × 10⁹/L",
+              "neutrophils": "7.0 × 10⁹/L",
+              "lymphocytes": "1.2 × 10⁹/L",
+              "platelets": "265 × 10⁹/L",
+              "interpretation": "Eosinophilia — consistent with atopic/allergic asthma."
+            },
+            "uAndE": {
+              "sodium": "139 mmol/L",
+              "potassium": "3.6 mmol/L",
+              "urea": "4.2 mmol/L",
+              "creatinine": "82 µmol/L",
+              "eGFR": ">90 mL/min/1.73m²",
+              "interpretation": "Normal"
+            },
+            "urinalysis": {
+              "protein": "Negative",
+              "interpretation": "Normal"
+            },
+            "bloodGlucose": {
+              "type": "Random",
+              "value": "5.5 mmol/L",
+              "interpretation": "Normal"
+            },
+            "additional": {
+              "CXR": "Mild hyperinflation. No consolidation. No pneumothorax.",
+              "PEFR_admission": "180 L/min (53% predicted)",
+              "PEFR_post_treatment": "260 L/min (75% predicted)"
+            }
+          },
+          "radiology": [
+            {
+              "type": "Chest X-Ray (PA view)",
+              "date": "2024-03-10",
+              "findings": "Mild hyperinflation. Lung fields clear. No consolidation or infiltrate. No pneumothorax. Heart size normal.",
+              "impression": "Changes consistent with asthma exacerbation. No complicating pneumonia or pneumothorax."
+            }
+          ]
+        },
+        {
+          "encounterId": "ENC-008-02",
+          "date": "2024-07-22",
+          "type": "Emergency",
+          "department": "Emergency → HDU",
+          "attendingDoctor": "Dr. Biodun Adeleke",
+          "disposition": "Admitted — HDU",
+          "summary": {
+            "chiefComplaint": "Severe acute breathlessness — cannot speak in full sentences, cyanosis",
+            "historyOfPresentingIllness": "23-year-old rushed in by friends at 23:00. Severe acute asthma attack after attending outdoor bonfire party — smoke exposure. Unable to use inhaler due to poor technique in panic. PEFR 35% predicted at triage. Cannot complete sentences. Cyanosed.",
+            "clinicalAssessment": "Silent chest on auscultation (life-threatening feature). SpO2 89%. HR 140 bpm. Unable to speak more than 1–2 words. PEFR <35% predicted. Cyanosis central.",
+            "diagnosis": [
+              "Life-threatening acute asthma (BTS criteria: silent chest, cyanosis, PEFR <33%) (ICD-10: J45.51)"
+            ],
+            "managementPlan": "Immediate resuscitation. O2 15L via NRB mask. Back-to-back salbutamol 5mg nebs continuous. IV magnesium sulphate 1.2–2g over 20 min. IV hydrocortisone 100mg stat then Q6H. Prepare for intubation if deterioration. ICU/anaesthesia on standby. ABG. IV salbutamol if no response."
+          },
+          "clinicalNotes": {
+            "consultationNote": "Life-threatening asthma — silent chest, SpO2 89%, PEFR 35%, cyanosis. Immediate O2 and back-to-back nebulisations commenced. IV magnesium sulphate 2g given over 20 min — response within 30 minutes (wheeze audible, SpO2 improving to 93%). IV hydrocortisone commenced. Intensive monitoring. ICU standby. ABG: pH 7.38, PO₂ 8.2 kPa, PCO₂ 3.8 kPa — mild respiratory alkalosis (hyperventilating, not yet CO₂ retaining).",
+            "nursingNote": "Patient rushed in 23:10. Cyanosed, distressed. Immediate O2 and nebs. IV access × 2. Magnesium sulphate drawn up and administered. Anaesthesia bleep active — team standby. Continuous SpO2, ECG, BP. SpO2 improved 89% → 93% → 96% over 45 min. Patient visibly improving. HDU bed prepared.",
+            "progressNote": "Day 2 (2024-07-23): SpO2 97% on 4L O2. PEFR 58% predicted. Wheeze reduced to mild. IV hydrocortisone switched to oral prednisolone 40mg. Regular nebulisations Q4H. Day 3: SpO2 99% RA, PEFR 72%. Discharged with ICS/LABA (budesonide/formoterol 400/12), montelukast 10mg nocte, and follow-up in 1 week."
+          },
+          "vitalSigns": {
+            "bloodPressure": "130/82 mmHg",
+            "pulseRate": "140 bpm",
+            "respiratoryRate": "32 breaths/min",
+            "temperature": "37.0 °C",
+            "oxygenSaturation": "89%",
+            "painScore": "4/10",
+            "PEFR": "118 L/min (35% predicted)"
+          },
+          "laboratoryResults": {
+            "fbc": {
+              "haemoglobin": "14.5 g/dL",
+              "wbc": "14.2 × 10⁹/L",
+              "neutrophils": "11.8 × 10⁹/L",
+              "eosinophils": "0.2 × 10⁹/L",
+              "platelets": "258 × 10⁹/L",
+              "interpretation": "Neutrophilia — steroid-driven demargination. Eosinophils suppressed by acute stress."
+            },
+            "uAndE": {
+              "sodium": "137 mmol/L",
+              "potassium": "3.2 mmol/L",
+              "urea": "4.8 mmol/L",
+              "creatinine": "80 mmol/L",
+              "interpretation": "Mild hypokalaemia — repeated salbutamol nebulisations. Replace K+."
+            },
+            "urinalysis": {
+              "interpretation": "Normal"
+            },
+            "bloodGlucose": {
+              "type": "Random",
+              "value": "9.8 mmol/L",
+              "interpretation": "Steroid hyperglycaemia"
+            },
+            "additional": {
+              "ABG": "pH 7.38, PO₂ 8.2 kPa, PCO₂ 3.8 kPa, HCO₃ 17 mmol/L — mild respiratory alkalosis",
+              "ECG": "Sinus tachycardia 140 bpm. No ischaemic changes.",
+              "PEFR_trend": "Admission 118 L/min (35%) → Post-MgSO4 165 L/min (48%) → Day 2 195 L/min (58%)"
+            }
+          },
+          "radiology": [
+            {
+              "type": "Chest X-Ray (AP, portable)",
+              "date": "2024-07-22",
+              "findings": "Severe bilateral hyperinflation. Low flat hemidiaphragms. Increased AP diameter. No consolidation. No pneumothorax. Heart within normal limits.",
+              "impression": "Severe asthma hyperinflation. No pneumothorax or mediastinal shift."
+            }
+          ]
+        },
+        {
+          "encounterId": "ENC-008-03",
+          "date": "2024-11-18",
+          "type": "Outpatient — Respiratory / Asthma Clinic",
+          "department": "Respiratory Medicine",
+          "attendingDoctor": "Dr. Biodun Adeleke",
+          "disposition": "Discharged home — step-up therapy confirmed",
+          "summary": {
+            "chiefComplaint": "Asthma review — 4 months post-severe exacerbation",
+            "historyOfPresentingIllness": "Good compliance with budesonide/formoterol 400/12 BD since July. Last severe attack was July. No emergency visits since. Occasional nocturnal symptoms × 1/week. PEFR self-monitoring at home: generally 82–88% predicted. Montelukast helping.",
+            "clinicalAssessment": "Well. SpO2 97% room air. Chest clear. PEFR 82% predicted today (280 L/min).",
+            "diagnosis": [
+              "Bronchial asthma — moderate persistent, partially controlled (ICD-10: J45.40)"
+            ],
+            "managementPlan": "Continue budesonide/formoterol + montelukast. Add cetirizine 10mg nocte (allergic rhinitis contributes to asthma). Allergen avoidance education. Annual flu vaccine. Review spirometry. Asthma control test score: 18 (not fully controlled). Step up if ACT <20 at next visit."
+          },
+          "clinicalNotes": {
+            "consultationNote": "Significant improvement since life-threatening episode in July. Now on step 4 therapy (ICS/LABA + LTRA). ACT score 18 — partially controlled. Spirometry: FEV1 80% predicted post-bronchodilator, FEV1/FVC 0.72. IgE 850 IU/mL — high (atopic). Total eosinophils 0.62 × 10⁹/L. Allergen testing: dust mite and mould strongly positive. Allergen avoidance counselling given. Referral to allergy clinic for consideration of SLIT.",
+            "nursingNote": "Inhaler technique assessed — acceptable but minor adjustments made for spacer use. PEFR 280 L/min (82% predicted). Asthma control test completed: score 18. Written asthma action plan updated — new trigger (smoke) added. Next review in 4 months.",
+            "progressNote": "N/A — outpatient"
+          },
+          "vitalSigns": {
+            "bloodPressure": "112/74 mmHg",
+            "pulseRate": "78 bpm",
+            "respiratoryRate": "16 breaths/min",
+            "temperature": "36.5 °C",
+            "oxygenSaturation": "97%",
+            "painScore": "0/10",
+            "PEFR": "280 L/min (82% predicted)",
+            "weight": "75 kg",
+            "height": "180 cm",
+            "BMI": "23.1 kg/m²"
+          },
+          "laboratoryResults": {
+            "fbc": {
+              "haemoglobin": "15.0 g/dL",
+              "wbc": "7.8 × 10⁹/L",
+              "eosinophils": "0.62 × 10⁹/L",
+              "platelets": "270 × 10⁹/L",
+              "interpretation": "Eosinophilia — atopic background persists."
+            },
+            "uAndE": {
+              "sodium": "140 mmol/L",
+              "potassium": "4.0 mmol/L",
+              "creatinine": "82 µmol/L",
+              "interpretation": "Normal"
+            },
+            "urinalysis": {
+              "interpretation": "Normal"
+            },
+            "bloodGlucose": {
+              "type": "Random",
+              "value": "5.2 mmol/L",
+              "interpretation": "Normal"
+            },
+            "additional": {
+              "totalIgE": "850 IU/mL (elevated — atopic)",
+              "spirometry": "FEV1 80% predicted (post-bronchodilator), FEV1/FVC 0.72 — mild obstruction partially reversible",
+              "skinPrickTest": "Dust mite 3+ (12mm), mould (Aspergillus) 2+ (8mm), cat dander 1+ (4mm)",
+              "asthmaControlTest": "18/25 — partially controlled"
+            }
+          },
+          "radiology": []
+        }
+      ]
+    },
+    {
+      "id": "PT-009",
+      "mrn": "LCH-2024-009",
+      "profile": {
+        "firstName": "Hauwa",
+        "lastName": "Garba",
+        "dateOfBirth": "1993-06-10",
+        "age": 31,
+        "sex": "Female",
+        "gender": "female",
+        "bloodGroup": "O+",
+        "genotype": "AA",
+        "phoneNumber": "+234-811-990-3344",
+        "address": "Block C, Dorayi Quarters",
+        "city": "Kano",
+        "state": "Kano State",
+        "hmoProvider": "NHIS / Integrated Healthcare Ltd",
+        "membershipNumber": "NHIS/2021/KN/07812",
+        "tribe": "Hausa",
+        "religion": "Islam",
+        "maritalStatus": "Married",
+        "occupation": "Seamstress",
+        "nextOfKin": {
+          "name": "Abdullahi Garba",
+          "relationship": "Husband",
+          "phone": "+234-802-554-9981"
+        },
+        "allergies": [
+          "Cefalexin — rash (first-generation cephalosporin allergy)"
+        ],
+        "knownConditions": [
+          "Recurrent urinary tract infections (3 episodes in 2023)",
+          "Iron deficiency anaemia (2023, on treatment)"
+        ]
+      },
+      "encounters": [
+        {
+          "encounterId": "ENC-009-01",
+          "date": "2024-01-30",
+          "type": "Outpatient",
+          "department": "General Practice",
+          "attendingDoctor": "Dr. Biodun Adeleke",
+          "disposition": "Discharged home",
+          "summary": {
+            "chiefComplaint": "Burning sensation on urination, increased urinary frequency for 3 days",
+            "historyOfPresentingIllness": "31-year-old female with 3-day history of dysuria, frequency (voiding every 30–45 min), suprapubic discomfort, and cloudy urine. No fever, no flank pain, no haematuria visible. History of recurrent UTIs — 3 episodes in 2023. Last sexual intercourse 5 days ago (husband). No vaginal discharge.",
+            "clinicalAssessment": "Afebrile (36.5°C). Suprapubic tenderness on deep palpation. No costovertebral angle tenderness. Urine dipstick: leucocytes +++, nitrites +.",
+            "diagnosis": [
+              "Uncomplicated lower urinary tract infection (ICD-10: N30.00)"
+            ],
+            "managementPlan": "Urine MCS (send before starting antibiotics). Nitrofurantoin 100mg (modified release) BD × 7 days (avoid cephalosporins — rash allergy). Encourage fluid intake >2L/day. Analgesia: paracetamol for discomfort. Urine MCS result review in 48 hours. Discuss low-dose prophylaxis if recurrence."
+          },
+          "clinicalNotes": {
+            "consultationNote": "Typical uncomplicated UTI in a woman with recurrent history. Urine dipstick ++ leucocytes, + nitrites — consistent with bacterial infection. No upper tract signs. Cefalexin allergy confirmed — prescribing nitrofurantoin. Urine MCS sent prior to antibiotics. If MCS shows resistant organism or no growth, will reassess.",
+            "nursingNote": "Clean-catch MSU collected prior to antibiotics. Patient instructed on specimen collection technique. Fluid intake advice: at least 8 cups daily. Voiding hygiene advice given. Nitrofurantoin dispensed — take with food to reduce nausea.",
+            "progressNote": "Follow-up call Day 3: Symptoms improving. MCS result: E. coli >10⁵ cfu/mL, sensitive to nitrofurantoin. Continue full 7-day course."
+          },
+          "vitalSigns": {
+            "bloodPressure": "112/72 mmHg",
+            "pulseRate": "80 bpm",
+            "respiratoryRate": "17 breaths/min",
+            "temperature": "36.5 °C",
+            "oxygenSaturation": "99%",
+            "painScore": "3/10",
+            "weight": "58 kg",
+            "height": "155 cm",
+            "BMI": "24.1 kg/m²"
+          },
+          "laboratoryResults": {
+            "fbc": {
+              "haemoglobin": "11.5 g/dL",
+              "pcv": "35%",
+              "wbc": "11.5 × 10⁹/L",
+              "neutrophils": "8.2 × 10⁹/L",
+              "platelets": "285 × 10⁹/L",
+              "mcv": "72 fL",
+              "interpretation": "Mild iron-deficiency anaemia (microcytic). Neutrophilia — active infection."
+            },
+            "uAndE": {
+              "sodium": "138 mmol/L",
+              "potassium": "3.9 mmol/L",
+              "creatinine": "68 µmol/L",
+              "eGFR": ">90 mL/min/1.73m²",
+              "interpretation": "Normal"
+            },
+            "urinalysis": {
+              "appearance": "Cloudy, yellow",
+              "pH": "6.5",
+              "specificGravity": "1.020",
+              "protein": "Trace",
+              "leucocyteEsterase": "+++",
+              "nitrites": "+",
+              "blood": "+",
+              "microscopy": "WBC >100/HPF, RBC 20/HPF, bacteria seen",
+              "interpretation": "Bacterial UTI — significant pyuria"
+            },
+            "bloodGlucose": {
+              "type": "Random",
+              "value": "5.0 mmol/L",
+              "interpretation": "Normal"
+            },
+            "additional": {
+              "urineMCS": "E. coli >10⁵ cfu/mL. Sensitive to: nitrofurantoin, trimethoprim, co-amoxiclav. Resistant to: cefalexin, ampicillin."
+            }
+          },
+          "radiology": []
+        },
+        {
+          "encounterId": "ENC-009-02",
+          "date": "2024-05-28",
+          "type": "Emergency Outpatient",
+          "department": "Urology / Internal Medicine",
+          "attendingDoctor": "Dr. Emeka Okonkwo",
+          "disposition": "Admitted — Medical Ward (IV antibiotics)",
+          "summary": {
+            "chiefComplaint": "Dysuria, left flank pain, and low-grade fever for 4 days",
+            "historyOfPresentingIllness": "31-year-old with 4-day history of dysuria and urinary frequency plus left-sided loin-to-groin pain and low-grade fever (37.8°C). Treated at pharmacy with cefalexin (unaware of her allergy) — developed a rash and stopped after 2 days. Symptoms not improving.",
+            "clinicalAssessment": "Temperature 37.8°C. Left costovertebral angle tenderness (Murphy's punch sign positive). Urine dipstick: leucocytes +++, nitrites +, protein +. Renal USS: mild left hydronephrosis, no calculus. Complicated UTI.",
+            "diagnosis": [
+              "Complicated UTI — left-sided pyelonephritis features (ICD-10: N10)",
+              "Drug rash — cefalexin (ICD-10: T36.1)"
+            ],
+            "managementPlan": "Admit. IV co-amoxiclav 1.2g TDS (cephalosporin allergy — using co-amoxiclav). Urine and blood cultures. Renal USS. IV fluids. Paracetamol for fever and analgesia. Urology review if hydronephrosis worsens. Target 14-day total antibiotic course."
+          },
+          "clinicalNotes": {
+            "consultationNote": "Complicated UTI — upper urinary tract involvement (left costovertebral tenderness, hydronephrosis on USS). Rash from cefalexin confirmed — documented prominently in allergy section. Urine MCS: ESBL-producing E. coli — resistant to ampicillin, TMP-SMX, and cephalosporins; sensitive to co-amoxiclav, nitrofurantoin (but unsuitable for pyelonephritis — does not achieve adequate tissue levels). IV co-amoxiclav commenced. Urology review for hydronephrosis — no obstruction on Doppler.",
+            "nursingNote": "Patient admitted. Allergy armband applied — cefalexin/cephalosporins. Rash (maculopapular, truncal) resolving. IV access established. Urine MCS sent. IV co-amoxiclav commenced. Fluid balance chart. Temperature and BP Q4H.",
+            "progressNote": "Day 3 (2024-05-31): Fever resolved (36.6°C). Flank pain improving. Blood cultures negative. Urine MCS confirmed ESBL E. coli — sensitive to co-amoxiclav. Day 7: Symptoms resolved. Switching to oral co-amoxiclav to complete 14-day course. Hydronephrosis resolved on USS."
+          },
+          "vitalSigns": {
+            "bloodPressure": "118/74 mmHg",
+            "pulseRate": "96 bpm",
+            "respiratoryRate": "20 breaths/min",
+            "temperature": "37.8 °C",
+            "oxygenSaturation": "98%",
+            "painScore": "5/10"
+          },
+          "laboratoryResults": {
+            "fbc": {
+              "haemoglobin": "10.8 g/dL",
+              "pcv": "33%",
+              "wbc": "15.2 × 10⁹/L",
+              "neutrophils": "12.5 × 10⁹/L",
+              "platelets": "310 × 10⁹/L",
+              "interpretation": "Neutrophilia — pyelonephritis. Mild anaemia (iron deficiency)."
+            },
+            "uAndE": {
+              "sodium": "136 mmol/L",
+              "potassium": "3.8 mmol/L",
+              "urea": "5.8 mmol/L",
+              "creatinine": "98 µmol/L",
+              "eGFR": "72 mL/min/1.73m²",
+              "interpretation": "Mild Cr elevation — upper tract infection and pre-renal dehydration."
+            },
+            "urinalysis": {
+              "appearance": "Turbid, cloudy",
+              "leucocyteEsterase": "+++",
+              "nitrites": "+",
+              "blood": "+",
+              "protein": "+",
+              "microscopy": "WBC >200/HPF, RBC 30/HPF, granular casts",
+              "interpretation": "Heavy pyuria with granular casts — pyelonephritis"
+            },
+            "bloodGlucose": {
+              "type": "Random",
+              "value": "5.5 mmol/L",
+              "interpretation": "Normal"
+            },
+            "additional": {
+              "urineMCS": "ESBL-producing E. coli. Resistant to: ampicillin, TMP-SMX, cephalosporins (all generations). Sensitive to: co-amoxiclav, nitrofurantoin, carbapenems.",
+              "bloodCultures": "No growth at 48 hours",
+              "CRP": "88 mg/L (elevated — active infection)"
+            }
+          },
+          "radiology": [
+            {
+              "type": "Renal Ultrasound",
+              "date": "2024-05-28",
+              "findings": "Left kidney mildly enlarged (13.5 cm vs right 11.2 cm). Mild left pelvicalyceal dilatation (hydronephrosis grade 1). No calculus identified. No perinephric collection. Right kidney normal.",
+              "impression": "Left mild hydronephrosis with renal enlargement — consistent with acute pyelonephritis. No obstructing calculus."
+            }
+          ]
+        },
+        {
+          "encounterId": "ENC-009-03",
+          "date": "2024-10-15",
+          "type": "Emergency",
+          "department": "Emergency → Medical Ward",
+          "attendingDoctor": "Dr. Emeka Okonkwo",
+          "disposition": "Admitted — IV antibiotics, sepsis protocol",
+          "summary": {
+            "chiefComplaint": "High fever with rigors, right loin pain, vomiting, and haematuria — 1 day",
+            "historyOfPresentingIllness": "31-year-old presents acutely unwell with 1-day history of high fever (39.8°C) with rigors, severe right loin pain radiating to groin, visible haematuria, and 4 episodes of vomiting. BP 88/55 mmHg on arrival — septic shock picture.",
+            "clinicalAssessment": "Systemically very unwell. Temperature 39.8°C, HR 138, BP 88/55 (septic shock). Right costovertebral angle exquisitely tender. Right renal punch positive. Haematuria macroscopic.",
+            "diagnosis": [
+              "Sepsis secondary to acute pyelonephritis (ICD-10: N10, A41.51)",
+              "Septic shock (ICD-10: R65.21)",
+              "Macroscopic haematuria (ICD-10: R31.0)"
+            ],
+            "managementPlan": "Sepsis 6 protocol: O2, IV access ×2, blood cultures × 2 sets, IV fluid resuscitation (30ml/kg crystalloid), lactate, urine output monitoring, IV meropenem 1g TDS (ESBL history). Urinary catheter. Renal USS urgent. Urology on call. ICU standby."
+          },
+          "clinicalNotes": {
+            "consultationNote": "Septic shock from acute pyelonephritis — BP 88/55, HR 138, Temp 39.8°C. ESBL E. coli history from May — commenced IV meropenem empirically (avoids resistance). Blood cultures × 2. IV fluid resuscitation 30mL/kg given over 30 min — BP improved to 102/65. Lactate 3.8 mmol/L (elevated — tissue hypoperfusion). Urgent renal USS: perinephric stranding right, renal abscess excluded. WBC 18.5, Cr rising to 115 (AKI stage 1).",
+            "nursingNote": "Sepsis 6 protocol initiated immediately. Two large-bore IVs. Blood cultures before antibiotics. IV crystalloid 1.8L given over 30 min. BP improved 88/55 → 102/65. Urinary catheter — initial output 15 mL/hr. Meropenem commenced. SpO2 95% — O2 4L nasal prongs. Hourly monitoring: BP, HR, SpO2, urine output. Family informed.",
+            "progressNote": "Day 2 (2024-10-16): BP 115/75, HR 96. Lactate normalising (1.5 mmol/L). Urine output improving 40 mL/hr. Blood culture Day 2: E. coli (ESBL) — same organism, sensitive to meropenem. Cr improving (108 µmol/L). Haematuria reducing. Day 5: Afebrile, haemodynamically stable, stepping down to oral ertapenem. Day 7: Discharged on oral course. Urology referral for recurrent UTI workup."
+          },
+          "vitalSigns": {
+            "bloodPressure": "88/55 mmHg",
+            "pulseRate": "138 bpm",
+            "respiratoryRate": "28 breaths/min",
+            "temperature": "39.8 °C",
+            "oxygenSaturation": "95%",
+            "painScore": "8/10"
+          },
+          "laboratoryResults": {
+            "fbc": {
+              "haemoglobin": "10.2 g/dL",
+              "pcv": "31%",
+              "wbc": "18.5 × 10⁹/L",
+              "neutrophils": "16.2 × 10⁹/L",
+              "bands": "1.5 × 10⁹/L",
+              "platelets": "148 × 10⁹/L",
+              "interpretation": "Marked neutrophilia with band forms (left shift) — sepsis. Thrombocytopaenia — sepsis-related."
+            },
+            "uAndE": {
+              "sodium": "130 mmol/L",
+              "potassium": "5.0 mmol/L",
+              "urea": "12.5 mmol/L",
+              "creatinine": "115 µmol/L",
+              "eGFR": "58 mL/min/1.73m²",
+              "interpretation": "AKI Stage 1 — sepsis-related. Hyponatraemia."
+            },
+            "urinalysis": {
+              "appearance": "Red, grossly haematuria",
+              "blood": "+++",
+              "leucocyteEsterase": "+++",
+              "nitrites": "+",
+              "protein": "+",
+              "interpretation": "Macroscopic haematuria with severe pyuria — acute pyelonephritis/sepsis"
+            },
+            "bloodGlucose": {
+              "type": "Random",
+              "value": "9.2 mmol/L",
+              "interpretation": "Stress hyperglycaemia"
+            },
+            "additional": {
+              "lactate": "3.8 mmol/L (elevated — sepsis tissue hypoperfusion)",
+              "CRP": "285 mg/L (severely elevated)",
+              "procalcitonin": "18.5 ng/mL (elevated — bacterial sepsis)",
+              "bloodCulture": "ESBL-producing E. coli — sensitive to meropenem, carbapenems. Resistant to 3rd-gen cephalosporins.",
+              "urineMCS": "ESBL E. coli >10⁵ cfu/mL — same susceptibility pattern as blood culture"
+            }
+          },
+          "radiology": [
+            {
+              "type": "Renal Ultrasound (urgent)",
+              "date": "2024-10-15",
+              "findings": "Right kidney enlarged (14.5 cm). Perinephric fat stranding. No frank abscess collection. Grade 1 hydronephrosis right — no obstructing calculus on USS. Left kidney normal.",
+              "impression": "Acute right pyelonephritis with perinephric stranding. No abscess. No obstructive uropathy. CT recommended if clinical deterioration."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "PT-010",
+      "mrn": "LCH-2024-010",
+      "profile": {
+        "firstName": "Ngozi",
+        "lastName": "Obiora",
+        "dateOfBirth": "1983-03-22",
+        "age": 41,
+        "sex": "Female",
+        "gender": "female",
+        "bloodGroup": "A-",
+        "genotype": "AA",
+        "phoneNumber": "+234-805-336-7712",
+        "address": "4 Nnebisi Road, Asaba",
+        "city": "Asaba",
+        "state": "Delta State",
+        "hmoProvider": "NHIS / Avon HMO",
+        "membershipNumber": "AVN/DT/2020/03341",
+        "tribe": "Igbo",
+        "religion": "Christianity",
+        "maritalStatus": "Married",
+        "occupation": "Secondary School Principal",
+        "nextOfKin": {
+          "name": "Mr. Chukwuemeka Obiora",
+          "relationship": "Husband",
+          "phone": "+234-803-119-8800"
+        },
+        "allergies": [
+          "None known"
+        ],
+        "knownConditions": [
+          "Right breast IDC — diagnosed 2024",
+          "Hypertension (mild, 2022)"
+        ]
+      },
+      "encounters": [
+        {
+          "encounterId": "ENC-010-01",
+          "date": "2024-02-08",
+          "type": "Outpatient — General Surgery / Breast Clinic",
+          "department": "General Surgery",
+          "attendingDoctor": "Dr. Amaka Eze",
+          "disposition": "Discharged home — biopsy pending",
+          "summary": {
+            "chiefComplaint": "Self-detected painless right breast lump for 3 months",
+            "historyOfPresentingIllness": "41-year-old presents with a 3-month history of a painless hard lump in the upper outer quadrant of the right breast. Lump has been gradually enlarging. No nipple discharge, no skin changes, no axillary lumps noticed. No family history of breast cancer. Menarche age 13. No oral contraceptive use. G2P2 — breastfed both children. Post-menopausal at 39 years (premature).",
+            "clinicalAssessment": "Right breast: hard, irregular, non-tender mass 3.5 × 3.0 cm in upper outer quadrant. Skin dimpling overlying. No nipple retraction. Right axilla: 1 firm lymph node palpable (1.5 cm). Left breast: normal. Triple assessment initiated.",
+            "diagnosis": [
+              "Right breast mass — suspicious for malignancy; triple assessment required (ICD-10: N63.11)"
+            ],
+            "managementPlan": "Urgent triple assessment: (1) Clinical examination — done. (2) Mammography + breast USS. (3) Core needle biopsy (CNB) under ultrasound guidance. Tumour markers: CA 15-3. MDT referral to breast surgery team. Patient counselled appropriately — diagnosis not confirmed yet."
+          },
+          "clinicalNotes": {
+            "consultationNote": "Suspicious breast mass in a 41-year-old with premature menopause (risk factor) and skin dimpling (high suspicion for malignancy). Triple assessment initiated. Mammography: BIRADS 5 (highly likely malignant). USS confirms 3.5 cm irregular hypoechoic mass, posterior acoustic shadowing. Core needle biopsy performed under USS guidance — 4 cores obtained. CA 15-3 borderline 38 U/mL. Axillary node 1.5 cm — suspicious. Histology awaited. Patient offered psychological support while awaiting results.",
+            "nursingNote": "Patient attended with husband. Explained procedure (core biopsy under local anaesthetic). Informed consent obtained. Biopsy performed — 4 cores to histology. Post-procedure pressure dressing applied. Patient given written information on breast cancer and support helpline number. Follow-up appointment in 2 weeks for histology result.",
+            "progressNote": "N/A — outpatient"
+          },
+          "vitalSigns": {
+            "bloodPressure": "128/82 mmHg",
+            "pulseRate": "80 bpm",
+            "respiratoryRate": "17 breaths/min",
+            "temperature": "36.6 °C",
+            "oxygenSaturation": "99%",
+            "painScore": "0/10",
+            "weight": "72 kg",
+            "height": "163 cm",
+            "BMI": "27.1 kg/m²"
+          },
+          "laboratoryResults": {
+            "fbc": {
+              "haemoglobin": "13.2 g/dL",
+              "pcv": "40%",
+              "wbc": "7.5 × 10⁹/L",
+              "platelets": "268 × 10⁹/L",
+              "interpretation": "Normal — no haematological abnormality"
+            },
+            "uAndE": {
+              "sodium": "140 mmol/L",
+              "potassium": "4.1 mmol/L",
+              "creatinine": "75 µmol/L",
+              "eGFR": "82 mL/min/1.73m²",
+              "interpretation": "Normal"
+            },
+            "urinalysis": {
+              "interpretation": "Normal"
+            },
+            "bloodGlucose": {
+              "type": "Random",
+              "value": "5.8 mmol/L",
+              "interpretation": "Normal"
+            },
+            "additional": {
+              "CA_15_3": "38 U/mL (borderline elevated, normal <35 U/mL)",
+              "coreBiopsy_histology": "PENDING — result due in 2 weeks",
+              "mammography": "BIRADS 5 — highly suspicious right UOQ 3.5 cm irregular mass with microcalcifications. Right axillary lymph node 1.5 cm."
+            }
+          },
+          "radiology": [
+            {
+              "type": "Digital Mammography (bilateral)",
+              "date": "2024-02-08",
+              "findings": "Right breast: 3.5 cm irregular spiculated mass in upper outer quadrant with associated microcalcifications. Overlying skin thickening. Right axillary lymph node 1.5 cm — suspicious morphology. Left breast: no suspicious lesion. ACR density C (heterogeneously dense).",
+              "impression": "BIRADS 5 — right breast mass highly suspicious for malignancy. Abnormal right axillary lymph node. Biopsy recommended."
+            },
+            {
+              "type": "Breast Ultrasound",
+              "date": "2024-02-08",
+              "findings": "Right breast UOQ: 3.5 × 3.0 cm hypoechoic irregular mass with angular margins and posterior acoustic shadowing — classic malignant features. Right axillary node: 1.5 cm, absent fatty hilum (pathological). Left breast unremarkable.",
+              "impression": "Highly suspicious right breast mass. Pathological right axillary lymphadenopathy. Core biopsy indicated."
+            }
+          ]
+        },
+        {
+          "encounterId": "ENC-010-02",
+          "date": "2024-05-10",
+          "type": "Outpatient → Surgical Pre-admission",
+          "department": "General Surgery / Oncology MDT",
+          "attendingDoctor": "Dr. Amaka Eze",
+          "disposition": "Admitted for surgery (right modified radical mastectomy)",
+          "summary": {
+            "chiefComplaint": "Breast cancer confirmed — presenting for surgical treatment",
+            "historyOfPresentingIllness": "Follow-up with confirmed histology: invasive ductal carcinoma (IDC) right breast, grade 2, ER+/PR+, HER2 negative. Staging CT chest/abdomen/pelvis: no distant metastases (M0). Discussed at MDT — primary surgery recommended before adjuvant therapy.",
+            "clinicalAssessment": "Mass slightly larger on re-examination (4 cm palpable). Axillary node still palpable. Pre-operative assessment complete. Anaesthetic review — fit for GA.",
+            "diagnosis": [
+              "Right breast invasive ductal carcinoma, Grade 2, ER+/PR+/HER2- (ICD-10: C50.411)",
+              "Clinical staging: T2 N1 M0 — Stage IIA"
+            ],
+            "managementPlan": "Right modified radical mastectomy with sentinel node biopsy today (2024-05-10). Post-op adjuvant therapy plan: tamoxifen 20mg daily × 5 years (ER+), +/- chemotherapy (Oncology MDT decision based on OncotypeDx score). Breast reconstruction discussed — patient prefers delayed reconstruction. Psychological support continued."
+          },
+          "clinicalNotes": {
+            "consultationNote": "Core biopsy (February): IDC grade 2, ER+/PR+, HER2 negative (IHC 1+). Staging CT: no liver, lung, or bone metastases. MDT decision: right modified radical mastectomy + SLNB. OncotypeDx sent from biopsy tissue — result awaited to guide chemotherapy decision. Tamoxifen planned post-operatively. Genetic counselling referral made (BRCA testing) given age <45 and premature menopause.",
+            "nursingNote": "Pre-operative checklist completed. Patient fasted from midnight. Consents signed — mastectomy + SLNB ± axillary clearance. IV access. TED stockings applied. Anxiolytic (midazolam) given as prescribed. Patient's husband updated pre-operatively. Antibiotics (cefazolin, despite her having no allergy) given prophylactically.",
+            "progressNote": "Intraoperative note: Right modified radical mastectomy performed. Sentinel node biopsy: 3 sentinel nodes harvested. Frozen section: 1/3 nodes involved (micro-metastasis). Proceeding to axillary clearance (level II). No intraoperative complications. Estimated blood loss 180 mL. Post-op: patient stable. Wound drain in situ. Day 2 (2024-05-12): Drain output 35 mL/24hr. Wound clean. Awaiting final histology."
+          },
+          "vitalSigns": {
+            "bloodPressure": "132/84 mmHg",
+            "pulseRate": "78 bpm",
+            "respiratoryRate": "17 breaths/min",
+            "temperature": "36.7 °C",
+            "oxygenSaturation": "99%",
+            "painScore": "1/10",
+            "weight": "71 kg"
+          },
+          "laboratoryResults": {
+            "fbc": {
+              "haemoglobin": "12.8 g/dL",
+              "pcv": "38%",
+              "wbc": "8.2 × 10⁹/L",
+              "platelets": "252 × 10⁹/L",
+              "interpretation": "Normal pre-operative haematology."
+            },
+            "uAndE": {
+              "sodium": "139 mmol/L",
+              "potassium": "4.0 mmol/L",
+              "creatinine": "74 µmol/L",
+              "interpretation": "Normal"
+            },
+            "urinalysis": {
+              "interpretation": "Normal"
+            },
+            "bloodGlucose": {
+              "type": "Fasting",
+              "value": "5.2 mmol/L",
+              "interpretation": "Normal"
+            },
+            "additional": {
+              "histology_final": "Invasive ductal carcinoma, NST, grade 2 (Modified Bloom-Richardson). Tumour size 3.8 cm. Margins clear (>10mm). ER: 8/8 (strongly positive), PR: 6/8 (positive), HER2: score 1+ (negative). Ki-67: 24%.",
+              "sentinelNodeBiopsy": "1 of 3 sentinel nodes: micro-metastasis (<2mm). Axillary clearance performed: 0/10 additional nodes positive.",
+              "coagulationScreen": "PT 11.8s, APTT 28s, INR 1.0 — normal",
+              "CA_15_3": "42 U/mL (mildly elevated)"
+            }
+          },
+          "radiology": [
+            {
+              "type": "CT Staging — Chest, Abdomen, Pelvis (with contrast)",
+              "date": "2024-04-20",
+              "findings": "Lungs: No pulmonary metastases. Mediastinum: no lymphadenopathy. Liver: No focal lesions. Abdomen: No lymphadenopathy or organ metastases. Pelvis: Unremarkable. Right axillary lymph nodes: 2 enlarged (1.5 cm, 1.2 cm) — suspicious. Left breast unremarkable.",
+              "impression": "No distant metastases detected — M0 disease. Suspicious right axillary lymphadenopathy consistent with nodal involvement (N1). Clinical stage T2 N1 M0."
+            }
+          ]
+        },
+        {
+          "encounterId": "ENC-010-03",
+          "date": "2024-09-20",
+          "type": "Outpatient — Oncology / Surgery Follow-up",
+          "department": "Oncology / General Surgery",
+          "attendingDoctor": "Dr. Amaka Eze",
+          "disposition": "Discharged home — adjuvant therapy ongoing",
+          "summary": {
+            "chiefComplaint": "6-week post-mastectomy review; query seroma and arm swelling",
+            "historyOfPresentingIllness": "4-month post-op follow-up (surgery May 10). Started tamoxifen 20mg daily after surgery. Completed 3 cycles of AC chemotherapy (doxorubicin/cyclophosphamide) at oncology centre. Reports mild right arm swelling and heaviness for 2 weeks (possible early lymphoedema). Wound healed. No signs of recurrence. Fatigue from chemotherapy.",
+            "clinicalAssessment": "Mastectomy wound healed, no seroma. Right arm slightly larger than left (circumference difference 2cm) — early lymphoedema. No axillary recurrence palpable.",
+            "diagnosis": [
+              "Post-mastectomy — early right-sided lymphoedema (ICD-10: I89.0)",
+              "Breast cancer — post-surgery, on adjuvant chemotherapy and tamoxifen (ICD-10: Z85.3)"
+            ],
+            "managementPlan": "Continue tamoxifen 20mg daily × 5 years. Continue AC × 1 cycle then switch to weekly paclitaxel × 12 (per oncology plan). Physiotherapy referral for lymphoedema — manual lymphatic drainage + compression sleeve. BRCA result: BRCA1/2 negative. OncotypeDx score 22 (intermediate — chemotherapy benefit marginal but continuing per MDT). Psycho-oncology support continued."
+          },
+          "clinicalNotes": {
+            "consultationNote": "Surgical recovery complete. Early right arm lymphoedema (circumference 2 cm difference at mid-forearm) — physiotherapy referral placed. Oncology update: AC chemotherapy cycle 3 of 4 completed. Tolerating reasonably well — mild nausea, fatigue. Tamoxifen side effects: hot flushes (managing with evening primrose). BRCA1/2 negative — no hereditary predisposition found. OncotypeDx 22 (intermediate risk) — continuing chemotherapy. 5-year estimated recurrence risk with current treatment 12%.",
+            "nursingNote": "Wound inspection — healed, no seroma, scar maturing well. Right arm circumference measured (R forearm 28 cm, L forearm 26 cm). Compression sleeve fitted and education given on lymphoedema care. Fatigue assessment: FACIT-F score 32 (moderate fatigue — chemotherapy-related). Patient states mood improving. Contact number for psychological support reaffirmed.",
+            "progressNote": "N/A — outpatient"
+          },
+          "vitalSigns": {
+            "bloodPressure": "126/80 mmHg",
+            "pulseRate": "76 bpm",
+            "respiratoryRate": "17 breaths/min",
+            "temperature": "36.5 °C",
+            "oxygenSaturation": "99%",
+            "painScore": "1/10",
+            "weight": "70 kg"
+          },
+          "laboratoryResults": {
+            "fbc": {
+              "haemoglobin": "11.2 g/dL",
+              "pcv": "34%",
+              "wbc": "3.8 × 10⁹/L",
+              "neutrophils": "2.1 × 10⁹/L",
+              "platelets": "195 × 10⁹/L",
+              "interpretation": "Mild anaemia and leucopaenia — chemotherapy myelosuppression. Neutrophil count >1.5, G-CSF not yet indicated."
+            },
+            "uAndE": {
+              "sodium": "138 mmol/L",
+              "potassium": "3.8 mmol/L",
+              "creatinine": "72 µmol/L",
+              "interpretation": "Normal"
+            },
+            "urinalysis": {
+              "interpretation": "Normal"
+            },
+            "bloodGlucose": {
+              "type": "Random",
+              "value": "5.5 mmol/L",
+              "interpretation": "Normal"
+            },
+            "additional": {
+              "CA_15_3": "18 U/mL (now normal — good response to treatment)",
+              "LFTs": "ALT 42 IU/L, AST 38 IU/L — mild elevation (chemotherapy hepatotoxicity, monitoring)",
+              "BRCA_result": "BRCA1 — negative, BRCA2 — negative",
+              "OncotypeDx": "Score 22 — intermediate recurrence risk",
+              "echocardiogram": "LVEF 60% — normal (baseline for doxorubicin cardiotoxicity monitoring)"
+            }
+          },
+          "radiology": [
+            {
+              "type": "CT Chest / Abdomen / Pelvis (restaging, 4 months post-surgery)",
+              "date": "2024-09-15",
+              "findings": "No evidence of pulmonary or hepatic metastases. Right chest wall: post-surgical changes, no local recurrence. Right axilla: post-axillary clearance appearances, no pathological lymph nodes. No new lymphadenopathy.",
+              "impression": "No evidence of distant or locoregional recurrence at 4 months post-mastectomy."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
