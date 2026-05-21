@@ -1,0 +1,17 @@
+{
+  "resourceType": "AccessPolicy",
+  "name": "Billing & HMO Officer Access Policy",
+  "description": "Full billing and insurance workflow access. Can manage Claims, Coverage, and approve/deny order baskets (RequestGroup). Read-only view of patient identity and orders. No access to clinical chart or notes.",
+  "resource": [
+    { "resourceType": "Coverage",         "readonly": false },
+    { "resourceType": "Claim",            "readonly": false },
+    { "resourceType": "ClaimResponse",    "readonly": false },
+    { "resourceType": "RequestGroup",     "readonly": false },
+    { "resourceType": "ServiceRequest",   "readonly": true  },
+    { "resourceType": "MedicationRequest","readonly": true  },
+    { "resourceType": "Patient",          "readonly": true,
+      "hiddenFields": ["address", "telecom", "contact", "communication"] },
+    { "resourceType": "Practitioner",     "readonly": true  },
+    { "resourceType": "Organization",     "readonly": true  }
+  ]
+}

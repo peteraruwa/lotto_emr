@@ -1,0 +1,17 @@
+{
+  "resourceType": "AccessPolicy",
+  "name": "Medical Records Officer Access Policy",
+  "description": "Full access to patient demographic records and documents. Can search patients, manage DocumentReferences, and view encounter history. No access to clinical orders, prescriptions, or results entry.",
+  "resource": [
+    { "resourceType": "Patient",            "readonly": false },
+    { "resourceType": "RelatedPerson",      "readonly": false },
+    { "resourceType": "DocumentReference",  "readonly": false },
+    { "resourceType": "Composition",        "readonly": false },
+    { "resourceType": "Encounter",          "readonly": true  },
+    { "resourceType": "DiagnosticReport",   "readonly": true  },
+    { "resourceType": "Condition",          "readonly": true  },
+    { "resourceType": "Procedure",          "readonly": true  },
+    { "resourceType": "Practitioner",       "readonly": true  },
+    { "resourceType": "Organization",       "readonly": true  }
+  ]
+}
