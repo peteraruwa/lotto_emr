@@ -1,12 +1,24 @@
 {
   "_comment": "NON-PROD seed data only. Never import to production.",
   "users": [
-    { "email": "dr.okonkwo@lotto-hospital.ng",   "role": "doctor",      "name": "Dr. Emeka Okonkwo",   "specialty": "Internal Medicine" },
-    { "email": "nurse.adaeze@lotto-hospital.ng",  "role": "nurse",       "name": "Adaeze Nwosu" },
-    { "email": "pharm.ibrahim@lotto-hospital.ng", "role": "pharmacist",  "name": "Ibrahim Musa" },
-    { "email": "lab.chika@lotto-hospital.ng",     "role": "lab",         "name": "Chikaodili Eze" },
-    { "email": "rad.fatima@lotto-hospital.ng",    "role": "radiologist", "name": "Fatima Al-Hassan" },
-    { "email": "admin@lotto-hospital.ng",         "role": "admin",       "name": "Blessing Okafor" },
-    { "email": "hr@lotto-hospital.ng",            "role": "superadmin",  "name": "Chukwudi Eze" }
+    { "email": "doctor1@lotto.ng",     "role": "doctor",      "name": "Dr. Ada Osei",          "specialty": "Internal Medicine" },
+    { "email": "doctor2@lotto.ng",     "role": "doctor",      "name": "Dr. Emeka Bello",        "specialty": "General Surgery" },
+    { "email": "nurse1@lotto.ng",      "role": "nurse",       "name": "Ngozi Adeyemi" },
+    { "email": "nurse2@lotto.ng",      "role": "nurse",       "name": "Fatima Sule" },
+    { "email": "pharmacist1@lotto.ng", "role": "pharmacist",  "name": "Oluwaseun Adebayo" },
+    { "email": "pharmacist2@lotto.ng", "role": "pharmacist",  "name": "Ramatu Idris" },
+    { "email": "lab1@lotto.ng",        "role": "lab",         "name": "Chidera Nwosu" },
+    { "email": "lab2@lotto.ng",        "role": "lab",         "name": "Hauwa Abdullahi" },
+    { "email": "rad1@lotto.ng",        "role": "radiologist", "name": "Segun Adeleke" },
+    { "email": "rad2@lotto.ng",        "role": "radiologist", "name": "Ifeoma Dike" },
+    { "email": "admin1@lotto.ng",      "role": "admin",       "name": "Kemi Adeyinka" },
+    { "email": "admin2@lotto.ng",      "role": "admin",       "name": "Dauda Salihu" },
+    { "email": "hr1@lotto.ng",         "role": "hr",          "name": "Chinyere Obiora" },
+    { "email": "hr2@lotto.ng",         "role": "hr",          "name": "Musa Lawal" },
+    { "email": "records1@lotto.ng",    "role": "records",     "name": "Amaka Eze" },
+    { "email": "records2@lotto.ng",    "role": "records",     "name": "Tunde Fashola" },
+    { "email": "billing1@lotto.ng",    "role": "billing",     "name": "Blessing Nwachukwu" },
+    { "email": "billing2@lotto.ng",    "role": "billing",     "name": "Uche Okafor" },
+    { "email": "superadmin1@lotto.ng", "role": "superadmin",  "name": "Test Superadmin" }
   ]
 }

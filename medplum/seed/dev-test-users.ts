@@ -15,10 +15,10 @@
  * ─────────────────────────────────────────────────────────────────────────────
  */
 
-export const DEV_PASSWORD = '1234';
+export const DEV_PASSWORD = '123456789';
 
 export interface DevTestUser {
-  /** Login username — also used as email prefix: username@test.emr.local */
+  /** Login username — email is username@lotto.ng */
   username: string;
   email: string;
   password: string;
@@ -35,7 +35,7 @@ export const testUsers: DevTestUser[] = [
   // ── DOCTORS — clinical-core / encounter ──────────────────────────────────
   {
     username:    'doctor1',
-    email:       'doctor1@test.emr.local',
+    email:       'doctor1@lotto.ng',
     password:    DEV_PASSWORD,
     role:        'doctor',
     department:  'clinical-core',
@@ -44,7 +44,7 @@ export const testUsers: DevTestUser[] = [
   },
   {
     username:    'doctor2',
-    email:       'doctor2@test.emr.local',
+    email:       'doctor2@lotto.ng',
     password:    DEV_PASSWORD,
     role:        'doctor',
     department:  'clinical-core',
@@ -55,7 +55,7 @@ export const testUsers: DevTestUser[] = [
   // ── NURSES — triage / ward ────────────────────────────────────────────────
   {
     username:    'nurse1',
-    email:       'nurse1@test.emr.local',
+    email:       'nurse1@lotto.ng',
     password:    DEV_PASSWORD,
     role:        'nurse',
     department:  'triage',
@@ -64,7 +64,7 @@ export const testUsers: DevTestUser[] = [
   },
   {
     username:    'nurse2',
-    email:       'nurse2@test.emr.local',
+    email:       'nurse2@lotto.ng',
     password:    DEV_PASSWORD,
     role:        'nurse',
     department:  'ward',
@@ -75,7 +75,7 @@ export const testUsers: DevTestUser[] = [
   // ── ADMIN — front desk / reception / scheduling ───────────────────────────
   {
     username:    'admin1',
-    email:       'admin1@test.emr.local',
+    email:       'admin1@lotto.ng',
     password:    DEV_PASSWORD,
     role:        'admin',
     department:  'administration',
@@ -84,7 +84,7 @@ export const testUsers: DevTestUser[] = [
   },
   {
     username:    'admin2',
-    email:       'admin2@test.emr.local',
+    email:       'admin2@lotto.ng',
     password:    DEV_PASSWORD,
     role:        'admin',
     department:  'administration',
@@ -95,7 +95,7 @@ export const testUsers: DevTestUser[] = [
   // ── HR — employee management / staff onboarding ───────────────────────────
   {
     username:    'hr1',
-    email:       'hr1@test.emr.local',
+    email:       'hr1@lotto.ng',
     password:    DEV_PASSWORD,
     role:        'hr',
     department:  'hr-management',
@@ -104,7 +104,7 @@ export const testUsers: DevTestUser[] = [
   },
   {
     username:    'hr2',
-    email:       'hr2@test.emr.local',
+    email:       'hr2@lotto.ng',
     password:    DEV_PASSWORD,
     role:        'hr',
     department:  'hr-management',
@@ -115,7 +115,7 @@ export const testUsers: DevTestUser[] = [
   // ── MEDICAL RECORDS — patient files / document management ─────────────────
   {
     username:    'records1',
-    email:       'records1@test.emr.local',
+    email:       'records1@lotto.ng',
     password:    DEV_PASSWORD,
     role:        'records',
     department:  'medical-records',
@@ -124,7 +124,7 @@ export const testUsers: DevTestUser[] = [
   },
   {
     username:    'records2',
-    email:       'records2@test.emr.local',
+    email:       'records2@lotto.ng',
     password:    DEV_PASSWORD,
     role:        'records',
     department:  'medical-records',
@@ -135,7 +135,7 @@ export const testUsers: DevTestUser[] = [
   // ── BILLING / HMO — claims, coverage, order authorisation ─────────────────
   {
     username:    'billing1',
-    email:       'billing1@test.emr.local',
+    email:       'billing1@lotto.ng',
     password:    DEV_PASSWORD,
     role:        'billing',
     department:  'billing',
@@ -144,7 +144,7 @@ export const testUsers: DevTestUser[] = [
   },
   {
     username:    'billing2',
-    email:       'billing2@test.emr.local',
+    email:       'billing2@lotto.ng',
     password:    DEV_PASSWORD,
     role:        'billing',
     department:  'billing',
@@ -155,7 +155,7 @@ export const testUsers: DevTestUser[] = [
   // ── LABORATORY SCIENTISTS — orders / lab ─────────────────────────────────
   {
     username:    'lab1',
-    email:       'lab1@test.emr.local',
+    email:       'lab1@lotto.ng',
     password:    DEV_PASSWORD,
     role:        'lab',
     department:  'laboratory',
@@ -164,7 +164,7 @@ export const testUsers: DevTestUser[] = [
   },
   {
     username:    'lab2',
-    email:       'lab2@test.emr.local',
+    email:       'lab2@lotto.ng',
     password:    DEV_PASSWORD,
     role:        'lab',
     department:  'laboratory',
@@ -175,7 +175,7 @@ export const testUsers: DevTestUser[] = [
   // ── RADIOLOGY TECHNICIANS — orders / radiology ───────────────────────────
   {
     username:    'rad1',
-    email:       'rad1@test.emr.local',
+    email:       'rad1@lotto.ng',
     password:    DEV_PASSWORD,
     role:        'radiologist',
     department:  'radiology',
@@ -184,7 +184,7 @@ export const testUsers: DevTestUser[] = [
   },
   {
     username:    'rad2',
-    email:       'rad2@test.emr.local',
+    email:       'rad2@lotto.ng',
     password:    DEV_PASSWORD,
     role:        'radiologist',
     department:  'radiology',
@@ -195,7 +195,7 @@ export const testUsers: DevTestUser[] = [
   // ── PHARMACISTS — orders / pharmacy ──────────────────────────────────────
   {
     username:    'pharmacist1',
-    email:       'pharmacist1@test.emr.local',
+    email:       'pharmacist1@lotto.ng',
     password:    DEV_PASSWORD,
     role:        'pharmacist',
     department:  'pharmacy',
@@ -204,7 +204,7 @@ export const testUsers: DevTestUser[] = [
   },
   {
     username:    'pharmacist2',
-    email:       'pharmacist2@test.emr.local',
+    email:       'pharmacist2@lotto.ng',
     password:    DEV_PASSWORD,
     role:        'pharmacist',
     department:  'pharmacy',
@@ -215,7 +215,7 @@ export const testUsers: DevTestUser[] = [
   // ── SUPERADMIN — infrastructure / system configuration (1 user) ──────────
   {
     username:    'superadmin1',
-    email:       'superadmin1@test.emr.local',
+    email:       'superadmin1@lotto.ng',
     password:    DEV_PASSWORD,
     role:        'superadmin',
     department:  'infrastructure',
