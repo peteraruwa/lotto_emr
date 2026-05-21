@@ -51,6 +51,8 @@ export interface NoteField {
   options?: ChipOption[];   // for chips type
 }
 
+export type ConsultTab = 'subjective' | 'objective' | 'assessment' | 'plan';
+
 export interface NoteSection {
   id: string;
   title: string;
@@ -58,6 +60,7 @@ export interface NoteSection {
   accent: string;             // Tailwind border-l-* class
   fields: NoteField[];
   conditionalGender?: 'female'; // hide for non-female patients
+  tab?: ConsultTab;            // assigned tab for consultation_note; undefined = always visible
 }
 
 export interface NoteTypeDefinition {
@@ -93,6 +96,7 @@ export const NOTE_TYPE_DEFINITIONS: Record<string, NoteTypeDefinition> = {
         title: 'Chief Complaint',
         icon: AlertCircle,
         accent: 'border-l-red-400',
+        tab: 'subjective',
         fields: [
           {
             key: 'chiefComplaint',
@@ -107,6 +111,7 @@ export const NOTE_TYPE_DEFINITIONS: Record<string, NoteTypeDefinition> = {
         title: 'History of Present Illness',
         icon: Clock,
         accent: 'border-l-orange-400',
+        tab: 'subjective',
         fields: [
           {
             key: 'hpi',
@@ -122,6 +127,7 @@ export const NOTE_TYPE_DEFINITIONS: Record<string, NoteTypeDefinition> = {
         title: 'Past Medical History',
         icon: BookOpen,
         accent: 'border-l-amber-400',
+        tab: 'subjective',
         fields: [
           {
             key: 'pastMedicalHistory',
@@ -137,6 +143,7 @@ export const NOTE_TYPE_DEFINITIONS: Record<string, NoteTypeDefinition> = {
         title: 'Gynaecology History',
         icon: Heart,
         accent: 'border-l-pink-400',
+        tab: 'subjective',
         conditionalGender: 'female',
         fields: [
           {
@@ -153,6 +160,7 @@ export const NOTE_TYPE_DEFINITIONS: Record<string, NoteTypeDefinition> = {
         title: 'Obstetrics History',
         icon: Baby,
         accent: 'border-l-rose-400',
+        tab: 'subjective',
         conditionalGender: 'female',
         fields: [
           {
@@ -169,6 +177,7 @@ export const NOTE_TYPE_DEFINITIONS: Record<string, NoteTypeDefinition> = {
         title: 'Drug History',
         icon: Pill,
         accent: 'border-l-purple-400',
+        tab: 'subjective',
         fields: [
           {
             key: 'drugHistory',
@@ -184,6 +193,7 @@ export const NOTE_TYPE_DEFINITIONS: Record<string, NoteTypeDefinition> = {
         title: 'Allergy History',
         icon: AlertTriangle,
         accent: 'border-l-red-300',
+        tab: 'subjective',
         fields: [
           {
             key: 'allergyHistory',
@@ -198,6 +208,7 @@ export const NOTE_TYPE_DEFINITIONS: Record<string, NoteTypeDefinition> = {
         title: 'Family History',
         icon: Users,
         accent: 'border-l-green-400',
+        tab: 'subjective',
         fields: [
           {
             key: 'familyHistory',
@@ -213,6 +224,7 @@ export const NOTE_TYPE_DEFINITIONS: Record<string, NoteTypeDefinition> = {
         title: 'Social History',
         icon: MapPin,
         accent: 'border-l-emerald-400',
+        tab: 'subjective',
         fields: [
           {
             key: 'socialHistory',
@@ -228,6 +240,7 @@ export const NOTE_TYPE_DEFINITIONS: Record<string, NoteTypeDefinition> = {
         title: 'Other History',
         icon: FileText,
         accent: 'border-l-slate-400',
+        tab: 'subjective',
         fields: [
           {
             key: 'otherHistory',
@@ -243,6 +256,7 @@ export const NOTE_TYPE_DEFINITIONS: Record<string, NoteTypeDefinition> = {
         title: 'Review of Systems',
         icon: List,
         accent: 'border-l-blue-400',
+        tab: 'subjective',
         fields: [
           {
             key: 'reviewOfSystems',
@@ -258,6 +272,7 @@ export const NOTE_TYPE_DEFINITIONS: Record<string, NoteTypeDefinition> = {
         title: 'Physical Examination',
         icon: Stethoscope,
         accent: 'border-l-cyan-500',
+        tab: 'objective',
         fields: [
           {
             key: 'examFindings',
@@ -271,6 +286,7 @@ export const NOTE_TYPE_DEFINITIONS: Record<string, NoteTypeDefinition> = {
         title: 'Assessment / Diagnosis',
         icon: Activity,
         accent: 'border-l-teal-500',
+        tab: 'assessment',
         fields: [
           {
             key: 'diagnosis',
@@ -286,6 +302,7 @@ export const NOTE_TYPE_DEFINITIONS: Record<string, NoteTypeDefinition> = {
         title: 'Differential Diagnosis',
         icon: Brain,
         accent: 'border-l-violet-400',
+        tab: 'assessment',
         fields: [
           {
             key: 'differentialDiagnosis',
@@ -301,6 +318,7 @@ export const NOTE_TYPE_DEFINITIONS: Record<string, NoteTypeDefinition> = {
         title: 'Investigations',
         icon: FlaskConical,
         accent: 'border-l-sky-400',
+        tab: 'plan',
         fields: [
           {
             key: 'investigations',
@@ -316,6 +334,7 @@ export const NOTE_TYPE_DEFINITIONS: Record<string, NoteTypeDefinition> = {
         title: 'Treatment Plan',
         icon: ClipboardList,
         accent: 'border-l-indigo-400',
+        tab: 'plan',
         fields: [
           {
             key: 'plan',
@@ -331,6 +350,7 @@ export const NOTE_TYPE_DEFINITIONS: Record<string, NoteTypeDefinition> = {
         title: 'Follow-up Plan',
         icon: Calendar,
         accent: 'border-l-gray-400',
+        tab: 'plan',
         fields: [
           {
             key: 'followUpPlan',

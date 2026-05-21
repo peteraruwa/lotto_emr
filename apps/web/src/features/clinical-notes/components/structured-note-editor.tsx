@@ -8,7 +8,7 @@ import {
   Wand2, Search, Loader2, CheckCircle2, BedDouble, CalendarPlus, Eye,
   AlertCircle, X, Save,
 } from 'lucide-react';
-import { Button, Card, CardContent, CardHeader, CardTitle, Label, Tooltip } from '@lotto-emr/ui';
+import { Button, Card, CardContent, CardHeader, CardTitle, Label, Tooltip, cn } from '@lotto-emr/ui';
 import { useMedplum } from '@medplum/react';
 import type { Observation, DocumentReference } from '@medplum/fhirtypes';
 import { useAiAssist } from '../hooks/use-ai-assist';
@@ -20,7 +20,7 @@ import { AdmitPatientModal } from '@/features/ward';
 import { NotePreviewModal } from './note-preview-modal';
 import { format } from 'date-fns';
 import { getNoteTypeDef } from '../data/note-type-definitions';
-import type { NoteField } from '../data/note-type-definitions';
+import type { NoteField, ConsultTab } from '../data/note-type-definitions';
 import { LOINC_VITALS, FHIR_SYSTEMS } from '@/shared/constants/loinc';
 
 
@@ -134,6 +134,14 @@ const CONTEXT_BADGE = {
   emergency:  { label: 'Emergency',  cls: 'bg-red-50 text-red-700 border-red-200' },
 };
 
+// ── Consultation-note tab config ──────────────────────────────────────────────
+const CONSULT_TABS: { id: ConsultTab; label: string }[] = [
+  { id: 'subjective',  label: 'Subjective' },
+  { id: 'objective',   label: 'Objective' },
+  { id: 'assessment',  label: 'Assessment' },
+  { id: 'plan',        label: 'Plan' },
+];
+
 // ── Props ─────────────────────────────────────────────────────────────────────
 interface StructuredNoteEditorProps {
   patientId: string;
@@ -189,6 +197,7 @@ export function StructuredNoteEditor({
   const [showPreview, setShowPreview] = useState(false);
   const [previewValues, setPreviewValues] = useState<Record<string, string>>({});
   const [admitModalOpen, setAdmitModalOpen] = useState(false);
+  const [consultTab, setConsultTab] = useState<ConsultTab>('subjective');
 
   // ── ICD search state ──────────────────────────────────────────────────────
   const [activeIcdFieldKey, setActiveIcdFieldKey] = useState<string | null>(null);
@@ -416,6 +425,23 @@ export function StructuredNoteEditor({
     (s) => !s.conditionalGender || (s.conditionalGender === 'female' && isFemale)
   );
 
+  const isConsultation = noteType === 'consultation_note';
+
+  // Pre-compute tab-relative section numbers so numbers reset per-tab
+  const tabSectionNums = React.useMemo(() => {
+    if (!isConsultation) return {} as Record<string, number>;
+    const counts: Partial<Record<ConsultTab, number>> = {};
+    const result: Record<string, number> = {};
+    visibleSections.forEach((sec) => {
+      const t = sec.tab;
+      if (t) {
+        counts[t] = (counts[t] ?? 0) + 1;
+        result[sec.id] = counts[t]!;
+      }
+    });
+    return result;
+  }, [isConsultation, visibleSections]);
+
   // ── Render field ──────────────────────────────────────────────────────────
   function renderField(field: NoteField, sectionTitle: string) {
     // Exam builder
@@ -581,15 +607,42 @@ export function StructuredNoteEditor({
         </div>
       )}
 
+      {/* ── Consultation note tab bar ── */}
+      {isConsultation && (
+        <div className="flex gap-1 p-1 bg-gray-100 rounded-xl border border-gray-200">
+          {CONSULT_TABS.map((tab) => (
+            <button
+              key={tab.id}
+              type="button"
+              onClick={() => setConsultTab(tab.id)}
+              className={cn(
+                'flex-1 px-3 py-2 text-sm font-semibold rounded-lg transition-all duration-150',
+                consultTab === tab.id
+                  ? 'bg-white text-teal-700 shadow-sm border border-gray-200'
+                  : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50',
+              )}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+      )}
+
       {/* ── Dynamic note sections ── */}
       <div className="space-y-4">
-        {visibleSections.map((section, idx) => (
-          <SectionCard key={section.id} num={idx + 1} icon={section.icon} title={section.title} accent={section.accent}>
-            <div className="space-y-5">
-              {section.fields.map((field) => renderField(field, section.title))}
+        {visibleSections.map((section, idx) => {
+          const num = isConsultation ? (tabSectionNums[section.id] ?? idx + 1) : idx + 1;
+          const hidden = isConsultation && section.tab !== undefined && section.tab !== consultTab;
+          return (
+            <div key={section.id} className={hidden ? 'hidden' : undefined}>
+              <SectionCard num={num} icon={section.icon} title={section.title} accent={section.accent}>
+                <div className="space-y-5">
+                  {section.fields.map((field) => renderField(field, section.title))}
+                </div>
+              </SectionCard>
             </div>
-          </SectionCard>
-        ))}
+          );
+        })}
       </div>
 
       {/* ── Sticky footer ── */}
