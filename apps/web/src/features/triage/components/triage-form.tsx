@@ -134,7 +134,7 @@ export function TriageForm({ patientId, encounterId, onComplete }: TriageFormPro
       priority: {
         coding: [
           {
-            system: 'http://terminology.hl7.org/CodeSystem/v3-ActPriority',
+            system: FHIR_SYSTEMS.ACT_PRIORITY,
             code: urgencyToActPriority(data.urgency),
           },
         ],
