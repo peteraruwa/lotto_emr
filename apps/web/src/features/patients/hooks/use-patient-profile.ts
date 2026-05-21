@@ -251,24 +251,9 @@ export function usePatientProfile(patientId: string) {
     ],
   });
 
-  const isLoading =
-    patientQ.isLoading ||
-    coverageQ.isLoading ||
-    encountersQ.isLoading ||
-    conditionsQ.isLoading ||
-    allergiesQ.isLoading ||
-    vitalsQ.isLoading ||
-    medsQ.isLoading ||
-    activeEncountersQ.isLoading;
+  const isLoading = patientQ.isLoading;
 
-  const error =
-    patientQ.error ||
-    coverageQ.error ||
-    encountersQ.error ||
-    conditionsQ.error ||
-    allergiesQ.error ||
-    vitalsQ.error ||
-    medsQ.error;
+  const error = patientQ.error;
 
   let profileData: PatientProfileData | null = null;
 
