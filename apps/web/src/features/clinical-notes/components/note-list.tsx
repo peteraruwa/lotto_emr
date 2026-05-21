@@ -177,25 +177,31 @@ function NoteCard({ note }: { note: NoteListItem }) {
 
 interface NoteListProps {
   patientId: string;
+  typeFilter?: NoteType;
+  hideNewButton?: boolean;
 }
 
-export function NoteList({ patientId }: NoteListProps) {
+export function NoteList({ patientId, typeFilter, hideNewButton = false }: NoteListProps) {
   const [showEditor, setShowEditor] = useState(false);
-  const { data: notes = [], isLoading } = useNotes(patientId);
+  const { data: allNotes = [], isLoading } = useNotes(patientId);
+
+  const notes = typeFilter ? allNotes.filter((n) => n.type === typeFilter) : allNotes;
 
   return (
     <div className="space-y-3">
-      <RequireRole roles={['doctor', 'nurse']}>
-        <div className="flex justify-end">
-          <button
-            onClick={() => setShowEditor(true)}
-            className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-hospital-600 hover:bg-hospital-700 text-white text-xs font-semibold transition-colors shadow-sm shadow-hospital-600/20"
-          >
-            <Plus className="h-3.5 w-3.5" />
-            New Note
-          </button>
-        </div>
-      </RequireRole>
+      {!hideNewButton && (
+        <RequireRole roles={['doctor', 'nurse']}>
+          <div className="flex justify-end">
+            <button
+              onClick={() => setShowEditor(true)}
+              className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-hospital-600 hover:bg-hospital-700 text-white text-xs font-semibold transition-colors shadow-sm shadow-hospital-600/20"
+            >
+              <Plus className="h-3.5 w-3.5" />
+              New Note
+            </button>
+          </div>
+        </RequireRole>
+      )}
 
       {/* Note editor modal */}
       {showEditor && (
@@ -232,7 +238,9 @@ export function NoteList({ patientId }: NoteListProps) {
       {!isLoading && notes.length === 0 && (
         <div className="bg-white rounded-2xl border border-gray-100 p-12 text-center">
           <FileText className="h-8 w-8 text-gray-200 mx-auto mb-3" />
-          <p className="text-sm font-semibold text-gray-500">No clinical notes yet</p>
+          <p className="text-sm font-semibold text-gray-500">
+            {typeFilter ? `No ${typeFilter.toLowerCase()} notes yet` : 'No clinical notes yet'}
+          </p>
           <p className="text-xs text-gray-400 mt-1">Notes will appear here once created</p>
         </div>
       )}
