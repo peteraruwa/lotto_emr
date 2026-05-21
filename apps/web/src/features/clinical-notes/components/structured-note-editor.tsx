@@ -166,10 +166,10 @@ function parseVitalsFromObservations(observations: Observation[]): VitalsSnapsho
 // ── Main component ─────────────────────────────────────────────────────────────
 export function StructuredNoteEditor({
   patientId,
-  patientGender = 'unknown',
+  patientGender,
   patientAge,
-  conditions = [],
-  medications = [],
+  conditions,
+  medications,
 }: StructuredNoteEditorProps) {
   const router = useRouter();
   const medplum = useMedplum();
@@ -185,29 +185,70 @@ export function StructuredNoteEditor({
   const [latestVitals, setLatestVitals] = useState<VitalsSnapshot | undefined>(undefined);
   const [aiAlerts, setAiAlerts] = useState<string[]>([]);
 
+  // Patient data fetched from FHIR (overrides any props)
+  const [resolvedGender, setResolvedGender] = useState(patientGender ?? 'unknown');
+  const [resolvedAge, setResolvedAge] = useState<number | undefined>(patientAge);
+  const [resolvedConditions, setResolvedConditions] = useState<string[]>(conditions ?? []);
+  const [resolvedMedications, setResolvedMedications] = useState<string[]>(medications ?? []);
+
   const {
     expandSection, searchIcd, suggestPlan, convertExamToNarrative, getAiAlerts,
     loadingSection, icdResults, setIcdResults, isSearchingIcd,
     isGeneratingPlan, isConvertingExam, aiError, clearAiError,
   } = useAiAssist();
 
+  // Fetch patient data + vitals on mount
   useEffect(() => {
     if (!patientId) return;
-    medplum
-      .searchResources('Observation', {
-        patient: `Patient/${patientId}`,
-        category: 'vital-signs',
-        _sort: '-date',
-        _count: '10',
-      })
-      .then((obs) => {
-        const snap = parseVitalsFromObservations(obs as Observation[]);
-        if (Object.values(snap).some(Boolean)) {
-          setLatestVitals(snap);
-          getAiAlerts(snap).then(setAiAlerts);
-        }
-      })
-      .catch(() => undefined);
+
+    // Patient resource → gender, age
+    medplum.readResource('Patient', patientId).then((pt: any) => {
+      if (pt.gender) setResolvedGender(pt.gender);
+      if (pt.birthDate) {
+        const age = Math.floor(
+          (Date.now() - new Date(pt.birthDate).getTime()) / (1000 * 60 * 60 * 24 * 365.25)
+        );
+        setResolvedAge(age);
+      }
+    }).catch(() => undefined);
+
+    // Active conditions
+    medplum.searchResources('Condition', {
+      patient: `Patient/${patientId}`,
+      'clinical-status': 'active',
+    }).then((list: any[]) => {
+      setResolvedConditions(
+        list.map((c) => c.code?.text ?? c.code?.coding?.[0]?.display ?? '').filter(Boolean)
+      );
+    }).catch(() => undefined);
+
+    // Active medications
+    medplum.searchResources('MedicationRequest', {
+      patient: `Patient/${patientId}`,
+      status: 'active',
+    }).then((list: any[]) => {
+      setResolvedMedications(
+        list.map((m) =>
+          m.medicationCodeableConcept?.text ??
+          m.medicationCodeableConcept?.coding?.[0]?.display ?? ''
+        ).filter(Boolean)
+      );
+    }).catch(() => undefined);
+
+    // Latest vitals
+    medplum.searchResources('Observation', {
+      patient: `Patient/${patientId}`,
+      category: 'vital-signs',
+      _sort: '-date',
+      _count: '10',
+    }).then((obs) => {
+      const snap = parseVitalsFromObservations(obs as Observation[]);
+      if (Object.values(snap).some(Boolean)) {
+        setLatestVitals(snap);
+        getAiAlerts(snap).then(setAiAlerts);
+      }
+    }).catch(() => undefined);
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -226,7 +267,7 @@ export function StructuredNoteEditor({
     },
   });
 
-  const isFemale = patientGender === 'female';
+  const isFemale = resolvedGender === 'female';
 
   async function handleAiAssist(section: keyof StructuredNoteFormData, label: string) {
     const val = watch(section);
@@ -255,7 +296,7 @@ export function StructuredNoteEditor({
 
   async function handleGeneratePlan() {
     const diagText = watch('diagnosis');
-    const plan = await suggestPlan(diagText, { age: patientAge, gender: patientGender, conditions, medications });
+    const plan = await suggestPlan(diagText, { age: resolvedAge, gender: resolvedGender, conditions: resolvedConditions, medications: resolvedMedications });
     if (plan) setValue('plan', plan);
   }
 
@@ -268,8 +309,42 @@ export function StructuredNoteEditor({
     setIsSaving(true);
     try {
       const currentUser = medplum.getProfile();
+      const now = new Date().toISOString();
       const noteContent = { ...formData, examFindings, examinationNarrative };
       const contentBase64 = Buffer.from(JSON.stringify(noteContent), 'utf-8').toString('base64');
+      const authorRef = currentUser?.id
+        ? [{
+            reference: `Practitioner/${currentUser.id}`,
+            display: `${currentUser.name?.[0]?.given?.[0] ?? ''} ${currentUser.name?.[0]?.family ?? ''}`.trim(),
+          }]
+        : [];
+
+      // Create a finished Encounter so the note appears in Previous Encounters
+      let encounterId: string | undefined;
+      try {
+        const enc = await medplum.createResource({
+          resourceType: 'Encounter',
+          status: 'finished',
+          class: {
+            system: 'http://terminology.hl7.org/CodeSystem/v3-ActCode',
+            code: 'AMB',
+            display: 'ambulatory',
+          },
+          type: [{
+            coding: [{ system: 'http://snomed.info/sct', code: '11429006', display: 'Consultation' }],
+            text: 'Outpatient Consultation',
+          }],
+          subject: { reference: `Patient/${patientId}` },
+          period: { start: now, end: now },
+          ...(formData.diagnosis.trim()
+            ? { reasonCode: [{ text: formData.diagnosis.trim() }] }
+            : {}),
+          ...(authorRef.length > 0
+            ? { participant: [{ individual: authorRef[0] }] }
+            : {}),
+        } as any);
+        encounterId = (enc as any).id as string | undefined;
+      } catch { /* non-critical — note still saves without encounter */ }
 
       const doc: DocumentReference = {
         resourceType: 'DocumentReference',
@@ -287,19 +362,20 @@ export function StructuredNoteEditor({
           }],
         }],
         subject: { reference: `Patient/${patientId}` },
-        date: new Date().toISOString(),
-        author: currentUser?.id
-          ? [{ reference: `Practitioner/${currentUser.id}`, display: `${currentUser.name?.[0]?.given?.[0] ?? ''} ${currentUser.name?.[0]?.family ?? ''}`.trim() }]
-          : [],
-        description: 'Structured Clinical Note',
+        date: now,
+        author: authorRef,
+        description: formData.diagnosis.trim() || 'Structured Clinical Note',
         content: [{
           attachment: {
             contentType: 'application/json',
             data: contentBase64,
             title: 'Structured Clinical Note',
-            creation: new Date().toISOString(),
+            creation: now,
           },
         }],
+        ...(encounterId
+          ? { context: { encounter: [{ reference: `Encounter/${encounterId}` }] } }
+          : {}),
       };
 
       await medplum.createResource(doc);

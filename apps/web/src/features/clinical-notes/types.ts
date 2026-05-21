@@ -19,7 +19,10 @@ export interface NoteListItem {
   patientId: string;
   type: NoteType;
   title: string;
-  contentPreview: string; // First 200 chars
+  contentPreview: string;
+  diagnosis: string;
+  presentingComplaints: string;
+  docStatus: 'preliminary' | 'final' | string;
   status: 'current' | 'superseded' | 'entered-in-error';
   authorName: string;
   date: string;

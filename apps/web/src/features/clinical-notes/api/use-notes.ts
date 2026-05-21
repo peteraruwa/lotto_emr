@@ -12,6 +12,14 @@ const NOTE_TYPE_MAP: Record<string, NoteType> = {
   '34137-0': NoteType.SOAP,
 };
 
+interface StructuredContent {
+  presentingComplaints?: string;
+  hpc?: string;
+  diagnosis?: string;
+  plan?: string;
+  [key: string]: unknown;
+}
+
 export function useNotes(patientId: string | undefined) {
   const medplum = useMedplum();
 
@@ -29,23 +37,30 @@ export function useNotes(patientId: string | undefined) {
         const loincCode = doc.type?.coding?.find((c: any) => c.system === 'http://loinc.org')?.code;
         const noteType = loincCode ? (NOTE_TYPE_MAP[loincCode] ?? NoteType.PROGRESS) : NoteType.PROGRESS;
 
-        // Decode base64 content if present
-        let contentText = '';
+        let structured: StructuredContent = {};
         const attachment = doc.content?.[0]?.attachment;
         if (attachment?.data) {
           try {
-            contentText = Buffer.from(attachment.data, 'base64').toString('utf-8');
+            const raw = Buffer.from(attachment.data, 'base64').toString('utf-8');
+            structured = JSON.parse(raw) as StructuredContent;
           } catch {
-            contentText = '';
+            structured = {};
           }
         }
+
+        const diagnosis = structured.diagnosis?.trim() ?? '';
+        const presentingComplaints = structured.presentingComplaints?.trim() ?? '';
+        const contentPreview = diagnosis || presentingComplaints || (structured.hpc?.trim() ?? '');
 
         return {
           id: doc.id ?? '',
           patientId: patientId ?? '',
           type: noteType,
-          title: doc.description ?? doc.type?.text ?? noteType,
-          contentPreview: contentText.slice(0, 200),
+          title: doc.description?.trim() || diagnosis || doc.type?.text || 'Clinical Note',
+          contentPreview: contentPreview.slice(0, 200),
+          diagnosis,
+          presentingComplaints,
+          docStatus: doc.docStatus ?? 'preliminary',
           status: doc.status ?? 'current',
           authorName: doc.author?.[0]?.display ?? 'Unknown',
           date: doc.date ?? '',
