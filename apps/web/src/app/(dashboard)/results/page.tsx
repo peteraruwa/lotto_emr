@@ -1,15 +1,20 @@
 import type { Metadata } from 'next';
+import { FlaskConical } from 'lucide-react';
 import { ResultsList } from '@/features/results';
+import { PageHeader } from '@/shared/components/page-header';
 
 export const metadata: Metadata = { title: 'Results' };
 
 export default function ResultsPage() {
   return (
-    <div className="space-y-4">
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight">Results</h1>
-        <p className="text-muted-foreground text-sm">Lab results and diagnostic reports</p>
-      </div>
+    <div>
+      <PageHeader
+        title="Results"
+        description="Lab results and diagnostic reports"
+        icon={FlaskConical}
+        iconColor="text-amber-600"
+        iconBg="bg-amber-50"
+      />
       <ResultsList />
     </div>
   );

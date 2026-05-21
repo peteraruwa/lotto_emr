@@ -1,15 +1,20 @@
 import type { Metadata } from 'next';
+import { ClipboardList } from 'lucide-react';
 import { OrderList } from '@/features/orders';
+import { PageHeader } from '@/shared/components/page-header';
 
 export const metadata: Metadata = { title: 'Orders Queue' };
 
 export default function OrdersQueuePage() {
   return (
-    <div className="space-y-4">
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight">Orders Queue</h1>
-        <p className="text-muted-foreground text-sm">All pending and active orders</p>
-      </div>
+    <div>
+      <PageHeader
+        title="Orders Queue"
+        description="All pending and active clinical orders"
+        icon={ClipboardList}
+        iconColor="text-violet-600"
+        iconBg="bg-violet-50"
+      />
       <OrderList />
     </div>
   );

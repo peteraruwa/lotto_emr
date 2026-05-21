@@ -1,67 +1,162 @@
 'use client';
 
 import React from 'react';
-import Link from 'next/link';
 import { format } from 'date-fns';
-import { Calendar, ChevronRight } from 'lucide-react';
-import { Badge, Button } from '@lotto-emr/ui';
+import { Calendar, ChevronRight, Clock } from 'lucide-react';
+import { cn } from '@lotto-emr/ui';
 import type { AppointmentRow } from '../hooks/use-dashboard-data';
 
-const STATUS_VARIANT: Record<string, 'active' | 'completed' | 'cancelled' | 'pending' | 'stable'> = {
-  booked:    'active',
-  arrived:   'stable',
-  checkedin: 'stable',
-  fulfilled: 'completed',
-  cancelled: 'cancelled',
-  noshow:    'cancelled',
-  proposed:  'pending',
-  pending:   'pending',
+const STATUS_CONFIG: Record<string, { label: string; className: string }> = {
+  booked:    { label: 'Waiting',   className: 'bg-blue-50 text-blue-700' },
+  arrived:   { label: 'In Room',   className: 'bg-emerald-50 text-emerald-700' },
+  checkedin: { label: 'In Room',   className: 'bg-emerald-50 text-emerald-700' },
+  fulfilled: { label: 'Done',      className: 'bg-gray-100 text-gray-500' },
+  cancelled: { label: 'Cancelled', className: 'bg-red-50 text-red-600' },
+  noshow:    { label: 'No Show',   className: 'bg-orange-50 text-orange-600' },
+  proposed:  { label: 'Pending',   className: 'bg-yellow-50 text-yellow-700' },
+  pending:   { label: 'Pending',   className: 'bg-yellow-50 text-yellow-700' },
 };
 
-const STATUS_LABEL: Record<string, string> = {
-  booked:    'Waiting',
-  arrived:   'In Room',
-  checkedin: 'In Room',
-  fulfilled: 'Done',
-  cancelled: 'Cancelled',
-  noshow:    'No Show',
-  proposed:  'Pending',
-  pending:   'Pending',
-};
+function initials(name: string) {
+  return name.split(' ').map((w) => w[0]).join('').toUpperCase().slice(0, 2);
+}
 
 interface PatientQueueProps {
   rows: AppointmentRow[];
   loading: boolean;
-  onOpenConsultation?: (row: AppointmentRow) => void;
+  onOpenPatient: (row: AppointmentRow) => void;
 }
 
-export function PatientQueue({ rows, loading, onOpenConsultation }: PatientQueueProps) {
+function SkeletonRow() {
+  return (
+    <div className="flex items-center gap-3 px-5 py-3.5 border-b border-gray-50 last:border-0">
+      <div className="w-9 h-9 rounded-xl bg-gray-100 animate-pulse flex-shrink-0" />
+      <div className="flex-1 min-w-0 space-y-1.5">
+        <div className="h-3 w-36 rounded-full bg-gray-100 animate-pulse" />
+        <div className="h-2.5 w-24 rounded-full bg-gray-100 animate-pulse" />
+      </div>
+      <div className="h-6 w-16 rounded-full bg-gray-100 animate-pulse flex-shrink-0" />
+      <div className="h-7 w-14 rounded-lg bg-gray-100 animate-pulse flex-shrink-0" />
+    </div>
+  );
+}
+
+function EmptyQueue() {
+  return (
+    <div className="flex flex-col items-center justify-center py-14 text-center px-4">
+      <div className="w-14 h-14 rounded-2xl bg-gray-50 flex items-center justify-center mb-4">
+        <Calendar className="h-7 w-7 text-gray-300" />
+      </div>
+      <p className="text-sm font-semibold text-gray-600">No appointments today</p>
+      <p className="text-xs text-gray-400 mt-1">Your schedule is clear for today</p>
+    </div>
+  );
+}
+
+function QueueRow({ appt, onOpenPatient }: { appt: AppointmentRow; onOpenPatient: (a: AppointmentRow) => void }) {
+  const d = appt.time ? new Date(appt.time) : null;
+  const timeStr = d && !isNaN(d.getTime()) ? format(d, 'HH:mm') : '—';
+  const isInRoom = ['arrived', 'checkedin'].includes(appt.status);
+  const isDone   = ['fulfilled', 'cancelled', 'noshow'].includes(appt.status);
+  const cfg      = STATUS_CONFIG[appt.status] ?? { label: appt.status, className: 'bg-gray-100 text-gray-500' };
+  const ini      = initials(appt.patientName);
+
+  return (
+    <div
+      className={cn(
+        'flex items-center gap-3 px-5 py-3 border-b border-gray-50 last:border-0 transition-colors',
+        isInRoom ? 'bg-emerald-50/50' : isDone ? 'opacity-60' : 'hover:bg-gray-50/80',
+      )}
+    >
+      <div className={cn('w-9 h-9 rounded-xl flex items-center justify-center text-xs font-bold flex-shrink-0',
+        isInRoom ? 'bg-emerald-100 text-emerald-700' : 'bg-hospital-100 text-hospital-700')}>
+        {ini}
+      </div>
+
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-1.5 min-w-0">
+          {isInRoom && <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 flex-shrink-0" />}
+          <p className="text-sm font-semibold text-gray-800 truncate leading-tight">{appt.patientName}</p>
+        </div>
+        <div className="flex items-center gap-2 mt-0.5 min-w-0">
+          <span className="flex items-center gap-1 text-xs text-gray-400 flex-shrink-0">
+            <Clock className="h-3 w-3" />{timeStr}
+          </span>
+          <span className="text-gray-200 flex-shrink-0">·</span>
+          <span className="text-xs text-gray-400 truncate">{appt.visitType}</span>
+        </div>
+      </div>
+
+      <span className={cn('hidden sm:inline-flex px-2.5 py-1 rounded-full text-[11px] font-semibold flex-shrink-0', cfg.className)}>
+        {cfg.label}
+      </span>
+
+      <button
+        onClick={() => onOpenPatient(appt)}
+        disabled={isDone}
+        className={cn(
+          'flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all flex-shrink-0',
+          isInRoom
+            ? 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm shadow-emerald-600/20'
+            : isDone
+            ? 'bg-gray-100 text-gray-400 cursor-default'
+            : 'bg-hospital-50 hover:bg-hospital-600 hover:text-white text-hospital-700',
+        )}
+      >
+        {isInRoom ? 'Consult' : 'Open'}
+        <ChevronRight className="h-3 w-3" />
+      </button>
+    </div>
+  );
+}
+
+function QueueCard({ appt, onOpenPatient }: { appt: AppointmentRow; onOpenPatient: (a: AppointmentRow) => void }) {
+  const d = appt.time ? new Date(appt.time) : null;
+  const timeStr = d && !isNaN(d.getTime()) ? format(d, 'h:mm a') : '—';
+  const isInRoom = ['arrived', 'checkedin'].includes(appt.status);
+  const isDone   = ['fulfilled', 'cancelled', 'noshow'].includes(appt.status);
+  const cfg      = STATUS_CONFIG[appt.status] ?? { label: appt.status, className: 'bg-gray-100 text-gray-500' };
+  const ini      = initials(appt.patientName);
+
+  return (
+    <div className={cn(
+      'mx-4 my-2 rounded-xl border p-3 flex items-center gap-3',
+      isInRoom ? 'bg-emerald-50 border-emerald-200' : 'bg-white border-gray-100',
+    )}>
+      <div className={cn('w-10 h-10 rounded-xl flex items-center justify-center text-xs font-bold flex-shrink-0',
+        isInRoom ? 'bg-emerald-100 text-emerald-700' : 'bg-hospital-100 text-hospital-700')}>
+        {ini}
+      </div>
+      <div className="flex-1 min-w-0">
+        <p className="text-sm font-semibold text-gray-800 truncate leading-tight">{appt.patientName}</p>
+        <div className="flex items-center gap-2 mt-0.5 flex-wrap">
+          <span className="text-xs text-gray-400 flex-shrink-0">{timeStr}</span>
+          <span className={cn('inline-flex px-2 py-0.5 rounded-full text-[11px] font-semibold flex-shrink-0', cfg.className)}>
+            {cfg.label}
+          </span>
+        </div>
+      </div>
+      <button
+        onClick={() => onOpenPatient(appt)}
+        disabled={isDone}
+        className={cn(
+          'w-8 h-8 flex items-center justify-center rounded-lg flex-shrink-0 transition-colors',
+          isInRoom ? 'bg-emerald-600 text-white' : isDone ? 'bg-gray-100 text-gray-300 cursor-default' : 'bg-hospital-600 text-white',
+        )}
+      >
+        <ChevronRight className="h-4 w-4" />
+      </button>
+    </div>
+  );
+}
+
+export function PatientQueue({ rows, loading, onOpenPatient }: PatientQueueProps) {
   if (loading) {
-    return (
-      <div className="divide-y">
-        {[1, 2, 3, 4].map((i) => (
-          <div key={i} className="flex items-center gap-4 px-4 py-3">
-            <div className="h-3 w-12 rounded bg-gray-100 animate-pulse" />
-            <div className="h-3 w-32 rounded bg-gray-100 animate-pulse" />
-            <div className="h-3 w-24 rounded bg-gray-100 animate-pulse" />
-            <div className="h-5 w-16 rounded bg-gray-100 animate-pulse ml-auto" />
-          </div>
-        ))}
-      </div>
-    );
+    return <div>{[1, 2, 3, 4].map((i) => <SkeletonRow key={i} />)}</div>;
   }
 
-  if (rows.length === 0) {
-    return (
-      <div className="flex flex-col items-center justify-center py-12 text-center">
-        <Calendar className="h-8 w-8 text-gray-200 mb-2" />
-        <p className="text-sm font-medium text-gray-500">No appointments today</p>
-        <p className="text-xs text-muted-foreground mt-0.5">Your schedule is clear</p>
-      </div>
-    );
-  }
+  if (rows.length === 0) return <EmptyQueue />;
 
-  // Sort: in-room → waiting → done
   const sorted = [...rows].sort((a, b) => {
     const rank = (s: string) =>
       ['arrived', 'checkedin'].includes(s) ? 0 :
@@ -70,84 +165,13 @@ export function PatientQueue({ rows, loading, onOpenConsultation }: PatientQueue
   });
 
   return (
-    <div className="overflow-x-auto">
-      <table className="w-full text-sm">
-        <thead>
-          <tr className="border-b bg-gray-50">
-            <th className="px-4 py-2.5 text-left text-xs font-semibold text-gray-500 w-16">Time</th>
-            <th className="px-4 py-2.5 text-left text-xs font-semibold text-gray-500">Patient</th>
-            <th className="px-4 py-2.5 text-left text-xs font-semibold text-gray-500">Visit Type</th>
-            <th className="px-4 py-2.5 text-left text-xs font-semibold text-gray-500">Status</th>
-            <th className="px-4 py-2.5 text-right text-xs font-semibold text-gray-500"></th>
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-gray-100">
-          {sorted.map((appt) => {
-            const patientId = appt.patientRef?.replace('Patient/', '');
-            const d = appt.time ? new Date(appt.time) : null;
-            const timeStr = d && !isNaN(d.getTime()) ? format(d, 'HH:mm') : '—';
-            const isInRoom = ['arrived', 'checkedin'].includes(appt.status);
-
-            return (
-              <tr
-                key={appt.id}
-                className={`transition-colors ${isInRoom ? 'bg-teal-50 hover:bg-teal-100' : 'hover:bg-gray-50'}`}
-              >
-                <td className="px-4 py-3 font-mono text-xs text-gray-500 whitespace-nowrap">
-                  {timeStr}
-                </td>
-
-                <td className="px-4 py-3">
-                  {patientId ? (
-                    <Link
-                      href={`/patients/${patientId}`}
-                      className="font-medium text-hospital-700 hover:underline"
-                    >
-                      {appt.patientName}
-                    </Link>
-                  ) : (
-                    <span className="font-medium text-gray-800">{appt.patientName}</span>
-                  )}
-                </td>
-
-                <td className="px-4 py-3 text-xs text-gray-500">
-                  {appt.visitType}
-                </td>
-
-                <td className="px-4 py-3">
-                  <Badge
-                    variant={STATUS_VARIANT[appt.status] ?? 'pending'}
-                    className="text-xs whitespace-nowrap"
-                  >
-                    {STATUS_LABEL[appt.status] ?? appt.status}
-                  </Badge>
-                </td>
-
-                <td className="px-4 py-3 text-right">
-                  {patientId && (
-                    <div className="flex items-center gap-1.5 justify-end">
-                      {onOpenConsultation && (
-                        <Button
-                          size="sm"
-                          variant={isInRoom ? 'default' : 'outline'}
-                          className="h-7 text-xs px-2"
-                          onClick={() => onOpenConsultation(appt)}
-                        >
-                          {isInRoom ? 'Consult' : 'See'}
-                          <ChevronRight className="h-3 w-3 ml-0.5" />
-                        </Button>
-                      )}
-                      <Button asChild size="sm" variant="ghost" className="h-7 text-xs px-2">
-                        <Link href={`/patients/${patientId}`}>Chart</Link>
-                      </Button>
-                    </div>
-                  )}
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
-    </div>
+    <>
+      <div className="sm:hidden py-2">
+        {sorted.map((appt) => <QueueCard key={appt.id} appt={appt} onOpenPatient={onOpenPatient} />)}
+      </div>
+      <div className="hidden sm:block">
+        {sorted.map((appt) => <QueueRow key={appt.id} appt={appt} onOpenPatient={onOpenPatient} />)}
+      </div>
+    </>
   );
 }

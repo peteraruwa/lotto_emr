@@ -1,17 +1,18 @@
 import type { Metadata } from 'next';
+import { Users } from 'lucide-react';
 import { PatientList } from '@/features/patients';
+import { PageHeader } from '@/shared/components/page-header';
 
 export const metadata: Metadata = { title: 'Patients' };
 
 export default function PatientsPage() {
   return (
-    <div className="space-y-4">
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight">Patients</h1>
-        <p className="text-muted-foreground text-sm">
-          Search and manage patient records
-        </p>
-      </div>
+    <div>
+      <PageHeader
+        title="Patients"
+        description="Search and manage patient records"
+        icon={Users}
+      />
       <PatientList />
     </div>
   );

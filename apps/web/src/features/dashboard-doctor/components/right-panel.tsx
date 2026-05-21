@@ -4,10 +4,10 @@ import React from 'react';
 import Link from 'next/link';
 import { isToday, format, formatDistanceToNow } from 'date-fns';
 import {
-  AlertCircle, Clock, CheckCircle2, ArrowRight,
-  FlaskConical, Users, ClipboardCheck,
+  AlertCircle, CheckCircle2, ArrowRight,
+  FlaskConical, Users, ClipboardCheck, Clock,
 } from 'lucide-react';
-import { Badge, Card, CardContent, CardHeader, CardTitle } from '@lotto-emr/ui';
+import { cn } from '@lotto-emr/ui';
 import type { DoctorDashboardData } from '../hooks/use-dashboard-data';
 
 interface RightPanelProps {
@@ -15,140 +15,202 @@ interface RightPanelProps {
   isLoading: boolean;
 }
 
+function SectionSkeleton({ lines = 3 }: { lines?: number }) {
+  return (
+    <div className="space-y-3 px-4 py-3">
+      {Array.from({ length: lines }).map((_, i) => (
+        <div key={i} className="flex items-center gap-3">
+          <div className="w-8 h-8 rounded-xl bg-gray-100 animate-pulse flex-shrink-0" />
+          <div className="flex-1 space-y-1.5">
+            <div className="h-2.5 w-3/4 rounded-full bg-gray-100 animate-pulse" />
+            <div className="h-2 w-1/2 rounded-full bg-gray-100 animate-pulse" />
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function PanelSection({
+  icon: Icon,
+  iconColor,
+  iconBg,
+  title,
+  count,
+  viewAllHref,
+  children,
+}: {
+  icon: React.ElementType;
+  iconColor: string;
+  iconBg: string;
+  title: string;
+  count?: number;
+  viewAllHref?: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+      <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
+        <div className="flex items-center gap-2 min-w-0">
+          <div className={cn('w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0', iconBg)}>
+            <Icon className={cn('h-3.5 w-3.5', iconColor)} />
+          </div>
+          <span className="text-sm font-semibold text-gray-800 truncate">{title}</span>
+          {count !== undefined && count > 0 && (
+            <span className="flex-shrink-0 w-5 h-5 rounded-full bg-red-500 text-white text-[10px] font-bold flex items-center justify-center">
+              {count > 9 ? '9+' : count}
+            </span>
+          )}
+        </div>
+        {viewAllHref && (
+          <Link
+            href={viewAllHref}
+            className="flex-shrink-0 flex items-center gap-0.5 text-xs font-medium text-hospital-600 hover:text-hospital-700 transition-colors"
+          >
+            All <ArrowRight className="h-3 w-3" />
+          </Link>
+        )}
+      </div>
+      <div>{children}</div>
+    </div>
+  );
+}
+
 export function RightPanel({ data, isLoading }: RightPanelProps) {
   return (
-    <div className="space-y-4">
+    <div className="space-y-3">
 
       {/* Results & Alerts */}
-      <Card>
-        <CardHeader className="pb-2">
-          <div className="flex items-center justify-between">
-            <CardTitle className="text-sm flex items-center gap-2">
-              <FlaskConical className="h-4 w-4 text-amber-500" />
-              Results & Alerts
-              {(data?.pendingResultsCount ?? 0) > 0 && (
-                <span className="inline-flex items-center justify-center w-4 h-4 rounded-full bg-amber-500 text-white text-[10px] font-bold">
-                  {data!.pendingResultsCount}
-                </span>
-              )}
-            </CardTitle>
+      <PanelSection
+        icon={FlaskConical}
+        iconColor="text-amber-600"
+        iconBg="bg-amber-50"
+        title="Results & Alerts"
+        count={data?.pendingResultsCount}
+        viewAllHref="/results"
+      >
+        {isLoading ? (
+          <SectionSkeleton lines={2} />
+        ) : (data?.pendingResults.length ?? 0) === 0 ? (
+          <div className="flex items-center gap-2.5 px-4 py-4 text-sm text-emerald-600">
+            <CheckCircle2 className="h-4 w-4 flex-shrink-0" />
+            <span className="text-xs font-medium">All results reviewed</span>
           </div>
-        </CardHeader>
-        <CardContent className="pt-0 space-y-2">
-          {isLoading ? (
-            <p className="text-xs text-muted-foreground">Loading…</p>
-          ) : (data?.pendingResults.length ?? 0) === 0 ? (
-            <div className="flex items-center gap-2 text-xs text-green-600">
-              <CheckCircle2 className="h-3.5 w-3.5" /> All results reviewed
-            </div>
-          ) : (
-            <>
-              {data!.pendingResults.slice(0, 5).map((r) => (
-                <div key={r.id} className="flex items-start gap-2 py-1.5 border-b last:border-0">
-                  <AlertCircle className="h-3.5 w-3.5 text-amber-500 mt-0.5 flex-shrink-0" />
-                  <div className="min-w-0">
-                    <p className="text-xs font-medium truncate">{r.title}</p>
-                    <p className="text-xs text-gray-400 truncate">{r.patientName}</p>
-                  </div>
+        ) : (
+          <div className="divide-y divide-gray-50">
+            {data!.pendingResults.slice(0, 5).map((r) => (
+              <div key={r.id} className="flex items-start gap-3 px-4 py-3">
+                <div className="w-7 h-7 rounded-lg bg-amber-50 flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <AlertCircle className="h-3.5 w-3.5 text-amber-500" />
                 </div>
-              ))}
-              <Link href="/results" className="text-xs text-hospital-600 hover:underline flex items-center gap-1 pt-1">
-                View all <ArrowRight className="h-3 w-3" />
-              </Link>
-            </>
-          )}
-        </CardContent>
-      </Card>
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs font-semibold text-gray-800 truncate leading-tight">{r.title}</p>
+                  <p className="text-[11px] text-gray-400 truncate mt-0.5">{r.patientName}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </PanelSection>
 
       {/* Recent Patients */}
-      <Card>
-        <CardHeader className="pb-2">
-          <div className="flex items-center justify-between">
-            <CardTitle className="text-sm flex items-center gap-2">
-              <Users className="h-4 w-4 text-hospital-600" /> Recent Patients
-            </CardTitle>
-            <Link href="/patients" className="text-xs text-hospital-600 hover:underline">
-              All
-            </Link>
-          </div>
-        </CardHeader>
-        <CardContent className="pt-0 space-y-1">
-          {isLoading ? (
-            <p className="text-xs text-muted-foreground">Loading…</p>
-          ) : (data?.recentEncounters.length ?? 0) === 0 ? (
-            <p className="text-xs text-muted-foreground">No recent patients.</p>
-          ) : (
-            data!.recentEncounters.slice(0, 6).map((enc) => {
-              const href = enc.patientId ? `/patients/${enc.patientId}` : '/patients';
+      <PanelSection
+        icon={Users}
+        iconColor="text-hospital-600"
+        iconBg="bg-hospital-50"
+        title="Recent Patients"
+        viewAllHref="/patients"
+      >
+        {isLoading ? (
+          <SectionSkeleton lines={4} />
+        ) : (data?.recentEncounters.length ?? 0) === 0 ? (
+          <p className="px-4 py-4 text-xs text-gray-400">No recent patients.</p>
+        ) : (
+          <div className="divide-y divide-gray-50">
+            {data!.recentEncounters.slice(0, 5).map((enc) => {
+              const href  = enc.patientId ? `/patients/${enc.patientId}` : '/patients';
               const start = enc.start ? new Date(enc.start) : null;
               const timeDisplay = start && !isNaN(start.getTime())
                 ? isToday(start) ? format(start, 'HH:mm') : formatDistanceToNow(start, { addSuffix: true })
                 : null;
+              const isActive = enc.status === 'in-progress';
+              const ini = enc.patientName.split(' ').map((w) => w[0]).join('').toUpperCase().slice(0, 2);
 
               return (
-                <Link key={enc.id} href={href} className="flex items-center gap-2 py-1.5 hover:bg-gray-50 rounded px-1 transition-colors group">
-                  <div className="w-7 h-7 rounded-full bg-hospital-100 text-hospital-700 text-xs font-bold flex items-center justify-center flex-shrink-0">
-                    {enc.patientName.charAt(0).toUpperCase()}
+                <Link
+                  key={enc.id}
+                  href={href}
+                  className="flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 transition-colors group"
+                >
+                  <div className={cn(
+                    'w-8 h-8 rounded-xl flex items-center justify-center text-xs font-bold flex-shrink-0',
+                    isActive ? 'bg-emerald-100 text-emerald-700' : 'bg-hospital-100 text-hospital-700',
+                  )}>
+                    {ini}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-xs font-medium truncate group-hover:text-hospital-700">{enc.patientName}</p>
+                    <p className="text-xs font-semibold text-gray-800 truncate group-hover:text-hospital-700 transition-colors leading-tight">
+                      {enc.patientName}
+                    </p>
                     {timeDisplay && (
-                      <p className="text-xs text-gray-400 flex items-center gap-0.5">
-                        <Clock className="h-2.5 w-2.5" />{timeDisplay}
+                      <p className="text-[11px] text-gray-400 flex items-center gap-1 mt-0.5">
+                        <Clock className="h-2.5 w-2.5 flex-shrink-0" />{timeDisplay}
                       </p>
                     )}
                   </div>
-                  <Badge
-                    variant={enc.status === 'in-progress' ? 'active' : enc.status === 'finished' ? 'completed' : 'pending'}
-                    className="text-xs capitalize flex-shrink-0"
-                  >
-                    {enc.status}
-                  </Badge>
+                  {isActive && (
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 flex-shrink-0" />
+                  )}
                 </Link>
               );
-            })
-          )}
-        </CardContent>
-      </Card>
+            })}
+          </div>
+        )}
+      </PanelSection>
 
-      {/* Tasks */}
-      <Card>
-        <CardHeader className="pb-2">
-          <CardTitle className="text-sm flex items-center gap-2">
-            <ClipboardCheck className="h-4 w-4 text-green-600" /> Tasks
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="pt-0 space-y-2">
-          {isLoading ? (
-            <p className="text-xs text-muted-foreground">Loading…</p>
-          ) : (data?.pendingOrders.length ?? 0) === 0 ? (
-            <div className="flex items-center gap-2 text-xs text-green-600">
-              <CheckCircle2 className="h-3.5 w-3.5" /> No pending tasks
-            </div>
-          ) : (
-            <>
-              {data!.pendingOrders.slice(0, 4).map((o) => (
-                <div key={o.id} className="flex items-start gap-2 py-1 border-b last:border-0">
-                  <div className={`text-[10px] font-bold px-1.5 py-0.5 rounded flex-shrink-0 ${
-                    o.priority === 'urgent' || o.priority === 'stat' ? 'bg-red-100 text-red-700'
-                    : o.priority === 'asap' ? 'bg-orange-100 text-orange-700'
-                    : 'bg-gray-100 text-gray-500'
-                  }`}>
-                    {o.priority === 'routine' ? 'RTN' : o.priority.toUpperCase()}
-                  </div>
-                  <div className="min-w-0">
-                    <p className="text-xs font-medium truncate">{o.title}</p>
-                    <p className="text-xs text-gray-400 truncate">{o.patientName}</p>
+      {/* Tasks / Pending Orders */}
+      <PanelSection
+        icon={ClipboardCheck}
+        iconColor="text-violet-600"
+        iconBg="bg-violet-50"
+        title="Pending Orders"
+        count={data?.pendingOrdersCount}
+        viewAllHref="/orders"
+      >
+        {isLoading ? (
+          <SectionSkeleton lines={3} />
+        ) : (data?.pendingOrders.length ?? 0) === 0 ? (
+          <div className="flex items-center gap-2.5 px-4 py-4 text-sm text-emerald-600">
+            <CheckCircle2 className="h-4 w-4 flex-shrink-0" />
+            <span className="text-xs font-medium">No pending tasks</span>
+          </div>
+        ) : (
+          <div className="divide-y divide-gray-50">
+            {data!.pendingOrders.slice(0, 5).map((o) => {
+              const isUrgent = o.priority === 'urgent' || o.priority === 'stat';
+              const isAsap   = o.priority === 'asap';
+              const priorityCls = isUrgent
+                ? 'bg-red-100 text-red-700'
+                : isAsap
+                ? 'bg-orange-100 text-orange-700'
+                : 'bg-gray-100 text-gray-500';
+              const priorityLabel = o.priority === 'routine' ? 'RTN' : o.priority.toUpperCase().slice(0, 4);
+
+              return (
+                <div key={o.id} className="flex items-center gap-3 px-4 py-3">
+                  <span className={cn('text-[10px] font-bold px-1.5 py-0.5 rounded-md flex-shrink-0', priorityCls)}>
+                    {priorityLabel}
+                  </span>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs font-semibold text-gray-800 truncate leading-tight">{o.title}</p>
+                    <p className="text-[11px] text-gray-400 truncate mt-0.5">{o.patientName}</p>
                   </div>
                 </div>
-              ))}
-              <Link href="/orders" className="text-xs text-hospital-600 hover:underline flex items-center gap-1 pt-1">
-                View all orders <ArrowRight className="h-3 w-3" />
-              </Link>
-            </>
-          )}
-        </CardContent>
-      </Card>
+              );
+            })}
+          </div>
+        )}
+      </PanelSection>
 
     </div>
   );
