@@ -13,7 +13,7 @@ export function useRadiologistDashboardData() {
   const medplum = useMedplum();
 
   return useQuery({
-    queryKey: ['dashboard-radiologist'],
+    queryKey: ['radiology'],
     queryFn: async () => {
       const [orders, reports] = await Promise.all([
         medplum.searchResources('ServiceRequest', {

@@ -6,6 +6,7 @@ import { Button, Card, CardContent, CardHeader, CardTitle, Badge, Label } from '
 import { ClipboardList } from 'lucide-react';
 import type { AncRecord, AncVisit, AncRiskLevel } from '../types';
 import { calculateGestationalWeeks } from '../lib/anc-utils';
+import { LOINC_VITALS, FHIR_SYSTEMS } from '@/shared/constants/loinc';
 
 interface AncVisitTrackerProps {
   ancRecord: AncRecord;
@@ -71,7 +72,7 @@ function VisitRecordForm({
         {
           coding: [
             {
-              system: 'http://terminology.hl7.org/CodeSystem/observation-category',
+              system: FHIR_SYSTEMS.OBSERVATION_CAT,
               code: 'exam',
             },
           ],
@@ -88,7 +89,7 @@ function VisitRecordForm({
         medplum.createResource({
           ...obsBase,
           code: {
-            coding: [{ system: 'http://loinc.org', code: '29463-7', display: 'Body weight' }],
+            coding: [{ system: FHIR_SYSTEMS.LOINC, code: LOINC_VITALS.BODY_WEIGHT, display: 'Body weight' }],
           },
           valueQuantity: { value: Number(form.weight), unit: 'kg' },
         }),
@@ -100,7 +101,7 @@ function VisitRecordForm({
         medplum.createResource({
           ...obsBase,
           code: {
-            coding: [{ system: 'http://loinc.org', code: '55284-4', display: 'Blood pressure' }],
+            coding: [{ system: FHIR_SYSTEMS.LOINC, code: LOINC_VITALS.BP_PANEL, display: 'Blood pressure' }],
           },
           valueString: form.bp,
         }),
@@ -113,7 +114,7 @@ function VisitRecordForm({
           ...obsBase,
           code: {
             coding: [
-              { system: 'http://loinc.org', code: '55283-6', display: 'Fetal heart rate' },
+              { system: FHIR_SYSTEMS.LOINC, code: '55283-6', display: 'Fetal heart rate' },
             ],
           },
           valueQuantity: { value: Number(form.fetalHeartRate), unit: '/min' },
@@ -128,7 +129,7 @@ function VisitRecordForm({
           code: {
             coding: [
               {
-                system: 'http://loinc.org',
+                system: FHIR_SYSTEMS.LOINC,
                 code: '11881-0',
                 display: 'Uterus fundal height',
               },
@@ -146,7 +147,7 @@ function VisitRecordForm({
           code: {
             coding: [
               {
-                system: 'http://loinc.org',
+                system: FHIR_SYSTEMS.LOINC,
                 code: '73761-6',
                 display: 'Fetal presentation',
               },
@@ -164,7 +165,7 @@ function VisitRecordForm({
           code: {
             coding: [
               {
-                system: 'http://snomed.info/sct',
+                system: FHIR_SYSTEMS.SNOMED,
                 code: '404684003',
                 display: 'Clinical finding',
               },

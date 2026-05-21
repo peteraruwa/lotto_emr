@@ -7,6 +7,7 @@ import { useMedplum } from '@medplum/react';
 import type { Observation, Encounter } from '@medplum/fhirtypes';
 import { Button, Card, CardContent, CardHeader, CardTitle, Label } from '@lotto-emr/ui';
 import type { TriageFormData, TriageUrgency, TriageRouting } from '../types';
+import { LOINC_VITALS, FHIR_SYSTEMS } from '@/shared/constants/loinc';
 
 interface TriageFormProps {
   patientId: string;
@@ -22,14 +23,14 @@ interface VitalConfig {
 }
 
 const VITALS: VitalConfig[] = [
-  { key: 'systolic',        label: 'Systolic BP',       loinc: '8480-6',  unit: 'mmHg' },
-  { key: 'diastolic',       label: 'Diastolic BP',      loinc: '8462-4',  unit: 'mmHg' },
-  { key: 'heartRate',       label: 'Heart Rate (/min)', loinc: '8867-4',  unit: '/min' },
-  { key: 'temperature',     label: 'Temperature (°C)',  loinc: '8310-5',  unit: 'Cel'  },
-  { key: 'spo2',            label: 'SpO2 (%)',          loinc: '59408-5', unit: '%'    },
-  { key: 'respiratoryRate', label: 'Resp. Rate (/min)', loinc: '9279-1',  unit: '/min' },
-  { key: 'weight',          label: 'Weight (kg)',       loinc: '29463-7', unit: 'kg'   },
-  { key: 'height',          label: 'Height (cm)',       loinc: '8302-2',  unit: 'cm'   },
+  { key: 'systolic',        label: 'Systolic BP',       loinc: LOINC_VITALS.SYSTOLIC,         unit: 'mmHg' },
+  { key: 'diastolic',       label: 'Diastolic BP',      loinc: LOINC_VITALS.DIASTOLIC,        unit: 'mmHg' },
+  { key: 'heartRate',       label: 'Heart Rate (/min)', loinc: LOINC_VITALS.HEART_RATE,       unit: '/min' },
+  { key: 'temperature',     label: 'Temperature (°C)',  loinc: LOINC_VITALS.TEMPERATURE,      unit: 'Cel'  },
+  { key: 'spo2',            label: 'SpO2 (%)',          loinc: LOINC_VITALS.SPO2,             unit: '%'    },
+  { key: 'respiratoryRate', label: 'Resp. Rate (/min)', loinc: LOINC_VITALS.RESPIRATORY_RATE, unit: '/min' },
+  { key: 'weight',          label: 'Weight (kg)',       loinc: LOINC_VITALS.BODY_WEIGHT,      unit: 'kg'   },
+  { key: 'height',          label: 'Height (cm)',       loinc: LOINC_VITALS.BODY_HEIGHT,      unit: 'cm'   },
 ];
 
 const URGENCY_OPTIONS: { value: TriageUrgency; label: string; emoji: string; description: string; border: string; bg: string }[] = [
@@ -96,7 +97,7 @@ export function TriageForm({ patientId, encounterId, onComplete }: TriageFormPro
           {
             coding: [
               {
-                system: 'http://terminology.hl7.org/CodeSystem/observation-category',
+                system: FHIR_SYSTEMS.OBSERVATION_CAT,
                 code: 'vital-signs',
               },
             ],
@@ -105,7 +106,7 @@ export function TriageForm({ patientId, encounterId, onComplete }: TriageFormPro
         code: {
           coding: [
             {
-              system: 'http://loinc.org',
+              system: FHIR_SYSTEMS.LOINC,
               code: vital.loinc,
             },
           ],

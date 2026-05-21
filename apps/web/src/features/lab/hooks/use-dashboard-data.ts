@@ -16,7 +16,7 @@ export function useLabDashboardData() {
   const medplum = useMedplum();
 
   return useQuery({
-    queryKey: ['dashboard-lab'],
+    queryKey: ['lab'],
     queryFn: async () => {
       const [orders, observations] = await Promise.all([
         medplum.searchResources('ServiceRequest', {
@@ -63,7 +63,7 @@ export function usePendingLabOrders() {
   const medplum = useMedplum();
 
   return useQuery<ServiceRequest[]>({
-    queryKey: ['lab-dashboard', 'pending-orders'],
+    queryKey: ['lab', 'pending-orders'],
     queryFn: () =>
       medplum.searchResources('ServiceRequest', {
         category: '108252007',

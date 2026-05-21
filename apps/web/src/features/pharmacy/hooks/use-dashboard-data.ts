@@ -19,7 +19,7 @@ export function usePharmacistDashboardData() {
   const medplum = useMedplum();
 
   return useQuery({
-    queryKey: ['dashboard-pharmacist', 'prescriptions'],
+    queryKey: ['pharmacy', 'prescriptions'],
     queryFn: async () => {
       const [active, dispensed] = await Promise.all([
         medplum.searchResources('MedicationRequest', { status: 'active', _sort: '-authored', _count: '20' }),

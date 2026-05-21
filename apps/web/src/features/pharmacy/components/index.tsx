@@ -145,7 +145,7 @@ export function PharmacistDashboard() {
 
   function handleDispensed() {
     refetch();
-    queryClient.invalidateQueries({ queryKey: ['dashboard-pharmacist'] });
+    queryClient.invalidateQueries({ queryKey: ['pharmacy'] });
   }
 
   return (

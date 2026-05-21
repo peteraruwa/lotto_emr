@@ -21,13 +21,8 @@ import { NotePreviewModal } from './note-preview-modal';
 import { format } from 'date-fns';
 import { getNoteTypeDef } from '../data/note-type-definitions';
 import type { NoteField } from '../data/note-type-definitions';
+import { LOINC_VITALS, FHIR_SYSTEMS } from '@/shared/constants/loinc';
 
-// ── LOINC vital codes ─────────────────────────────────────────────────────────
-const VITAL_LOINC = {
-  BP_PANEL: '55284-4', SYSTOLIC: '8480-6', DIASTOLIC: '8462-4',
-  HR: '8867-4', TEMP: '8310-5', SPO2: '59408-5',
-  WEIGHT: '29463-7', HEIGHT: '8302-2', RR: '9279-1',
-} as const;
 
 // Fields to check for diagnosis / complaint content
 const DIAGNOSIS_KEYS = ['diagnosis', 'assessment', 'finalDiagnosis', 'admissionDiagnosis', 'currentDiagnosis'];
@@ -37,18 +32,18 @@ const COMPLAINT_KEYS = ['chiefComplaint', 'presentingComplaint', 'reasonForRefer
 function parseVitalsFromObservations(observations: Observation[]): VitalsSnapshot {
   const snap: VitalsSnapshot = {};
   for (const obs of observations) {
-    const code = obs.code?.coding?.find((c) => c.system === 'http://loinc.org')?.code;
-    if (code === VITAL_LOINC.BP_PANEL) {
-      const sys = obs.component?.find((c) => c.code?.coding?.some((x) => x.code === VITAL_LOINC.SYSTOLIC));
-      const dia = obs.component?.find((c) => c.code?.coding?.some((x) => x.code === VITAL_LOINC.DIASTOLIC));
+    const code = obs.code?.coding?.find((c) => c.system === FHIR_SYSTEMS.LOINC)?.code;
+    if (code === LOINC_VITALS.BP_PANEL) {
+      const sys = obs.component?.find((c) => c.code?.coding?.some((x) => x.code === LOINC_VITALS.SYSTOLIC));
+      const dia = obs.component?.find((c) => c.code?.coding?.some((x) => x.code === LOINC_VITALS.DIASTOLIC));
       if (sys?.valueQuantity?.value != null && dia?.valueQuantity?.value != null)
         snap.bp = `${sys.valueQuantity.value}/${dia.valueQuantity.value} mmHg`;
-    } else if (code === VITAL_LOINC.HR && !snap.hr) snap.hr = `${obs.valueQuantity?.value} /min`;
-    else if (code === VITAL_LOINC.TEMP && !snap.temp) snap.temp = `${obs.valueQuantity?.value} °C`;
-    else if (code === VITAL_LOINC.SPO2 && !snap.spo2) snap.spo2 = `${obs.valueQuantity?.value} %`;
-    else if (code === VITAL_LOINC.WEIGHT && !snap.weight) snap.weight = `${obs.valueQuantity?.value} kg`;
-    else if (code === VITAL_LOINC.HEIGHT && !snap.height) snap.height = `${obs.valueQuantity?.value} cm`;
-    else if (code === VITAL_LOINC.RR && !snap.rr) snap.rr = `${obs.valueQuantity?.value} /min`;
+    } else if (code === LOINC_VITALS.HEART_RATE && !snap.hr) snap.hr = `${obs.valueQuantity?.value} /min`;
+    else if (code === LOINC_VITALS.TEMPERATURE && !snap.temp) snap.temp = `${obs.valueQuantity?.value} °C`;
+    else if (code === LOINC_VITALS.SPO2 && !snap.spo2) snap.spo2 = `${obs.valueQuantity?.value} %`;
+    else if (code === LOINC_VITALS.BODY_WEIGHT && !snap.weight) snap.weight = `${obs.valueQuantity?.value} kg`;
+    else if (code === LOINC_VITALS.BODY_HEIGHT && !snap.height) snap.height = `${obs.valueQuantity?.value} cm`;
+    else if (code === LOINC_VITALS.RESPIRATORY_RATE && !snap.rr) snap.rr = `${obs.valueQuantity?.value} /min`;
   }
   return snap;
 }
@@ -277,8 +272,8 @@ export function StructuredNoteEditor({
         const enc = await medplum.createResource({
           resourceType: 'Encounter',
           status: 'finished',
-          class: { system: 'http://terminology.hl7.org/CodeSystem/v3-ActCode', code: 'AMB', display: 'ambulatory' },
-          type: [{ coding: [{ system: 'http://snomed.info/sct', code: '11429006', display: 'Consultation' }], text: noteTypeDef.label }],
+          class: { system: FHIR_SYSTEMS.ACT_CODE, code: 'AMB', display: 'ambulatory' },
+          type: [{ coding: [{ system: FHIR_SYSTEMS.SNOMED, code: '11429006', display: 'Consultation' }], text: noteTypeDef.label }],
           subject: { reference: `Patient/${patientId}` },
           period: { start: now, end: now },
           ...(diagnosisValue ? { reasonCode: [{ text: diagnosisValue }] } : {}),
@@ -292,12 +287,12 @@ export function StructuredNoteEditor({
       status: 'current',
       docStatus: docStatus === 'final' ? 'final' : 'preliminary',
       type: {
-        coding: [{ system: 'http://loinc.org', code: noteTypeDef.loinc, display: noteTypeDef.loincDisplay }],
+        coding: [{ system: FHIR_SYSTEMS.LOINC, code: noteTypeDef.loinc, display: noteTypeDef.loincDisplay }],
         text: noteTypeDef.loincText,
       },
       category: [{
         coding: [{
-          system: 'http://hl7.org/fhir/us/core/CodeSystem/us-core-documentreference-category',
+          system: FHIR_SYSTEMS.DOC_CAT,
           code: 'clinical-note',
           display: 'Clinical Note',
         }],

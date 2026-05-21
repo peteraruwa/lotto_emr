@@ -6,6 +6,7 @@ import { useMedplum } from '@medplum/react';
 import type { Encounter, DocumentReference } from '@medplum/fhirtypes';
 import { Button, Card, CardContent, CardHeader, CardTitle, Label } from '@lotto-emr/ui';
 import type { DispositionType, DispositionData } from '../types';
+import { LOINC_NOTE_TYPES, FHIR_SYSTEMS } from '@/shared/constants/loinc';
 
 interface DispositionFormProps {
   patientId: string;
@@ -113,8 +114,8 @@ export function DispositionForm({ patientId, encounterId, onComplete }: Disposit
         type: {
           coding: [
             {
-              system: 'http://loinc.org',
-              code: '18842-5',
+              system: FHIR_SYSTEMS.LOINC,
+              code: LOINC_NOTE_TYPES.DISCHARGE_SUMMARY,
               display: 'Discharge summary',
             },
           ],
@@ -124,7 +125,7 @@ export function DispositionForm({ patientId, encounterId, onComplete }: Disposit
           {
             coding: [
               {
-                system: 'http://hl7.org/fhir/us/core/CodeSystem/us-core-documentreference-category',
+                system: FHIR_SYSTEMS.DOC_CAT,
                 code: 'clinical-note',
               },
             ],

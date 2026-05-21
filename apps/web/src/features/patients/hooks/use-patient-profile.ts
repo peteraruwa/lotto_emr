@@ -5,6 +5,7 @@ import { useMedplum } from '@medplum/react';
 import type { Patient, Observation, Encounter, AllergyIntolerance, Condition, Coverage, MedicationRequest } from '@medplum/fhirtypes';
 import { formatPatientName, formatPatientMRN, getPatientAge, getActiveEncounter } from '@lotto-emr/core';
 import { format, parseISO, isValid, isToday } from 'date-fns';
+import { LOINC_VITALS, FHIR_SYSTEMS } from '@/shared/constants/loinc';
 
 // ── Extension URLs ──────────────────────────────────────────────────────────────
 const EXT_BLOOD_GROUP = 'https://lotto-hospital.local/fhir/StructureDefinition/blood-group';
@@ -12,17 +13,6 @@ const EXT_GENOTYPE = 'https://lotto-hospital.local/fhir/StructureDefinition/geno
 const EXT_TRIBE = 'https://lotto-hospital.local/fhir/StructureDefinition/tribe';
 const EXT_RELIGION = 'https://lotto-hospital.local/fhir/StructureDefinition/religion';
 
-// ── LOINC vital sign codes ──────────────────────────────────────────────────────
-const VITAL_LOINC = {
-  BP_PANEL: '55284-4',
-  SYSTOLIC: '8480-6',
-  DIASTOLIC: '8462-4',
-  HR: '8867-4',
-  TEMP: '8310-5',
-  SPO2: '59408-5',
-  WEIGHT: '29463-7',
-  HEIGHT: '8302-2',
-} as const;
 
 // ── Helper to extract extension value ──────────────────────────────────────────
 function getExtension(patient: Patient, url: string): string | undefined {
@@ -130,28 +120,28 @@ function buildVitalRows(observations: Observation[]): VitalRow[] {
     let height: string | undefined;
 
     for (const obs of dayObs) {
-      const loincCode = obs.code?.coding?.find((c) => c.system === 'http://loinc.org')?.code;
+      const loincCode = obs.code?.coding?.find((c) => c.system === FHIR_SYSTEMS.LOINC)?.code;
 
-      if (loincCode === VITAL_LOINC.BP_PANEL) {
+      if (loincCode === LOINC_VITALS.BP_PANEL) {
         // Blood pressure panel with components
         const systolicComp = obs.component?.find((comp) =>
-          comp.code?.coding?.some((c) => c.code === VITAL_LOINC.SYSTOLIC)
+          comp.code?.coding?.some((c) => c.code === LOINC_VITALS.SYSTOLIC)
         );
         const diastolicComp = obs.component?.find((comp) =>
-          comp.code?.coding?.some((c) => c.code === VITAL_LOINC.DIASTOLIC)
+          comp.code?.coding?.some((c) => c.code === LOINC_VITALS.DIASTOLIC)
         );
         if (systolicComp?.valueQuantity?.value !== undefined && diastolicComp?.valueQuantity?.value !== undefined) {
           bp = `${systolicComp.valueQuantity.value}/${diastolicComp.valueQuantity.value} mmHg`;
         }
-      } else if (loincCode === VITAL_LOINC.HR) {
+      } else if (loincCode === LOINC_VITALS.HEART_RATE) {
         hr = formatVitalValue(obs, '/min');
-      } else if (loincCode === VITAL_LOINC.TEMP) {
+      } else if (loincCode === LOINC_VITALS.TEMPERATURE) {
         temp = formatVitalValue(obs, '°C');
-      } else if (loincCode === VITAL_LOINC.SPO2) {
+      } else if (loincCode === LOINC_VITALS.SPO2) {
         spo2 = formatVitalValue(obs, '%');
-      } else if (loincCode === VITAL_LOINC.WEIGHT) {
+      } else if (loincCode === LOINC_VITALS.BODY_WEIGHT) {
         weight = formatVitalValue(obs, 'kg');
-      } else if (loincCode === VITAL_LOINC.HEIGHT) {
+      } else if (loincCode === LOINC_VITALS.BODY_HEIGHT) {
         height = formatVitalValue(obs, 'cm');
       }
     }

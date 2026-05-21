@@ -4,16 +4,17 @@ import { useQuery } from '@tanstack/react-query';
 import { useMedplum } from '@medplum/react';
 import { NoteType } from '../types';
 import type { NoteListItem } from '../types';
+import { LOINC_NOTE_TYPES, FHIR_SYSTEMS } from '@/shared/constants/loinc';
 
 const NOTE_TYPE_MAP: Record<string, NoteType> = {
-  '11488-4': NoteType.SOAP,      // Consultation note
-  '11506-3': NoteType.PROGRESS,  // Progress note / SOAP follow-up
-  '18842-5': NoteType.DISCHARGE, // Discharge summary
-  '28570-0': NoteType.PROGRESS,  // Procedure note
-  '34117-2': NoteType.SOAP,      // History and physical (Admission)
-  '34137-0': NoteType.SOAP,      // SOAP note
-  '34878-9': NoteType.PROGRESS,  // Emergency medicine note
-  '57133-1': NoteType.REFERRAL,  // Referral note
+  [LOINC_NOTE_TYPES.CONSULTATION]:      NoteType.SOAP,      // Consultation note
+  [LOINC_NOTE_TYPES.PROGRESS_NOTE]:     NoteType.PROGRESS,  // Progress note / SOAP follow-up
+  [LOINC_NOTE_TYPES.DISCHARGE_SUMMARY]: NoteType.DISCHARGE, // Discharge summary
+  [LOINC_NOTE_TYPES.PROCEDURE_NOTE]:    NoteType.PROGRESS,  // Procedure note
+  [LOINC_NOTE_TYPES.ADMISSION_HP]:      NoteType.SOAP,      // History and physical (Admission)
+  [LOINC_NOTE_TYPES.SOAP_NOTE]:         NoteType.SOAP,      // SOAP note
+  [LOINC_NOTE_TYPES.ED_NOTE]:           NoteType.PROGRESS,  // Emergency medicine note
+  [LOINC_NOTE_TYPES.REFERRAL_NOTE]:     NoteType.REFERRAL,  // Referral note
 };
 
 interface StructuredContent {
@@ -38,7 +39,7 @@ export function useNotes(patientId: string | undefined) {
       });
 
       return docs.map((doc: any): NoteListItem => {
-        const loincCode = doc.type?.coding?.find((c: any) => c.system === 'http://loinc.org')?.code;
+        const loincCode = doc.type?.coding?.find((c: any) => c.system === FHIR_SYSTEMS.LOINC)?.code;
         const noteType = loincCode ? (NOTE_TYPE_MAP[loincCode] ?? NoteType.PROGRESS) : NoteType.PROGRESS;
 
         let structured: StructuredContent = {};
