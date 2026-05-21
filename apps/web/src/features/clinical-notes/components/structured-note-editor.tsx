@@ -550,14 +550,14 @@ export function StructuredNoteEditor({
             <Button type="button" variant="outline" size="sm" asChild className="gap-1.5">
               <Link href={`/schedule?patient=${patientId}`}>
                 <CalendarPlus className="h-4 w-4" />
-                <span className="hidden sm:inline">Book Appt</span>
+                Book Appt
               </Link>
             </Button>
           </Tooltip>
           <Tooltip label="Admit this patient to a ward bed">
             <Button type="button" size="sm" onClick={() => setAdmitModalOpen(true)} className="bg-teal-600 hover:bg-teal-700 text-white gap-1.5">
               <BedDouble className="h-4 w-4" />
-              <span className="hidden sm:inline">Admit</span>
+              Admit Patient
             </Button>
           </Tooltip>
         </div>
@@ -615,19 +615,19 @@ export function StructuredNoteEditor({
           <Tooltip label="Preview essay form before signing">
             <Button type="button" variant="outline" size="sm" onClick={() => { setPreviewValues(getValues()); setShowPreview(true); }} className="gap-1.5 h-8">
               <Eye className="h-3.5 w-3.5" />
-              <span className="hidden sm:inline">Preview</span>
+              Preview
             </Button>
           </Tooltip>
           <Tooltip label="Save this note as a draft (unsigned)">
             <Button type="button" variant="outline" size="sm" onClick={() => saveNote('draft')} disabled={isSaving} className="gap-1.5 h-8">
               {isSaving ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Save className="h-3.5 w-3.5" />}
-              <span className="hidden sm:inline">Save Draft</span>
+              Save Draft
             </Button>
           </Tooltip>
           <Tooltip label="Sign and finalise this clinical note">
             <Button type="button" size="sm" onClick={() => saveNote('final')} disabled={isSaving} className="bg-teal-600 hover:bg-teal-700 text-white gap-1.5 h-8">
               {isSaving ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <CheckCircle2 className="h-3.5 w-3.5" />}
-              <span className="hidden sm:inline">Sign & Save</span>
+              Sign & Save
             </Button>
           </Tooltip>
         </div>

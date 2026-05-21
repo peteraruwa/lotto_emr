@@ -2,12 +2,13 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, AlertTriangle, Plus, Eye, FileText } from 'lucide-react';
+import { ArrowLeft, AlertTriangle, Plus, Eye, FileText, PenLine } from 'lucide-react';
 import { Badge, Button, Card, CardContent, CardHeader, CardTitle } from '@lotto-emr/ui';
 import { capitalize, formatDate, formatDateTime } from '@/shared/lib/utils';
 import { usePatientProfile } from '../hooks/use-patient-profile';
 import type { VitalRow } from '../hooks/use-patient-profile';
 import { useNotes } from '@/features/clinical-notes';
+import type { NoteListItem } from '@/features/clinical-notes/types';
 import { NoteTypeSelectorModal } from '@/features/clinical-notes/components/note-type-selector-modal';
 
 interface PatientProfileProps {
@@ -87,8 +88,17 @@ function VitalTableRow({ row }: { row: VitalRow }) {
 // ── Main component ─────────────────────────────────────────────────────────────
 export function PatientProfile({ patientId }: PatientProfileProps) {
   const { profileData, isLoading, error } = usePatientProfile(patientId);
-  const { data: notes = [], isLoading: notesLoading } = useNotes(patientId);
+  const { data: notes = [] } = useNotes(patientId);
   const [noteTypeModalOpen, setNoteTypeModalOpen] = useState(false);
+
+  // Build encounter → note lookup map
+  const noteByEncounterId = React.useMemo(() => {
+    const map = new Map<string, NoteListItem>();
+    for (const note of notes) {
+      if (note.encounterId) map.set(note.encounterId, note);
+    }
+    return map;
+  }, [notes]);
 
   if (isLoading) {
     return (
@@ -268,7 +278,7 @@ export function PatientProfile({ patientId }: PatientProfileProps) {
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
                   <tr>
-                    {['Date', 'Visit Type', 'Diagnosis', 'Status'].map((h) => (
+                    {['Date', 'Visit Type', 'Diagnosis', 'Status', 'Note'].map((h) => (
                       <th
                         key={h}
                         className="px-4 py-2 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider"
@@ -279,86 +289,55 @@ export function PatientProfile({ patientId }: PatientProfileProps) {
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-100">
-                  {encounters.map((enc) => (
-                    <tr key={enc.id} className="hover:bg-gray-50">
-                      <td className="px-4 py-3 text-sm text-gray-900 whitespace-nowrap">
-                        {enc.date ? formatDateTime(enc.date) : '—'}
-                      </td>
-                      <td className="px-4 py-3 text-sm text-gray-700">{enc.visitType}</td>
-                      <td className="px-4 py-3 text-sm text-gray-700">{enc.diagnosis}</td>
-                      <td className="px-4 py-3">
-                        <Badge
-                          variant={STATUS_VARIANT[enc.status] ?? 'default'}
-                          className="capitalize text-xs"
-                        >
-                          {enc.status}
-                        </Badge>
-                      </td>
-                    </tr>
-                  ))}
+                  {encounters.map((enc) => {
+                    const linkedNote = noteByEncounterId.get(enc.id);
+                    return (
+                      <tr key={enc.id} className="hover:bg-gray-50">
+                        <td className="px-4 py-3 text-sm text-gray-900 whitespace-nowrap">
+                          {enc.date ? formatDateTime(enc.date) : '—'}
+                        </td>
+                        <td className="px-4 py-3 text-sm text-gray-700">{enc.visitType}</td>
+                        <td className="px-4 py-3 text-sm text-gray-700">{enc.diagnosis}</td>
+                        <td className="px-4 py-3">
+                          <Badge
+                            variant={STATUS_VARIANT[enc.status] ?? 'default'}
+                            className="capitalize text-xs"
+                          >
+                            {enc.status}
+                          </Badge>
+                        </td>
+                        <td className="px-4 py-3">
+                          {linkedNote ? (
+                            <div className="flex flex-col gap-1">
+                              <div className="flex items-center gap-1.5">
+                                <FileText className="h-3.5 w-3.5 text-teal-500 shrink-0" />
+                                <span className="text-xs text-gray-600 truncate max-w-[140px]">{linkedNote.title}</span>
+                                <Badge
+                                  variant={linkedNote.docStatus === 'final' ? 'completed' : 'pending'}
+                                  className="text-[10px] shrink-0"
+                                >
+                                  {linkedNote.docStatus === 'final' ? 'Signed' : 'Draft'}
+                                </Badge>
+                              </div>
+                              <Button asChild variant="ghost" size="sm" className="h-6 text-xs px-2 w-fit gap-1">
+                                <Link href={`/patients/${patientId}/notes`}>
+                                  <Eye className="h-3 w-3" />
+                                  View Note
+                                </Link>
+                              </Button>
+                            </div>
+                          ) : (
+                            <Button variant="ghost" size="sm" className="h-6 text-xs px-2 gap-1 text-gray-400 hover:text-teal-600" onClick={() => setNoteTypeModalOpen(true)}>
+                              <PenLine className="h-3 w-3" />
+                              Write
+                            </Button>
+                          )}
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
-            </div>
-          )}
-        </CardContent>
-      </Card>
-
-      {/* ── Section 4: Clinical Notes ── */}
-      <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <CardTitle className="text-base flex items-center gap-2">
-              <FileText className="h-4 w-4 text-teal-600" />
-              Clinical Notes
-            </CardTitle>
-            <Button size="sm" variant="outline" onClick={() => setNoteTypeModalOpen(true)}>
-              <Plus className="h-4 w-4 mr-1" />
-              New Note
-            </Button>
-          </div>
-        </CardHeader>
-        <CardContent>
-          {notesLoading ? (
-            <p className="text-sm text-muted-foreground py-4 text-center">Loading notes…</p>
-          ) : notes.length === 0 ? (
-            <p className="text-sm text-muted-foreground py-4 text-center">No clinical notes yet.</p>
-          ) : (
-            <div className="space-y-2">
-              {notes.map((note) => (
-                <div
-                  key={note.id}
-                  className="flex items-start justify-between gap-3 border rounded-lg px-4 py-3 hover:bg-gray-50 transition-colors"
-                >
-                  <div className="flex items-start gap-3 min-w-0">
-                    <FileText className="h-4 w-4 text-teal-500 mt-0.5 shrink-0" />
-                    <div className="min-w-0">
-                      <div className="flex flex-wrap items-center gap-1.5 mb-0.5">
-                        <span className="text-sm font-medium text-gray-900 truncate">
-                          {note.title}
-                        </span>
-                        <Badge
-                          variant={note.docStatus === 'final' ? 'completed' : 'pending'}
-                          className="text-[10px] shrink-0"
-                        >
-                          {note.docStatus === 'final' ? 'Signed' : 'Draft'}
-                        </Badge>
-                      </div>
-                      {note.contentPreview && (
-                        <p className="text-xs text-gray-500 line-clamp-2">{note.contentPreview}</p>
-                      )}
-                      <p className="text-xs text-muted-foreground mt-0.5">
-                        {note.authorName} · {note.date ? formatDateTime(note.date) : '—'}
-                      </p>
-                    </div>
-                  </div>
-                  <Button asChild variant="ghost" size="sm" className="h-7 text-xs shrink-0">
-                    <Link href={`/patients/${patientId}/notes`}>
-                      <Eye className="h-3.5 w-3.5 mr-1" />
-                      View
-                    </Link>
-                  </Button>
-                </div>
-              ))}
             </div>
           )}
         </CardContent>
