@@ -22,6 +22,15 @@ import { AdmitPatientModal } from '@/features/ward';
 import { NotePreviewModal } from './note-preview-modal';
 import { format } from 'date-fns';
 
+// ── Note type → LOINC mapping ──────────────────────────────────────────────────
+const NOTE_TYPE_CONFIG: Record<string, { loinc: string; display: string; text: string; label: string }> = {
+  consultation_note: { loinc: '11488-4', display: 'Consultation Note', text: 'Consultation Note', label: 'Consultation Note' },
+  soap_followup:     { loinc: '11506-3', display: 'Progress Note',      text: 'Follow-up SOAP Note', label: 'Follow-up SOAP Note' },
+  procedure_note:    { loinc: '28570-0', display: 'Procedure Note',     text: 'Procedure Note',      label: 'Procedure Note' },
+  referral_note:     { loinc: '57133-1', display: 'Referral Note',      text: 'Referral Note',        label: 'Referral Note' },
+};
+const DEFAULT_NOTE_TYPE_CONFIG = { loinc: '11506-3', display: 'Progress Note', text: 'Clinical Note', label: 'Clinical Note' };
+
 // ── LOINC codes ────────────────────────────────────────────────────────────────
 const VITAL_LOINC = {
   BP_PANEL: '55284-4', SYSTOLIC: '8480-6', DIASTOLIC: '8462-4',
@@ -50,6 +59,7 @@ interface StructuredNoteEditorProps {
   patientAge?: number;
   conditions?: string[];
   medications?: string[];
+  noteType?: string;
 }
 
 // ── Section card ───────────────────────────────────────────────────────────────
@@ -132,7 +142,7 @@ function parseVitalsFromObservations(observations: Observation[]): VitalsSnapsho
 }
 
 // ── Main component ─────────────────────────────────────────────────────────────
-export function StructuredNoteEditor({ patientId, patientGender, patientAge, conditions, medications }: StructuredNoteEditorProps) {
+export function StructuredNoteEditor({ patientId, patientGender, patientAge, conditions, medications, noteType }: StructuredNoteEditorProps) {
   const router = useRouter();
   const medplum = useMedplum();
 
@@ -253,11 +263,13 @@ export function StructuredNoteEditor({ patientId, patientGender, patientAge, con
       } catch { /* non-critical */ }
     }
 
+    const ntCfg = noteType ? (NOTE_TYPE_CONFIG[noteType] ?? DEFAULT_NOTE_TYPE_CONFIG) : DEFAULT_NOTE_TYPE_CONFIG;
+
     const docPayload: DocumentReference = {
       resourceType: 'DocumentReference',
       status: 'current',
       docStatus: docStatus === 'final' ? 'final' : 'preliminary',
-      type: { coding: [{ system: 'http://loinc.org', code: '11506-3', display: 'Progress Note' }], text: 'Structured Clinical Note' },
+      type: { coding: [{ system: 'http://loinc.org', code: ntCfg.loinc, display: ntCfg.display }], text: ntCfg.text },
       category: [{ coding: [{ system: 'http://hl7.org/fhir/us/core/CodeSystem/us-core-documentreference-category', code: 'clinical-note', display: 'Clinical Note' }] }],
       subject: { reference: `Patient/${patientId}` },
       date: now,
@@ -274,7 +286,7 @@ export function StructuredNoteEditor({ patientId, patientGender, patientAge, con
       const created = await medplum.createResource(docPayload);
       savedDocIdRef.current = (created as any).id as string | undefined;
     }
-  }, [medplum, patientId]);
+  }, [medplum, patientId, noteType]);
 
   // ── Keep persistNote ref current (so interval sees latest closure) ─────────
   const persistNoteRef = useRef(persistNote);
@@ -373,7 +385,9 @@ export function StructuredNoteEditor({ patientId, patientGender, patientAge, con
       {/* ── Header ── */}
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <h1 className="text-xl font-bold text-gray-900 truncate">New Clinical Note</h1>
+          <h1 className="text-xl font-bold text-gray-900 truncate">
+            {noteType ? (NOTE_TYPE_CONFIG[noteType]?.label ?? 'Clinical Note') : 'Clinical Note'}
+          </h1>
           <p className="text-xs text-muted-foreground mt-0.5">Review all AI-generated content before signing.</p>
         </div>
         <div className="flex items-center gap-2 shrink-0">

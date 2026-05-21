@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, AlertTriangle, Plus, Eye, FileText } from 'lucide-react';
 import { Badge, Button, Card, CardContent, CardHeader, CardTitle } from '@lotto-emr/ui';
@@ -8,6 +8,7 @@ import { capitalize, formatDate, formatDateTime } from '@/shared/lib/utils';
 import { usePatientProfile } from '../hooks/use-patient-profile';
 import type { VitalRow } from '../hooks/use-patient-profile';
 import { useNotes } from '@/features/clinical-notes';
+import { NoteTypeSelectorModal } from '@/features/clinical-notes/components/note-type-selector-modal';
 
 interface PatientProfileProps {
   patientId: string;
@@ -87,6 +88,7 @@ function VitalTableRow({ row }: { row: VitalRow }) {
 export function PatientProfile({ patientId }: PatientProfileProps) {
   const { profileData, isLoading, error } = usePatientProfile(patientId);
   const { data: notes = [], isLoading: notesLoading } = useNotes(patientId);
+  const [noteTypeModalOpen, setNoteTypeModalOpen] = useState(false);
 
   if (isLoading) {
     return (
@@ -250,11 +252,9 @@ export function PatientProfile({ patientId }: PatientProfileProps) {
         <CardHeader>
           <div className="flex items-center justify-between">
             <CardTitle className="text-base">Previous Encounters</CardTitle>
-            <Button asChild size="sm" className="bg-teal-600 hover:bg-teal-700 text-white">
-              <Link href={`/patients/${patientId}/clinical-note/new`}>
-                <Plus className="h-4 w-4 mr-1" />
-                New Clinical Note
-              </Link>
+            <Button size="sm" className="bg-teal-600 hover:bg-teal-700 text-white" onClick={() => setNoteTypeModalOpen(true)}>
+              <Plus className="h-4 w-4 mr-1" />
+              New Clinical Note
             </Button>
           </div>
         </CardHeader>
@@ -311,11 +311,9 @@ export function PatientProfile({ patientId }: PatientProfileProps) {
               <FileText className="h-4 w-4 text-teal-600" />
               Clinical Notes
             </CardTitle>
-            <Button asChild size="sm" variant="outline">
-              <Link href={`/patients/${patientId}/clinical-note/new`}>
-                <Plus className="h-4 w-4 mr-1" />
-                New Note
-              </Link>
+            <Button size="sm" variant="outline" onClick={() => setNoteTypeModalOpen(true)}>
+              <Plus className="h-4 w-4 mr-1" />
+              New Note
             </Button>
           </div>
         </CardHeader>
@@ -365,6 +363,12 @@ export function PatientProfile({ patientId }: PatientProfileProps) {
           )}
         </CardContent>
       </Card>
+
+      <NoteTypeSelectorModal
+        isOpen={noteTypeModalOpen}
+        onClose={() => setNoteTypeModalOpen(false)}
+        patientId={patientId}
+      />
     </div>
   );
 }

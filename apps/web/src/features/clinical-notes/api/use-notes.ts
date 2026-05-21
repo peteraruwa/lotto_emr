@@ -6,10 +6,12 @@ import { NoteType } from '../types';
 import type { NoteListItem } from '../types';
 
 const NOTE_TYPE_MAP: Record<string, NoteType> = {
-  '11506-3': NoteType.PROGRESS,
-  '18842-5': NoteType.DISCHARGE,
-  '57133-1': NoteType.REFERRAL,
-  '34137-0': NoteType.SOAP,
+  '11488-4': NoteType.SOAP,      // Consultation note → treat as SOAP/structured
+  '11506-3': NoteType.PROGRESS,  // Progress note
+  '18842-5': NoteType.DISCHARGE, // Discharge summary
+  '28570-0': NoteType.PROGRESS,  // Procedure note
+  '34137-0': NoteType.SOAP,      // SOAP note
+  '57133-1': NoteType.REFERRAL,  // Referral note
 };
 
 interface StructuredContent {
