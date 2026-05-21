@@ -26,8 +26,11 @@ export const ROLE_CONFIG: Record<Role, RoleConfig> = {
       { label: 'Dashboard',    href: '/',          icon: 'LayoutDashboard' },
       { label: 'Patients',     href: '/patients',  icon: 'Users' },
       { label: 'Appointments', href: '/schedule',  icon: 'Calendar' },
+      { label: 'Ward',         href: '/ward',      icon: 'BedDouble' },
       { label: 'Orders',       href: '/orders',    icon: 'ClipboardList' },
       { label: 'Results',      href: '/results',   icon: 'FlaskConical' },
+      { label: 'Billing',      href: '/billing',   icon: 'DollarSign' },
+      { label: 'Analytics',    href: '/analytics', icon: 'BarChart2' },
     ],
     allowedActions: [
       'patient:read',
@@ -45,10 +48,12 @@ export const ROLE_CONFIG: Record<Role, RoleConfig> = {
   [ROLES.NURSE]: {
     homeRoute: '/',
     navItems: [
-      { label: 'Dashboard', href: '/', icon: 'LayoutDashboard' },
-      { label: 'Patients', href: '/patients', icon: 'Users' },
-      { label: 'Schedule', href: '/schedule', icon: 'Calendar' },
-      { label: 'Vitals', href: '/results', icon: 'Activity' },
+      { label: 'Dashboard',    href: '/',        icon: 'LayoutDashboard' },
+      { label: 'Triage Queue', href: '/triage',  icon: 'Activity' },
+      { label: 'Patients',     href: '/patients', icon: 'Users' },
+      { label: 'Schedule',     href: '/schedule', icon: 'Calendar' },
+      { label: 'Ward',         href: '/ward',     icon: 'BedDouble' },
+      { label: 'Vitals',       href: '/results',  icon: 'Activity' },
     ],
     allowedActions: [
       'patient:read',
@@ -108,23 +113,67 @@ export const ROLE_CONFIG: Record<Role, RoleConfig> = {
   [ROLES.ADMIN]: {
     homeRoute: '/',
     navItems: [
-      { label: 'Dashboard', href: '/', icon: 'LayoutDashboard' },
-      { label: 'Patients',  href: '/patients',  icon: 'Users' },
-      { label: 'Schedule',  href: '/schedule',  icon: 'Calendar' },
+      { label: 'Dashboard', href: '/',         icon: 'LayoutDashboard' },
+      { label: 'Patients',  href: '/patients', icon: 'Users' },
+      { label: 'Schedule',  href: '/schedule', icon: 'Calendar' },
+      { label: 'Ward',      href: '/ward',     icon: 'BedDouble' },
     ],
     allowedActions: [
       'patient:create', 'patient:update',
-      'appointment:write', 'schedule:manage', 'billing:write',
+      'appointment:write', 'schedule:manage',
+    ],
+  },
+
+  [ROLES.HR]: {
+    homeRoute: '/',
+    navItems: [
+      { label: 'Dashboard', href: '/',    icon: 'LayoutDashboard' },
+      { label: 'Employees', href: '/hr',  icon: 'UsersRound' },
+      { label: 'Schedule',  href: '/schedule', icon: 'Calendar' },
+    ],
+    allowedActions: [
+      'employee:create', 'employee:read', 'employee:update',
+      'practitioner:write',
+    ],
+  },
+
+  [ROLES.RECORDS]: {
+    homeRoute: '/',
+    navItems: [
+      { label: 'Dashboard', href: '/',         icon: 'LayoutDashboard' },
+      { label: 'Patients',  href: '/patients', icon: 'Users' },
+      { label: 'Records',   href: '/patients', icon: 'FolderOpen' },
+    ],
+    allowedActions: [
+      'patient:read', 'patient:update',
+      'document:read', 'document:write',
+      'encounter:read',
+    ],
+  },
+
+  [ROLES.BILLING]: {
+    homeRoute: '/',
+    navItems: [
+      { label: 'Dashboard', href: '/',        icon: 'LayoutDashboard' },
+      { label: 'Billing',   href: '/billing', icon: 'DollarSign' },
+      { label: 'Patients',  href: '/patients', icon: 'Users' },
+    ],
+    allowedActions: [
+      'patient:read',
+      'billing:read', 'billing:write',
+      'claim:write', 'coverage:write',
     ],
   },
 
   [ROLES.SUPERADMIN]: {
     homeRoute: '/',
     navItems: [
-      { label: 'Dashboard',  href: '/',          icon: 'LayoutDashboard' },
-      { label: 'Employees',  href: '/hr',         icon: 'UsersRound' },
-      { label: 'Patients',   href: '/patients',   icon: 'Users' },
-      { label: 'Schedule',   href: '/schedule',   icon: 'Calendar' },
+      { label: 'Dashboard',  href: '/',            icon: 'LayoutDashboard' },
+      { label: 'Employees',  href: '/hr',           icon: 'UsersRound' },
+      { label: 'Patients',   href: '/patients',     icon: 'Users' },
+      { label: 'Schedule',   href: '/schedule',     icon: 'Calendar' },
+      { label: 'Ward',       href: '/ward',         icon: 'BedDouble' },
+      { label: 'Analytics',  href: '/analytics',    icon: 'BarChart2' },
     ],
     allowedActions: [
       'employee:create', 'employee:read', 'employee:update',
