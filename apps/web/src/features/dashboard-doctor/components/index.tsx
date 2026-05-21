@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react'; // useState kept for TopBar search
+import React, { useState } from 'react';
 import Link from 'next/link';
 import { format } from 'date-fns';
 import {
@@ -9,9 +9,10 @@ import {
 } from 'lucide-react';
 import { Card, CardContent, Button, Input } from '@lotto-emr/ui';
 import { useMedplum } from '@medplum/react';
-import { useDoctorDashboardData } from '../hooks/use-dashboard-data';
+import { useDoctorDashboardData, type AppointmentRow } from '../hooks/use-dashboard-data';
 import { PatientQueue } from './patient-queue';
 import { RightPanel } from './right-panel';
+import { ConsultationView } from './consultation-view';
 
 // ── Stat card ─────────────────────────────────────────────────────────────────
 
@@ -22,7 +23,7 @@ function StatCard({
   color: string; href?: string; loading: boolean;
 }) {
   const inner = (
-    <Card className="hover:shadow-md transition-shadow">
+    <Card className="hover:shadow-md transition-shadow cursor-pointer">
       <CardContent className="p-3 flex items-center gap-3">
         <div className={`p-2 rounded-lg ${color} flex-shrink-0`}>
           <Icon className="h-4 w-4 text-white" />
@@ -100,10 +101,32 @@ function TopBar({
 export function DoctorDashboard() {
   const medplum = useMedplum();
   const { data, isLoading } = useDoctorDashboardData();
+  const [activeConsultation, setActiveConsultation] = useState<AppointmentRow | null>(null);
+
   const profile   = medplum.getProfile() as any;
   const firstName = profile?.name?.[0]?.given?.[0] ?? 'Doctor';
   const hour      = new Date().getHours();
   const greeting  = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
+
+  // ── Consultation view mode ───────────────────────────────────────────────────
+
+  if (activeConsultation) {
+    return (
+      <div className="space-y-4">
+        <TopBar
+          pendingCount={data?.pendingResultsCount ?? 0}
+          firstName={firstName}
+          greeting={greeting}
+        />
+        <ConsultationView
+          appointment={activeConsultation}
+          onBack={() => setActiveConsultation(null)}
+        />
+      </div>
+    );
+  }
+
+  // ── Default queue view ───────────────────────────────────────────────────────
 
   return (
     <div className="space-y-4">
@@ -118,9 +141,9 @@ export function DoctorDashboard() {
       {/* Stat strip */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
         <StatCard label="Today's Appts"     value={data?.todayAppointments   ?? 0} icon={Calendar}      color="bg-hospital-600" href="/schedule" loading={isLoading} />
-        <StatCard label="Active Encounters"  value={data?.activeEncounters    ?? 0} icon={Activity}      color="bg-green-600"                    loading={isLoading} />
-        <StatCard label="Pending Results"   value={data?.pendingResultsCount ?? 0} icon={FlaskConical}  color="bg-amber-500"    href="/results"  loading={isLoading} />
-        <StatCard label="Pending Orders"    value={data?.pendingOrdersCount  ?? 0} icon={ClipboardList} color="bg-purple-600"  href="/orders"   loading={isLoading} />
+        <StatCard label="Active Encounters"  value={data?.activeEncounters    ?? 0} icon={Activity}      color="bg-green-600"    href="/ward"    loading={isLoading} />
+        <StatCard label="Pending Results"   value={data?.pendingResultsCount ?? 0} icon={FlaskConical}  color="bg-amber-500"    href="/results" loading={isLoading} />
+        <StatCard label="Pending Orders"    value={data?.pendingOrdersCount  ?? 0} icon={ClipboardList} color="bg-purple-600"   href="/orders"  loading={isLoading} />
       </div>
 
       {/* Main workspace */}
@@ -147,6 +170,7 @@ export function DoctorDashboard() {
               <PatientQueue
                 rows={data?.schedule ?? []}
                 loading={isLoading}
+                onOpenConsultation={setActiveConsultation}
               />
             </CardContent>
           </Card>

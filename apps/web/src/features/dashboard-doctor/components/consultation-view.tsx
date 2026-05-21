@@ -109,6 +109,17 @@ export function ConsultationView({ appointment, onBack }: ConsultationViewProps)
         </div>
       )}
 
+      {/* Allergy banner */}
+      {!isLoading && snap && snap.allergies.length > 0 && (
+        <div className="flex items-center gap-2 px-3 py-2 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700">
+          <AlertTriangle className="h-4 w-4 flex-shrink-0 text-red-500" />
+          <span className="font-semibold">Allergies:</span>
+          {snap.allergies.map((a, i) => (
+            <span key={a.id}>{a.substance}{a.severity ? ` (${a.severity})` : ''}{i < snap.allergies.length - 1 ? ', ' : ''}</span>
+          ))}
+        </div>
+      )}
+
       {!isLoading && snap && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
@@ -135,49 +146,26 @@ export function ConsultationView({ appointment, onBack }: ConsultationViewProps)
             </CardContent>
           </Card>
 
-          {/* Conditions + Allergies */}
-          <div className="space-y-3">
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm flex items-center gap-2">
-                  <Stethoscope className="h-4 w-4 text-blue-600" /> Active Conditions
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="pt-0 space-y-1">
-                {snap.conditions.length === 0 ? (
-                  <p className="text-xs text-muted-foreground">None recorded.</p>
-                ) : (
-                  snap.conditions.map((c) => (
-                    <div key={c.id} className="flex items-center gap-2 py-0.5">
-                      <div className="w-1.5 h-1.5 rounded-full bg-blue-400 flex-shrink-0" />
-                      <span className="text-xs">{c.text}</span>
-                    </div>
-                  ))
-                )}
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm flex items-center gap-2">
-                  <AlertTriangle className="h-4 w-4 text-red-500" /> Allergies
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="pt-0 space-y-1">
-                {snap.allergies.length === 0 ? (
-                  <p className="text-xs text-green-600 flex items-center gap-1"><CheckCircle className="h-3.5 w-3.5" /> NKDA</p>
-                ) : (
-                  snap.allergies.map((a) => (
-                    <div key={a.id} className="flex items-center gap-2 py-0.5">
-                      <div className="w-1.5 h-1.5 rounded-full bg-red-400 flex-shrink-0" />
-                      <span className="text-xs">{a.substance}</span>
-                      {a.severity && <Badge variant="cancelled" className="text-xs">{a.severity}</Badge>}
-                    </div>
-                  ))
-                )}
-              </CardContent>
-            </Card>
-          </div>
+          {/* Active Conditions */}
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm flex items-center gap-2">
+                <Stethoscope className="h-4 w-4 text-blue-600" /> Active Conditions
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="pt-0 space-y-1">
+              {snap.conditions.length === 0 ? (
+                <p className="text-xs text-muted-foreground">None recorded.</p>
+              ) : (
+                snap.conditions.map((c) => (
+                  <div key={c.id} className="flex items-center gap-2 py-0.5">
+                    <div className="w-1.5 h-1.5 rounded-full bg-blue-400 flex-shrink-0" />
+                    <span className="text-xs">{c.text}</span>
+                  </div>
+                ))
+              )}
+            </CardContent>
+          </Card>
 
           {/* Medications */}
           <Card>

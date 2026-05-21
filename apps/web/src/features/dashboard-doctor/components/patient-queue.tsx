@@ -32,9 +32,10 @@ const STATUS_LABEL: Record<string, string> = {
 interface PatientQueueProps {
   rows: AppointmentRow[];
   loading: boolean;
+  onOpenConsultation?: (row: AppointmentRow) => void;
 }
 
-export function PatientQueue({ rows, loading }: PatientQueueProps) {
+export function PatientQueue({ rows, loading, onOpenConsultation }: PatientQueueProps) {
   if (loading) {
     return (
       <div className="divide-y">
@@ -124,11 +125,22 @@ export function PatientQueue({ rows, loading }: PatientQueueProps) {
 
                 <td className="px-4 py-3 text-right">
                   {patientId && (
-                    <Button asChild size="sm" variant="outline" className="h-7 text-xs px-2">
-                      <Link href={`/patients/${patientId}`}>
-                        Open <ChevronRight className="h-3 w-3 ml-0.5" />
-                      </Link>
-                    </Button>
+                    <div className="flex items-center gap-1.5 justify-end">
+                      {onOpenConsultation && (
+                        <Button
+                          size="sm"
+                          variant={isInRoom ? 'default' : 'outline'}
+                          className="h-7 text-xs px-2"
+                          onClick={() => onOpenConsultation(appt)}
+                        >
+                          {isInRoom ? 'Consult' : 'See'}
+                          <ChevronRight className="h-3 w-3 ml-0.5" />
+                        </Button>
+                      )}
+                      <Button asChild size="sm" variant="ghost" className="h-7 text-xs px-2">
+                        <Link href={`/patients/${patientId}`}>Chart</Link>
+                      </Button>
+                    </div>
                   )}
                 </td>
               </tr>
