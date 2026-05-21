@@ -12,9 +12,10 @@ export async function POST(req: NextRequest) {
     text?: string;
     context?: Record<string, unknown>;
     examData?: Record<string, Record<string, string | string[]>>;
+    vitals?: Record<string, string | undefined>;
   } | null;
 
-  const { action, text, context, examData } = body ?? {};
+  const { action, text, context, examData, vitals: bodyVitals } = body ?? {};
 
   if (!action) {
     return NextResponse.json({ error: 'action required' }, { status: 400 });
@@ -154,6 +155,42 @@ Be practical and evidence-based. Respond with the plan text only.`,
 
       const narrative = result.response.text();
       return NextResponse.json({ narrative });
+    }
+
+    if (action === 'suggest-alerts') {
+      const vitals = bodyVitals ?? {};
+      const vitalsLines = Object.entries(vitals)
+        .filter(([, v]) => v !== undefined && v !== null && v !== '')
+        .map(([k, v]) => `${k}: ${v}`)
+        .join('\n');
+
+      if (!vitalsLines) return NextResponse.json({ alerts: [] });
+
+      const result = await flashModel.generateContent({
+        systemInstruction: `You are a clinical decision support system for a Nigerian hospital.
+Analyse the provided vital signs and return a JSON array of clinical alert strings.
+Each alert should be concise (one sentence), clinically significant, and actionable.
+Only flag genuinely abnormal values. If all vitals are within normal limits return an empty array.
+Respond ONLY with valid JSON — no prose, no markdown fences.
+Format: ["Alert 1", "Alert 2"]`,
+        contents: [
+          {
+            role: 'user',
+            parts: [{ text: `Vital signs:\n${vitalsLines}\n\nReturn alerts as a JSON array.` }],
+          },
+        ],
+      });
+
+      const responseText = result.response.text();
+      let alerts: string[] = [];
+      try {
+        const cleaned = responseText.replace(/```[a-z]*\n?/g, '').trim();
+        alerts = JSON.parse(cleaned);
+        if (!Array.isArray(alerts)) alerts = [];
+      } catch {
+        alerts = [];
+      }
+      return NextResponse.json({ alerts });
     }
 
     return NextResponse.json({ error: 'unknown action' }, { status: 400 });
