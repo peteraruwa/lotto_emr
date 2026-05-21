@@ -1,2 +1,2 @@
 export { LabDashboard } from './components/index';
-export { useLabDashboardData } from './hooks/use-dashboard-data';
+export { useLabDashboardData, usePendingLabOrders } from './hooks/use-dashboard-data';

@@ -2,12 +2,14 @@
 
 import { useQuery } from '@tanstack/react-query';
 import { useMedplum } from '@medplum/react';
+import type { ServiceRequest } from '@medplum/fhirtypes';
 
 export interface LabDashboardData {
   pendingOrders: number;
   criticalValues: number;
   labOrders: Array<{ id: string; patientName: string; test: string; priority: string; orderedAt: string }>;
   criticalObservations: Array<{ id: string; patientName: string; test: string; value: string }>;
+  pendingLabOrders: ServiceRequest[];
 }
 
 export function useLabDashboardData() {
@@ -19,7 +21,7 @@ export function useLabDashboardData() {
       const [orders, observations] = await Promise.all([
         medplum.searchResources('ServiceRequest', {
           status: 'active',
-          category: '108252007', // Laboratory procedure SNOMED
+          category: '108252007',
           _sort: '-authored',
           _count: '20',
         }),
@@ -51,7 +53,23 @@ export function useLabDashboardData() {
             test: o.code?.text ?? 'Observation',
             value: o.valueQuantity ? `${o.valueQuantity.value} ${o.valueQuantity.unit}` : o.valueString ?? '',
           })),
+        pendingLabOrders: orders as ServiceRequest[],
       } as LabDashboardData;
     },
+  });
+}
+
+export function usePendingLabOrders() {
+  const medplum = useMedplum();
+
+  return useQuery<ServiceRequest[]>({
+    queryKey: ['lab-dashboard', 'pending-orders'],
+    queryFn: () =>
+      medplum.searchResources('ServiceRequest', {
+        category: '108252007',
+        status: 'active',
+        _sort: '-authored',
+        _count: '20',
+      }) as Promise<ServiceRequest[]>,
   });
 }

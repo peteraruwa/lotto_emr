@@ -6,6 +6,7 @@ import { Users, Activity, Pill } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, Badge } from '@lotto-emr/ui';
 import { useMedplum } from '@medplum/react';
 import { useNurseDashboardData } from '../hooks/use-dashboard-data';
+import { TriageQueueTable } from '@/features/triage';
 
 export function NurseDashboard() {
   const medplum = useMedplum();
@@ -39,6 +40,19 @@ export function NurseDashboard() {
           </Card>
         ))}
       </div>
+
+      {/* Triage Queue */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-sm flex items-center gap-2">
+            <Activity className="h-4 w-4 text-amber-500" />
+            Triage Queue
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <TriageQueueTable />
+        </CardContent>
+      </Card>
 
       <Card>
         <CardHeader>

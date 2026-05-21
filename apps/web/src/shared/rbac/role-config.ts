@@ -29,6 +29,7 @@ export const ROLE_CONFIG: Record<Role, RoleConfig> = {
       { label: 'Ward',         href: '/ward',      icon: 'BedDouble' },
       { label: 'Orders',       href: '/orders',    icon: 'ClipboardList' },
       { label: 'Results',      href: '/results',   icon: 'FlaskConical' },
+      { label: 'Billing',      href: '/billing',   icon: 'DollarSign' },
     ],
     allowedActions: [
       'patient:read',
@@ -46,11 +47,12 @@ export const ROLE_CONFIG: Record<Role, RoleConfig> = {
   [ROLES.NURSE]: {
     homeRoute: '/',
     navItems: [
-      { label: 'Dashboard', href: '/', icon: 'LayoutDashboard' },
-      { label: 'Patients', href: '/patients', icon: 'Users' },
-      { label: 'Schedule', href: '/schedule', icon: 'Calendar' },
-      { label: 'Ward', href: '/ward', icon: 'BedDouble' },
-      { label: 'Vitals', href: '/results', icon: 'Activity' },
+      { label: 'Dashboard',    href: '/',        icon: 'LayoutDashboard' },
+      { label: 'Triage Queue', href: '/triage',  icon: 'Activity' },
+      { label: 'Patients',     href: '/patients', icon: 'Users' },
+      { label: 'Schedule',     href: '/schedule', icon: 'Calendar' },
+      { label: 'Ward',         href: '/ward',     icon: 'BedDouble' },
+      { label: 'Vitals',       href: '/results',  icon: 'Activity' },
     ],
     allowedActions: [
       'patient:read',
@@ -110,10 +112,11 @@ export const ROLE_CONFIG: Record<Role, RoleConfig> = {
   [ROLES.ADMIN]: {
     homeRoute: '/',
     navItems: [
-      { label: 'Dashboard', href: '/', icon: 'LayoutDashboard' },
-      { label: 'Patients',  href: '/patients',  icon: 'Users' },
-      { label: 'Schedule',  href: '/schedule',  icon: 'Calendar' },
-      { label: 'Ward',      href: '/ward',      icon: 'BedDouble' },
+      { label: 'Dashboard', href: '/',         icon: 'LayoutDashboard' },
+      { label: 'Patients',  href: '/patients', icon: 'Users' },
+      { label: 'Schedule',  href: '/schedule', icon: 'Calendar' },
+      { label: 'Ward',      href: '/ward',     icon: 'BedDouble' },
+      { label: 'Billing',   href: '/billing',  icon: 'DollarSign' },
     ],
     allowedActions: [
       'patient:create', 'patient:update',

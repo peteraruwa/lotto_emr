@@ -20,6 +20,7 @@ import {
   Scan,
   FileText,
   BedDouble,
+  DollarSign,
   LogOut,
   Menu,
   X,
@@ -39,6 +40,7 @@ const ICON_MAP: Record<string, React.ElementType> = {
   Scan,
   FileText,
   BedDouble,
+  DollarSign,
 };
 
 function NavLink({ item, onClick }: { item: NavItem; onClick?: () => void }) {

@@ -2,11 +2,15 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, AlertTriangle, Plus, Eye, FileText, PenLine } from 'lucide-react';
+import {
+  ArrowLeft, AlertTriangle, Plus, Eye, FileText, PenLine,
+  Activity, Baby, ShoppingCart, LogOut, Loader2, CalendarPlus,
+} from 'lucide-react';
 import { Badge, Button, Card, CardContent, CardHeader, CardTitle } from '@lotto-emr/ui';
 import { capitalize, formatDate, formatDateTime } from '@/shared/lib/utils';
 import { usePatientProfile } from '../hooks/use-patient-profile';
 import type { VitalRow } from '../hooks/use-patient-profile';
+import { useMedplum } from '@medplum/react';
 import { useNotes } from '@/features/clinical-notes';
 import type { NoteListItem } from '@/features/clinical-notes/types';
 import { NoteTypeSelectorModal } from '@/features/clinical-notes/components/note-type-selector-modal';
@@ -87,9 +91,12 @@ function VitalTableRow({ row }: { row: VitalRow }) {
 
 // ── Main component ─────────────────────────────────────────────────────────────
 export function PatientProfile({ patientId }: PatientProfileProps) {
+  const medplum = useMedplum();
   const { profileData, isLoading, error } = usePatientProfile(patientId);
   const { data: notes = [] } = useNotes(patientId);
   const [noteTypeModalOpen, setNoteTypeModalOpen] = useState(false);
+  const [openingVisit, setOpeningVisit] = useState(false);
+  const [activeEncounterId, setActiveEncounterId] = useState<string | undefined>();
 
   // Build encounter → note lookup map
   const noteByEncounterId = React.useMemo(() => {
@@ -99,6 +106,24 @@ export function PatientProfile({ patientId }: PatientProfileProps) {
     }
     return map;
   }, [notes]);
+
+  async function openVisit() {
+    setOpeningVisit(true);
+    try {
+      const enc = await medplum.createResource({
+        resourceType: 'Encounter',
+        status: 'arrived',
+        class: { system: 'http://terminology.hl7.org/CodeSystem/v3-ActCode', code: 'AMB', display: 'ambulatory' },
+        subject: { reference: `Patient/${patientId}` },
+        period: { start: new Date().toISOString() },
+      } as any);
+      setActiveEncounterId((enc as any).id as string);
+    } catch {
+      /* non-critical */
+    } finally {
+      setOpeningVisit(false);
+    }
+  }
 
   if (isLoading) {
     return (
@@ -117,6 +142,11 @@ export function PatientProfile({ patientId }: PatientProfileProps) {
   }
 
   const { biodata, hasActiveEncounter, allergies, conditions, vitalRows, latestVitals, encounters } = profileData;
+
+  // Resolve active encounter ID: prefer freshly-opened one, fall back to first active encounter in list
+  const resolvedEncounterId =
+    activeEncounterId ??
+    encounters.find((e) => e.status === 'arrived' || e.status === 'in-progress' || e.status === 'triaged')?.id;
 
   return (
     <div className="space-y-6">
@@ -257,13 +287,68 @@ export function PatientProfile({ patientId }: PatientProfileProps) {
         </CardContent>
       </Card>
 
-      {/* ── Section 3: Encounters ── */}
+      {/* ── Section 3: Quick Actions ── */}
+      <Card className="border-l-4 border-teal-500">
+        <CardHeader className="pb-3">
+          <CardTitle className="text-base">Patient Actions</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-wrap gap-2">
+            {/* Open Visit */}
+            {!resolvedEncounterId ? (
+              <Button size="sm" onClick={openVisit} disabled={openingVisit} className="bg-teal-600 hover:bg-teal-700 text-white gap-1.5">
+                {openingVisit ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
+                Open Visit
+              </Button>
+            ) : (
+              <Button asChild size="sm" className="bg-amber-500 hover:bg-amber-600 text-white gap-1.5">
+                <Link href={`/patients/${patientId}/triage?encounter=${resolvedEncounterId}`}>
+                  <Activity className="h-4 w-4" />
+                  Start Triage
+                </Link>
+              </Button>
+            )}
+            <Button size="sm" variant="outline" onClick={() => setNoteTypeModalOpen(true)} className="gap-1.5">
+              <FileText className="h-4 w-4" />
+              New Note
+            </Button>
+            <Button asChild size="sm" variant="outline" className="gap-1.5">
+              <Link href={`/patients/${patientId}/anc`}>
+                <Baby className="h-4 w-4" />
+                ANC
+              </Link>
+            </Button>
+            <Button asChild size="sm" variant="outline" className="gap-1.5">
+              <Link href={`/patients/${patientId}/orders`}>
+                <ShoppingCart className="h-4 w-4" />
+                Order Basket
+              </Link>
+            </Button>
+            <Button asChild size="sm" variant="outline" className="gap-1.5">
+              <Link href={`/schedule?patient=${patientId}`}>
+                <CalendarPlus className="h-4 w-4" />
+                Book Appt
+              </Link>
+            </Button>
+            {resolvedEncounterId && (
+              <Button asChild size="sm" variant="outline" className="gap-1.5 border-red-200 text-red-600 hover:bg-red-50">
+                <Link href={`/patients/${patientId}/discharge?encounter=${resolvedEncounterId}`}>
+                  <LogOut className="h-4 w-4" />
+                  Discharge
+                </Link>
+              </Button>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* ── Section 4: Encounters ── */}
       <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
             <CardTitle className="text-base">Previous Encounters</CardTitle>
-            <Button size="sm" className="bg-teal-600 hover:bg-teal-700 text-white" onClick={() => setNoteTypeModalOpen(true)}>
-              <Plus className="h-4 w-4 mr-1" />
+            <Button size="sm" className="bg-teal-600 hover:bg-teal-700 text-white gap-1.5" onClick={() => setNoteTypeModalOpen(true)}>
+              <Plus className="h-4 w-4" />
               New Clinical Note
             </Button>
           </div>
