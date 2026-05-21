@@ -35,6 +35,8 @@ medplum patch ProjectMembership/<membership-id> \
 
 The seed script at `medplum/seed/seed.ts` automatically assigns policies when creating test users.
 
+For dev/testing, use `medplum/seed/dev-seed.ts` instead — it seeds all role navigation test accounts (password: `1234`) without touching the main QA dataset.
+
 ### Via Bot (programmatic)
 
 ```typescript
