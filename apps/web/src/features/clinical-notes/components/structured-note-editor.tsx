@@ -6,83 +6,101 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
   Wand2, Search, Loader2, CheckCircle2, BedDouble, CalendarPlus, Eye,
-  AlertCircle, Clock, BookOpen, Baby, Heart, Users, Pill, List,
-  Stethoscope, Activity, ClipboardList, X, FileText, Save,
+  AlertCircle, X, Save,
 } from 'lucide-react';
-import { Badge, Button, Card, CardContent, CardHeader, CardTitle, Input, Label, Tooltip } from '@lotto-emr/ui';
+import { Button, Card, CardContent, CardHeader, CardTitle, Label, Tooltip } from '@lotto-emr/ui';
 import { useMedplum } from '@medplum/react';
-import type { Observation } from '@medplum/fhirtypes';
+import type { Observation, DocumentReference } from '@medplum/fhirtypes';
 import { useAiAssist } from '../hooks/use-ai-assist';
 import type { IcdCode } from '../hooks/use-ai-assist';
-import type { DocumentReference } from '@medplum/fhirtypes';
 import { ExamBuilder } from './exam-builder';
 import type { ExamBuilderValue } from './exam-builder';
 import type { VitalsSnapshot } from '../data/exam-data';
 import { AdmitPatientModal } from '@/features/ward';
 import { NotePreviewModal } from './note-preview-modal';
 import { format } from 'date-fns';
+import { getNoteTypeDef } from '../data/note-type-definitions';
+import type { NoteField } from '../data/note-type-definitions';
 
-// ── Note type → LOINC mapping ──────────────────────────────────────────────────
-const NOTE_TYPE_CONFIG: Record<string, { loinc: string; display: string; text: string; label: string }> = {
-  consultation_note: { loinc: '11488-4', display: 'Consultation Note', text: 'Consultation Note', label: 'Consultation Note' },
-  soap_followup:     { loinc: '11506-3', display: 'Progress Note',      text: 'Follow-up SOAP Note', label: 'Follow-up SOAP Note' },
-  procedure_note:    { loinc: '28570-0', display: 'Procedure Note',     text: 'Procedure Note',      label: 'Procedure Note' },
-  referral_note:     { loinc: '57133-1', display: 'Referral Note',      text: 'Referral Note',        label: 'Referral Note' },
-};
-const DEFAULT_NOTE_TYPE_CONFIG = { loinc: '11506-3', display: 'Progress Note', text: 'Clinical Note', label: 'Clinical Note' };
-
-// ── LOINC codes ────────────────────────────────────────────────────────────────
+// ── LOINC vital codes ─────────────────────────────────────────────────────────
 const VITAL_LOINC = {
   BP_PANEL: '55284-4', SYSTOLIC: '8480-6', DIASTOLIC: '8462-4',
   HR: '8867-4', TEMP: '8310-5', SPO2: '59408-5',
   WEIGHT: '29463-7', HEIGHT: '8302-2', RR: '9279-1',
 } as const;
 
-// ── Form data ──────────────────────────────────────────────────────────────────
-interface StructuredNoteFormData {
-  presentingComplaints: string;
-  hpc: string;
-  pastMedicalHistory: string;
-  obstetricsHistory: string;
-  gynaecologyHistory: string;
-  familySocialHistory: string;
-  drugHistory: string;
-  otherHistory: string;       // ← NEW
-  reviewOfSystems: string;
-  diagnosis: string;
-  plan: string;
+// Fields to check for diagnosis / complaint content
+const DIAGNOSIS_KEYS = ['diagnosis', 'assessment', 'finalDiagnosis', 'admissionDiagnosis', 'currentDiagnosis'];
+const COMPLAINT_KEYS = ['chiefComplaint', 'presentingComplaint', 'reasonForReferral', 'hpi', 'subjective'];
+
+// ── Parse vitals from FHIR observations ──────────────────────────────────────
+function parseVitalsFromObservations(observations: Observation[]): VitalsSnapshot {
+  const snap: VitalsSnapshot = {};
+  for (const obs of observations) {
+    const code = obs.code?.coding?.find((c) => c.system === 'http://loinc.org')?.code;
+    if (code === VITAL_LOINC.BP_PANEL) {
+      const sys = obs.component?.find((c) => c.code?.coding?.some((x) => x.code === VITAL_LOINC.SYSTOLIC));
+      const dia = obs.component?.find((c) => c.code?.coding?.some((x) => x.code === VITAL_LOINC.DIASTOLIC));
+      if (sys?.valueQuantity?.value != null && dia?.valueQuantity?.value != null)
+        snap.bp = `${sys.valueQuantity.value}/${dia.valueQuantity.value} mmHg`;
+    } else if (code === VITAL_LOINC.HR && !snap.hr) snap.hr = `${obs.valueQuantity?.value} /min`;
+    else if (code === VITAL_LOINC.TEMP && !snap.temp) snap.temp = `${obs.valueQuantity?.value} °C`;
+    else if (code === VITAL_LOINC.SPO2 && !snap.spo2) snap.spo2 = `${obs.valueQuantity?.value} %`;
+    else if (code === VITAL_LOINC.WEIGHT && !snap.weight) snap.weight = `${obs.valueQuantity?.value} kg`;
+    else if (code === VITAL_LOINC.HEIGHT && !snap.height) snap.height = `${obs.valueQuantity?.value} cm`;
+    else if (code === VITAL_LOINC.RR && !snap.rr) snap.rr = `${obs.valueQuantity?.value} /min`;
+  }
+  return snap;
 }
 
-interface StructuredNoteEditorProps {
-  patientId: string;
-  patientGender?: string;
-  patientAge?: number;
-  conditions?: string[];
-  medications?: string[];
-  noteType?: string;
+// ── ChipsField ────────────────────────────────────────────────────────────────
+function ChipsField({ field, value, onChange }: {
+  field: NoteField; value: string; onChange: (v: string) => void;
+}) {
+  return (
+    <div className="space-y-2.5">
+      <Label className="text-sm font-medium text-gray-600">{field.label}</Label>
+      <div className="flex flex-wrap gap-2">
+        {field.options?.map((opt) => (
+          <button
+            key={opt.value}
+            type="button"
+            onClick={() => onChange(value === opt.value ? '' : opt.value)}
+            className={`px-4 py-2 text-sm font-medium rounded-full border transition-all duration-150 ${
+              value === opt.value
+                ? 'bg-teal-600 text-white border-teal-600 shadow-sm'
+                : 'bg-white text-gray-600 border-gray-200 hover:border-teal-400 hover:text-teal-600 hover:bg-teal-50'
+            }`}
+          >
+            {opt.label}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
 }
 
-// ── Section card ───────────────────────────────────────────────────────────────
+// ── SectionCard ───────────────────────────────────────────────────────────────
 function SectionCard({ num, icon: Icon, title, accent, children }: {
   num: number; icon: React.ElementType; title: string; accent: string; children: React.ReactNode;
 }) {
   return (
-    <Card className={`border-l-4 ${accent} shadow-sm`}>
-      <CardHeader className="pb-3 pt-4">
-        <CardTitle className="text-sm font-semibold text-gray-700 flex items-center gap-2 min-w-0">
-          <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-gray-100 text-[11px] font-bold text-gray-500 shrink-0">
+    <Card className={`border-l-4 ${accent} shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden`}>
+      <CardHeader className="pb-3 pt-5 px-5">
+        <CardTitle className="text-sm font-semibold text-gray-800 flex items-center gap-2.5 min-w-0">
+          <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-teal-50 border border-teal-200 text-[11px] font-bold text-teal-600 shrink-0 select-none">
             {num}
           </span>
           <Icon className="h-4 w-4 text-gray-400 shrink-0" />
           <span className="truncate">{title}</span>
         </CardTitle>
       </CardHeader>
-      <CardContent className="pt-0">{children}</CardContent>
+      <CardContent className="pt-0 px-5 pb-5">{children}</CardContent>
     </Card>
   );
 }
 
-// ── Section textarea ───────────────────────────────────────────────────────────
+// ── SectionTextarea ───────────────────────────────────────────────────────────
 interface SectionTextareaProps {
   id: string; label: string; value: string; onChange: (v: string) => void;
   rows?: number; showAiAssist?: boolean; isAssisting?: boolean;
@@ -90,15 +108,15 @@ interface SectionTextareaProps {
 }
 function SectionTextarea({
   id, label, value, onChange, rows = 4,
-  showAiAssist = true, isAssisting = false, onAiAssist, placeholder,
+  showAiAssist = false, isAssisting = false, onAiAssist, placeholder,
 }: SectionTextareaProps) {
   return (
-    <div className="space-y-1.5">
+    <div className="space-y-2">
       <div className="flex items-center justify-between gap-2 min-w-0">
         <Label htmlFor={id} className="text-sm font-medium text-gray-600 truncate">{label}</Label>
         {showAiAssist && onAiAssist && (
           <Tooltip label="Expand and structure this section using AI">
-            <Button type="button" variant="outline" size="sm" onClick={onAiAssist} disabled={isAssisting} className="h-7 text-xs gap-1 shrink-0">
+            <Button type="button" variant="outline" size="sm" onClick={onAiAssist} disabled={isAssisting} className="h-7 text-xs gap-1.5 shrink-0">
               {isAssisting ? <Loader2 className="h-3 w-3 animate-spin" /> : <Wand2 className="h-3 w-3" />}
               <span className="hidden sm:inline">{isAssisting ? 'Expanding…' : 'AI Assist'}</span>
             </Button>
@@ -108,78 +126,86 @@ function SectionTextarea({
       <textarea
         id={id} value={value} onChange={(e) => onChange(e.target.value)} rows={rows}
         placeholder={placeholder ?? `Enter ${label.toLowerCase()}…`}
-        className="flex w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-teal-400 resize-y transition-shadow"
+        className="flex w-full rounded-lg border border-gray-200 bg-white px-4 py-3 text-sm text-gray-900 shadow-sm placeholder:text-gray-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-400/30 focus-visible:border-teal-400 resize-y transition-all duration-150 leading-relaxed"
       />
     </div>
   );
 }
 
-// ── Parse vitals ───────────────────────────────────────────────────────────────
-function parseVitalsFromObservations(observations: Observation[]): VitalsSnapshot {
-  const snap: VitalsSnapshot = {};
-  for (const obs of observations) {
-    const code = obs.code?.coding?.find((c) => c.system === 'http://loinc.org')?.code;
-    if (code === VITAL_LOINC.BP_PANEL) {
-      const sys = obs.component?.find((c) => c.code?.coding?.some((x) => x.code === VITAL_LOINC.SYSTOLIC));
-      const dia = obs.component?.find((c) => c.code?.coding?.some((x) => x.code === VITAL_LOINC.DIASTOLIC));
-      if (sys?.valueQuantity?.value !== undefined && dia?.valueQuantity?.value !== undefined && !snap.bp)
-        snap.bp = `${sys.valueQuantity.value}/${dia.valueQuantity.value} mmHg`;
-    } else if (code === VITAL_LOINC.HR && !snap.hr) {
-      const v = obs.valueQuantity?.value; if (v !== undefined) snap.hr = `${v} /min`;
-    } else if (code === VITAL_LOINC.TEMP && !snap.temp) {
-      const v = obs.valueQuantity?.value; if (v !== undefined) snap.temp = `${v} °C`;
-    } else if (code === VITAL_LOINC.SPO2 && !snap.spo2) {
-      const v = obs.valueQuantity?.value; if (v !== undefined) snap.spo2 = `${v} %`;
-    } else if (code === VITAL_LOINC.WEIGHT && !snap.weight) {
-      const v = obs.valueQuantity?.value; if (v !== undefined) snap.weight = `${v} kg`;
-    } else if (code === VITAL_LOINC.HEIGHT && !snap.height) {
-      const v = obs.valueQuantity?.value; if (v !== undefined) snap.height = `${v} cm`;
-    } else if (code === VITAL_LOINC.RR && !snap.rr) {
-      const v = obs.valueQuantity?.value; if (v !== undefined) snap.rr = `${v} /min`;
-    }
-  }
-  return snap;
+// ── Context badge config ──────────────────────────────────────────────────────
+const CONTEXT_BADGE = {
+  outpatient: { label: 'Outpatient', cls: 'bg-teal-50 text-teal-700 border-teal-200' },
+  inpatient:  { label: 'Inpatient',  cls: 'bg-blue-50 text-blue-700 border-blue-200' },
+  emergency:  { label: 'Emergency',  cls: 'bg-red-50 text-red-700 border-red-200' },
+};
+
+// ── Props ─────────────────────────────────────────────────────────────────────
+interface StructuredNoteEditorProps {
+  patientId: string;
+  patientGender?: string;
+  patientAge?: number;
+  conditions?: string[];
+  medications?: string[];
+  noteType?: string;
 }
 
-// ── Main component ─────────────────────────────────────────────────────────────
-export function StructuredNoteEditor({ patientId, patientGender, patientAge, conditions, medications, noteType }: StructuredNoteEditorProps) {
-  const router = useRouter();
+// ── Main component ────────────────────────────────────────────────────────────
+export function StructuredNoteEditor({
+  patientId, patientGender, patientAge, conditions, medications, noteType,
+}: StructuredNoteEditorProps) {
   const medplum = useMedplum();
+  const router = useRouter();
 
-  // Save / UI state
-  const [isSaving, setIsSaving] = useState(false);
-  const [saveStatus, setSaveStatus] = useState<'idle' | 'draft' | 'final'>('idle');
-  const [icdOpen, setIcdOpen] = useState(false);
-  const [admitModalOpen, setAdmitModalOpen] = useState(false);
-  const [previewOpen, setPreviewOpen] = useState(false);
-  const diagnosisRef = useRef<HTMLDivElement>(null);
+  const noteTypeDef = getNoteTypeDef(noteType);
+  const contextBadge = CONTEXT_BADGE[noteTypeDef.context];
 
-  // Exam state
+  // Build default form values from all non-exam-builder fields
+  const defaultValues = React.useMemo(
+    () =>
+      noteTypeDef.sections
+        .flatMap((s) => s.fields)
+        .filter((f) => f.type !== 'exam-builder')
+        .reduce<Record<string, string>>((acc, f) => ({ ...acc, [f.key]: '' }), {}),
+    // noteTypeDef is stable (derived from URL param that doesn't change)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
+  );
+
+  const { control, watch, setValue, getValues } = useForm<Record<string, string>>({ defaultValues });
+
+  // ── Exam builder (separate state — not in form) ────────────────────────────
   const [examFindings, setExamFindings] = useState<ExamBuilderValue>({});
   const [examinationNarrative, setExaminationNarrative] = useState('');
-  const [latestVitals, setLatestVitals] = useState<VitalsSnapshot | undefined>(undefined);
-  const [aiAlerts, setAiAlerts] = useState<string[]>([]);
-
-  // Keep refs in sync for auto-save (avoid stale closures)
   const examFindingsRef = useRef<ExamBuilderValue>({});
   const examinationNarrativeRef = useRef('');
   useEffect(() => { examFindingsRef.current = examFindings; }, [examFindings]);
   useEffect(() => { examinationNarrativeRef.current = examinationNarrative; }, [examinationNarrative]);
 
-  // Persisted document/encounter IDs (create once, update thereafter)
+  // ── Persist refs (create once, update thereafter) ─────────────────────────
   const savedDocIdRef = useRef<string | undefined>();
   const savedEncIdRef = useRef<string | undefined>();
 
-  // Auto-save indicator
+  // ── UI state ──────────────────────────────────────────────────────────────
   const [autoSaveStatus, setAutoSaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle');
   const [lastAutoSaved, setLastAutoSaved] = useState<Date | undefined>();
   const autoSaveBusyRef = useRef(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveStatus, setSaveStatus] = useState<'idle' | 'draft' | 'final'>('idle');
+  const [showPreview, setShowPreview] = useState(false);
+  const [previewValues, setPreviewValues] = useState<Record<string, string>>({});
+  const [admitModalOpen, setAdmitModalOpen] = useState(false);
 
-  // Patient data (fetched from FHIR)
+  // ── ICD search state ──────────────────────────────────────────────────────
+  const [activeIcdFieldKey, setActiveIcdFieldKey] = useState<string | null>(null);
+  const [showIcdResults, setShowIcdResults] = useState(false);
+
+  // ── Patient data resolved from FHIR ──────────────────────────────────────
   const [resolvedGender, setResolvedGender] = useState(patientGender ?? 'unknown');
   const [resolvedAge, setResolvedAge] = useState<number | undefined>(patientAge);
   const [resolvedConditions, setResolvedConditions] = useState<string[]>(conditions ?? []);
   const [resolvedMedications, setResolvedMedications] = useState<string[]>(medications ?? []);
+  const [latestVitals, setLatestVitals] = useState<VitalsSnapshot | undefined>();
+  const [aiAlerts, setAiAlerts] = useState<string[]>([]);
 
   const {
     expandSection, searchIcd, suggestPlan, convertExamToNarrative, getAiAlerts,
@@ -187,14 +213,14 @@ export function StructuredNoteEditor({ patientId, patientGender, patientAge, con
     isGeneratingPlan, isConvertingExam, aiError, clearAiError,
   } = useAiAssist();
 
-  // ── On mount: fetch patient data + vitals ─────────────────────────────────
+  // ── On mount: fetch patient + vitals ─────────────────────────────────────
   useEffect(() => {
     if (!patientId) return;
 
     medplum.readResource('Patient', patientId).then((pt: any) => {
       if (pt.gender) setResolvedGender(pt.gender);
       if (pt.birthDate) {
-        const age = Math.floor((Date.now() - new Date(pt.birthDate).getTime()) / (1000 * 60 * 60 * 24 * 365.25));
+        const age = Math.floor((Date.now() - new Date(pt.birthDate).getTime()) / (365.25 * 24 * 60 * 60 * 1000));
         setResolvedAge(age);
       }
     }).catch(() => undefined);
@@ -219,86 +245,98 @@ export function StructuredNoteEditor({ patientId, patientGender, patientAge, con
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const { control, handleSubmit, watch, setValue, getValues } = useForm<StructuredNoteFormData>({
-    defaultValues: {
-      presentingComplaints: '', hpc: '', pastMedicalHistory: '',
-      obstetricsHistory: '', gynaecologyHistory: '',
-      familySocialHistory: '', drugHistory: '', otherHistory: '',
-      reviewOfSystems: '', diagnosis: '', plan: '',
-    },
-  });
-
   const isFemale = resolvedGender === 'female';
 
-  // ── Core persist logic (used by both manual save and auto-save) ───────────
+  // ── Core persist ──────────────────────────────────────────────────────────
   const persistNote = useCallback(async (
-    formData: StructuredNoteFormData,
+    formData: Record<string, string>,
     docStatus: 'draft' | 'final',
   ): Promise<void> => {
     const currentUser = medplum.getProfile();
     const now = new Date().toISOString();
+
+    const diagnosisValue = DIAGNOSIS_KEYS.map((k) => formData[k]).find((v) => v?.trim()) ?? '';
+    const complaintValue = COMPLAINT_KEYS.map((k) => formData[k]).find((v) => v?.trim()) ?? '';
+    const description = (diagnosisValue || complaintValue || noteTypeDef.label).slice(0, 500);
+
     const noteContent = {
       ...formData,
+      noteType: noteType ?? 'consultation_note',
       examFindings: examFindingsRef.current,
       examinationNarrative: examinationNarrativeRef.current,
     };
     const contentBase64 = Buffer.from(JSON.stringify(noteContent), 'utf-8').toString('base64');
+
     const authorRef = currentUser?.id
       ? [{ reference: `Practitioner/${currentUser.id}`, display: `${currentUser.name?.[0]?.given?.[0] ?? ''} ${currentUser.name?.[0]?.family ?? ''}`.trim() }]
       : [];
 
-    // Create Encounter exactly once (on first persist)
+    // Create Encounter exactly once
     if (!savedEncIdRef.current) {
       try {
         const enc = await medplum.createResource({
           resourceType: 'Encounter',
           status: 'finished',
           class: { system: 'http://terminology.hl7.org/CodeSystem/v3-ActCode', code: 'AMB', display: 'ambulatory' },
-          type: [{ coding: [{ system: 'http://snomed.info/sct', code: '11429006', display: 'Consultation' }], text: 'Outpatient Consultation' }],
+          type: [{ coding: [{ system: 'http://snomed.info/sct', code: '11429006', display: 'Consultation' }], text: noteTypeDef.label }],
           subject: { reference: `Patient/${patientId}` },
           period: { start: now, end: now },
-          ...(formData.diagnosis.trim() ? { reasonCode: [{ text: formData.diagnosis.trim() }] } : {}),
+          ...(diagnosisValue ? { reasonCode: [{ text: diagnosisValue }] } : {}),
         } as any);
         savedEncIdRef.current = (enc as any).id as string | undefined;
-      } catch { /* non-critical */ }
+      } catch { /* non-critical — encounter creation failure shouldn't block the note */ }
     }
-
-    const ntCfg = noteType ? (NOTE_TYPE_CONFIG[noteType] ?? DEFAULT_NOTE_TYPE_CONFIG) : DEFAULT_NOTE_TYPE_CONFIG;
 
     const docPayload: DocumentReference = {
       resourceType: 'DocumentReference',
       status: 'current',
       docStatus: docStatus === 'final' ? 'final' : 'preliminary',
-      type: { coding: [{ system: 'http://loinc.org', code: ntCfg.loinc, display: ntCfg.display }], text: ntCfg.text },
-      category: [{ coding: [{ system: 'http://hl7.org/fhir/us/core/CodeSystem/us-core-documentreference-category', code: 'clinical-note', display: 'Clinical Note' }] }],
+      type: {
+        coding: [{ system: 'http://loinc.org', code: noteTypeDef.loinc, display: noteTypeDef.loincDisplay }],
+        text: noteTypeDef.loincText,
+      },
+      category: [{
+        coding: [{
+          system: 'http://hl7.org/fhir/us/core/CodeSystem/us-core-documentreference-category',
+          code: 'clinical-note',
+          display: 'Clinical Note',
+        }],
+      }],
       subject: { reference: `Patient/${patientId}` },
       date: now,
       author: authorRef,
-      description: formData.diagnosis.trim() || formData.presentingComplaints.trim() || 'Structured Clinical Note',
-      content: [{ attachment: { contentType: 'application/json', data: contentBase64, title: 'Structured Clinical Note', creation: now } }],
+      description,
+      content: [{
+        attachment: {
+          contentType: 'application/json',
+          data: contentBase64,
+          title: noteTypeDef.label,
+          creation: now,
+        },
+      }],
       ...(savedEncIdRef.current ? { context: { encounter: [{ reference: `Encounter/${savedEncIdRef.current}` }] } } : {}),
     };
 
     if (savedDocIdRef.current) {
-      // Update in place — no new DocumentReference created
       await medplum.updateResource({ ...docPayload, id: savedDocIdRef.current } as any);
     } else {
       const created = await medplum.createResource(docPayload);
       savedDocIdRef.current = (created as any).id as string | undefined;
     }
-  }, [medplum, patientId, noteType]);
+  }, [medplum, patientId, noteType, noteTypeDef]);
 
-  // ── Keep persistNote ref current (so interval sees latest closure) ─────────
+  // Keep persistNote ref fresh (stale-closure-safe interval)
   const persistNoteRef = useRef(persistNote);
   useEffect(() => { persistNoteRef.current = persistNote; }, [persistNote]);
 
-  // ── Auto-save interval (10 s) ─────────────────────────────────────────────
+  // ── Auto-save every 10 s ──────────────────────────────────────────────────
   useEffect(() => {
     const interval = setInterval(async () => {
-      // Skip if already saving, signed, or nothing typed
       if (autoSaveBusyRef.current || isSaving) return;
       const formData = getValues();
-      const hasContent = Object.values(formData).some((v) => typeof v === 'string' && v.trim());
+      const hasContent =
+        Object.values(formData).some((v) => typeof v === 'string' && v.trim()) ||
+        !!examinationNarrativeRef.current.trim();
       if (!hasContent) return;
 
       autoSaveBusyRef.current = true;
@@ -314,16 +352,15 @@ export function StructuredNoteEditor({ patientId, patientGender, patientAge, con
         autoSaveBusyRef.current = false;
       }
     }, 10000);
-
     return () => clearInterval(interval);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isSaving]);
 
   // ── Manual save ───────────────────────────────────────────────────────────
-  async function saveNote(formData: StructuredNoteFormData, status: 'draft' | 'final') {
+  async function saveNote(status: 'draft' | 'final') {
     setIsSaving(true);
     try {
-      await persistNote(formData, status);
+      await persistNote(getValues(), status);
       setSaveStatus(status);
       setTimeout(() => router.push(`/patients/${patientId}`), 1000);
     } catch (err) {
@@ -334,33 +371,152 @@ export function StructuredNoteEditor({ patientId, patientGender, patientAge, con
   }
 
   // ── AI handlers ───────────────────────────────────────────────────────────
-  async function handleAiAssist(section: keyof StructuredNoteFormData, label: string) {
-    const expanded = await expandSection(section, watch(section), { section: label });
-    if (expanded) setValue(section, expanded);
+  async function handleAiAssist(fieldKey: string, sectionTitle: string) {
+    const current = watch(fieldKey) ?? '';
+    const expanded = await expandSection(fieldKey, current, { section: sectionTitle });
+    if (expanded) setValue(fieldKey as any, expanded);
   }
 
-  async function handleIcdSearch() {
-    const diagText = watch('diagnosis');
-    if (!diagText.trim()) return;
-    const codes = await searchIcd(diagText);
-    if (codes.length > 0) setIcdOpen(true);
+  async function handleIcdSearch(fieldKey: string) {
+    const text = watch(fieldKey) ?? '';
+    if (!text.trim()) return;
+    setActiveIcdFieldKey(fieldKey);
+    const codes = await searchIcd(text);
+    if (codes.length > 0) setShowIcdResults(true);
   }
 
   function handleIcdSelect(code: IcdCode) {
-    const current = watch('diagnosis');
-    setValue('diagnosis', current.trim() ? `${current.trim()} (ICD-10: ${code.code})` : `${code.description} (ICD-10: ${code.code})`);
-    setIcdOpen(false);
+    if (!activeIcdFieldKey) return;
+    const current = watch(activeIcdFieldKey) ?? '';
+    setValue(
+      activeIcdFieldKey as any,
+      current.trim()
+        ? `${current.trim()} (ICD-10: ${code.code})`
+        : `${code.description} (ICD-10: ${code.code})`
+    );
+    setShowIcdResults(false);
     setIcdResults([]);
+    setActiveIcdFieldKey(null);
   }
 
-  async function handleGeneratePlan() {
-    const plan = await suggestPlan(watch('diagnosis'), { age: resolvedAge, gender: resolvedGender, conditions: resolvedConditions, medications: resolvedMedications });
-    if (plan) setValue('plan', plan);
+  async function handleSuggestPlan(fieldKey: string) {
+    const formData = getValues();
+    const diagnosisValue = DIAGNOSIS_KEYS.map((k) => formData[k]).find((v) => v?.trim()) ?? '';
+    const plan = await suggestPlan(diagnosisValue, {
+      age: resolvedAge,
+      gender: resolvedGender,
+      conditions: resolvedConditions,
+      medications: resolvedMedications,
+    });
+    if (plan) setValue(fieldKey as any, plan);
   }
 
   async function handleGenerateNarrative() {
     const narrative = await convertExamToNarrative(examFindingsRef.current);
     if (narrative) setExaminationNarrative(narrative);
+  }
+
+  // ── Compute visible sections (filter gender-conditional) ──────────────────
+  const visibleSections = noteTypeDef.sections.filter(
+    (s) => !s.conditionalGender || (s.conditionalGender === 'female' && isFemale)
+  );
+
+  // ── Render field ──────────────────────────────────────────────────────────
+  function renderField(field: NoteField, sectionTitle: string) {
+    // Exam builder
+    if (field.type === 'exam-builder') {
+      return (
+        <div key={field.key}>
+          <ExamBuilder
+            value={examFindings}
+            onChange={(val) => { setExamFindings(val); examFindingsRef.current = val; }}
+            onGenerateNarrative={handleGenerateNarrative}
+            isGenerating={isConvertingExam}
+            vitals={latestVitals}
+          />
+          {examinationNarrative && (
+            <div className="mt-3 rounded-lg border border-teal-100 bg-teal-50/40 px-4 py-3 text-sm text-gray-800 whitespace-pre-wrap leading-relaxed">
+              {examinationNarrative}
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    // Chips
+    if (field.type === 'chips') {
+      return (
+        <Controller key={field.key} control={control} name={field.key as any} render={({ field: f }) => (
+          <ChipsField field={field} value={f.value ?? ''} onChange={f.onChange} />
+        )} />
+      );
+    }
+
+    // Default: textarea + optional ICD search / suggest plan
+    return (
+      <div key={field.key} className="space-y-2">
+        <Controller control={control} name={field.key as any} render={({ field: f }) => (
+          <SectionTextarea
+            id={field.key}
+            label={field.label}
+            value={f.value ?? ''}
+            onChange={f.onChange}
+            rows={field.rows}
+            placeholder={field.placeholder}
+            showAiAssist={field.showAiAssist}
+            isAssisting={loadingSection === field.key}
+            onAiAssist={field.showAiAssist ? () => handleAiAssist(field.key, sectionTitle) : undefined}
+          />
+        )} />
+
+        {/* ICD-10 search */}
+        {field.showIcdSearch && (
+          <div className="flex items-center gap-2 flex-wrap">
+            <Tooltip label="Search ICD-10 diagnostic codes">
+              <Button type="button" variant="outline" size="sm"
+                onClick={() => handleIcdSearch(field.key)}
+                disabled={isSearchingIcd && activeIcdFieldKey === field.key}
+                className="h-7 text-xs gap-1.5"
+              >
+                {isSearchingIcd && activeIcdFieldKey === field.key
+                  ? <Loader2 className="h-3 w-3 animate-spin" />
+                  : <Search className="h-3 w-3" />}
+                ICD-10 Search
+              </Button>
+            </Tooltip>
+            {showIcdResults && activeIcdFieldKey === field.key && (
+              <button type="button" onClick={() => { setShowIcdResults(false); setIcdResults([]); }}
+                className="text-xs text-gray-400 hover:text-gray-600 transition-colors">
+                Clear results
+              </button>
+            )}
+          </div>
+        )}
+
+        {/* ICD results */}
+        {showIcdResults && activeIcdFieldKey === field.key && icdResults.length > 0 && (
+          <div className="border border-teal-200 rounded-xl divide-y divide-gray-100 max-h-52 overflow-y-auto shadow-md">
+            {icdResults.map((code) => (
+              <button key={code.code} type="button" onClick={() => handleIcdSelect(code)}
+                className="w-full text-left flex items-center gap-3 px-4 py-2.5 hover:bg-teal-50 transition-colors first:rounded-t-xl last:rounded-b-xl">
+                <span className="font-mono text-xs font-bold text-teal-700 shrink-0 w-16">{code.code}</span>
+                <span className="text-sm text-gray-700 truncate">{code.description}</span>
+              </button>
+            ))}
+          </div>
+        )}
+
+        {/* Suggest plan */}
+        {field.showSuggestPlan && (
+          <Tooltip label="Generate a management plan based on the diagnosis using AI">
+            <Button type="button" variant="outline" size="sm" onClick={() => handleSuggestPlan(field.key)} disabled={isGeneratingPlan} className="h-7 text-xs gap-1.5">
+              {isGeneratingPlan ? <Loader2 className="h-3 w-3 animate-spin" /> : <Wand2 className="h-3 w-3" />}
+              {isGeneratingPlan ? 'Generating plan…' : 'Suggest Plan'}
+            </Button>
+          </Tooltip>
+        )}
+      </div>
+    );
   }
 
   // ── Success screen ────────────────────────────────────────────────────────
@@ -376,18 +532,17 @@ export function StructuredNoteEditor({ patientId, patientGender, patientAge, con
     );
   }
 
-  let n = 0;
-  const next = () => ++n;
-
   return (
-    <div className="space-y-5">
-
+    <div className="space-y-5 pb-24">
       {/* ── Header ── */}
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <h1 className="text-xl font-bold text-gray-900 truncate">
-            {noteType ? (NOTE_TYPE_CONFIG[noteType]?.label ?? 'Clinical Note') : 'Clinical Note'}
-          </h1>
+          <div className="flex items-center gap-2 mb-1.5">
+            <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-full border ${contextBadge.cls}`}>
+              {contextBadge.label}
+            </span>
+          </div>
+          <h1 className="text-xl font-bold text-gray-900 leading-tight">{noteTypeDef.label}</h1>
           <p className="text-xs text-muted-foreground mt-0.5">Review all AI-generated content before signing.</p>
         </div>
         <div className="flex items-center gap-2 shrink-0">
@@ -408,226 +563,92 @@ export function StructuredNoteEditor({ patientId, patientGender, patientAge, con
         </div>
       </div>
 
-      {/* ── AI error banner ── */}
+      {/* ── Clinical alerts ── */}
+      {aiAlerts.length > 0 && (
+        <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3">
+          <p className="text-xs font-semibold text-amber-800 mb-1.5">Clinical Alerts</p>
+          <ul className="space-y-1">
+            {aiAlerts.map((alert, i) => (
+              <li key={i} className="text-xs text-amber-700 flex items-start gap-1.5">
+                <span className="text-amber-500 mt-px shrink-0">•</span>{alert}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {/* ── AI error ── */}
       {aiError && (
-        <div className="flex items-start gap-2 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
+        <div className="flex items-start gap-2 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
           <AlertCircle className="h-4 w-4 mt-0.5 shrink-0 text-red-500" />
           <div className="flex-1 min-w-0"><span className="font-semibold">AI error: </span>{aiError}</div>
           <button type="button" onClick={clearAiError} className="shrink-0 text-red-400 hover:text-red-600"><X className="h-4 w-4" /></button>
         </div>
       )}
 
-      <form className="space-y-4">
-
-        {/* 1. Presenting Complaints */}
-        <SectionCard num={next()} icon={AlertCircle} title="Presenting Complaints" accent="border-l-red-400">
-          <Controller control={control} name="presentingComplaints" render={({ field }) => (
-            <SectionTextarea id="presentingComplaints" label="Chief complaints" value={field.value} onChange={field.onChange}
-              showAiAssist={false} placeholder="Describe the patient's chief complaints…" rows={3} />
-          )} />
-        </SectionCard>
-
-        {/* 2. HPC */}
-        <SectionCard num={next()} icon={Clock} title="History of Presenting Complaints" accent="border-l-orange-400">
-          <Controller control={control} name="hpc" render={({ field }) => (
-            <SectionTextarea id="hpc" label="HPC" value={field.value} onChange={field.onChange} showAiAssist
-              isAssisting={loadingSection === 'hpc'} onAiAssist={() => handleAiAssist('hpc', 'History of Presenting Complaints')} rows={5} />
-          )} />
-        </SectionCard>
-
-        {/* 3. Past Medical History */}
-        <SectionCard num={next()} icon={BookOpen} title="Past Medical History" accent="border-l-amber-400">
-          <Controller control={control} name="pastMedicalHistory" render={({ field }) => (
-            <SectionTextarea id="pastMedicalHistory" label="Past medical history" value={field.value} onChange={field.onChange} showAiAssist
-              isAssisting={loadingSection === 'pastMedicalHistory'} onAiAssist={() => handleAiAssist('pastMedicalHistory', 'Past Medical History')} rows={4} />
-          )} />
-        </SectionCard>
-
-        {/* 4 & 5. Obstetrics + Gynaecology (female only) */}
-        {isFemale && (
-          <>
-            <SectionCard num={next()} icon={Baby} title="Obstetrics History" accent="border-l-pink-400">
-              <Controller control={control} name="obstetricsHistory" render={({ field }) => (
-                <SectionTextarea id="obstetricsHistory" label="Obstetrics history" value={field.value} onChange={field.onChange} showAiAssist
-                  isAssisting={loadingSection === 'obstetricsHistory'} onAiAssist={() => handleAiAssist('obstetricsHistory', 'Obstetrics History')}
-                  placeholder="Gravida/Para, LMP, EDD, previous deliveries, complications…" rows={4} />
-              )} />
-            </SectionCard>
-            <SectionCard num={next()} icon={Heart} title="Gynaecology History" accent="border-l-rose-400">
-              <Controller control={control} name="gynaecologyHistory" render={({ field }) => (
-                <SectionTextarea id="gynaecologyHistory" label="Gynaecology history" value={field.value} onChange={field.onChange} showAiAssist
-                  isAssisting={loadingSection === 'gynaecologyHistory'} onAiAssist={() => handleAiAssist('gynaecologyHistory', 'Gynaecology History')}
-                  placeholder="Menstrual cycle, dysmenorrhoea, vaginal discharge, contraception, cervical smear…" rows={4} />
-              )} />
-            </SectionCard>
-          </>
-        )}
-
-        {/* Family & Social History */}
-        <SectionCard num={next()} icon={Users} title="Family & Social History" accent="border-l-green-400">
-          <Controller control={control} name="familySocialHistory" render={({ field }) => (
-            <SectionTextarea id="familySocialHistory" label="Family & social history" value={field.value} onChange={field.onChange} showAiAssist
-              isAssisting={loadingSection === 'familySocialHistory'} onAiAssist={() => handleAiAssist('familySocialHistory', 'Family & Social History')} rows={4} />
-          )} />
-        </SectionCard>
-
-        {/* Drug History */}
-        <SectionCard num={next()} icon={Pill} title="Drug History" accent="border-l-purple-400">
-          <Controller control={control} name="drugHistory" render={({ field }) => (
-            <SectionTextarea id="drugHistory" label="Drug history" value={field.value} onChange={field.onChange} showAiAssist
-              isAssisting={loadingSection === 'drugHistory'} onAiAssist={() => handleAiAssist('drugHistory', 'Drug History')} rows={3} />
-          )} />
-        </SectionCard>
-
-        {/* Other History */}
-        <SectionCard num={next()} icon={FileText} title="Other History" accent="border-l-slate-400">
-          <Controller control={control} name="otherHistory" render={({ field }) => (
-            <SectionTextarea id="otherHistory" label="Other relevant history" value={field.value} onChange={field.onChange} showAiAssist
-              isAssisting={loadingSection === 'otherHistory'} onAiAssist={() => handleAiAssist('otherHistory', 'Other History')}
-              placeholder="Surgical history, travel history, occupational history, immunisation history, substance use…" rows={4} />
-          )} />
-        </SectionCard>
-
-        {/* Review of Systems */}
-        <SectionCard num={next()} icon={List} title="Review of Systems" accent="border-l-blue-400">
-          <Controller control={control} name="reviewOfSystems" render={({ field }) => (
-            <SectionTextarea id="reviewOfSystems" label="Review of systems" value={field.value} onChange={field.onChange} showAiAssist
-              isAssisting={loadingSection === 'reviewOfSystems'} onAiAssist={() => handleAiAssist('reviewOfSystems', 'Review of Systems')} rows={5} />
-          )} />
-        </SectionCard>
-
-        {/* Diagnosis */}
-        <SectionCard num={next()} icon={Stethoscope} title="Diagnosis / Assessment" accent="border-l-teal-500">
-          <div className="space-y-3">
-            <div className="flex gap-2 min-w-0">
-              <Controller control={control} name="diagnosis" render={({ field }) => (
-                <Input id="diagnosis" value={field.value} onChange={field.onChange} placeholder="Enter diagnosis…" className="flex-1 min-w-0" />
-              )} />
-              <Tooltip label="Search ICD-10 codes for this diagnosis using AI">
-                <Button type="button" variant="outline" size="sm" onClick={handleIcdSearch} disabled={isSearchingIcd} className="shrink-0 gap-1">
-                  {isSearchingIcd ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}
-                  <span className="hidden sm:inline">{isSearchingIcd ? 'Searching…' : 'ICD-10'}</span>
-                </Button>
-              </Tooltip>
+      {/* ── Dynamic note sections ── */}
+      <div className="space-y-4">
+        {visibleSections.map((section, idx) => (
+          <SectionCard key={section.id} num={idx + 1} icon={section.icon} title={section.title} accent={section.accent}>
+            <div className="space-y-5">
+              {section.fields.map((field) => renderField(field, section.title))}
             </div>
-            {icdOpen && icdResults.length > 0 && (
-              <div ref={diagnosisRef} className="border border-gray-200 rounded-lg shadow-md bg-white max-h-48 overflow-y-auto z-10 relative">
-                {icdResults.map((code) => (
-                  <button key={code.code} type="button" onClick={() => handleIcdSelect(code)}
-                    className="w-full text-left px-3 py-2.5 hover:bg-teal-50 text-sm flex items-start gap-2 border-b border-gray-100 last:border-0 transition-colors">
-                    <Badge variant="outline" className="font-mono text-xs shrink-0 mt-0.5">{code.code}</Badge>
-                    <span className="text-gray-700">{code.description}</span>
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-        </SectionCard>
+          </SectionCard>
+        ))}
+      </div>
 
-        {/* Examination */}
-        <SectionCard num={next()} icon={Activity} title="Physical Examination" accent="border-l-cyan-500">
-          <div className="space-y-5">
-            <ExamBuilder value={examFindings} onChange={setExamFindings} vitals={latestVitals}
-              onGenerateNarrative={handleGenerateNarrative} isGenerating={isConvertingExam} aiAlerts={aiAlerts} />
-            {examinationNarrative && (
-              <div className="space-y-1.5">
-                <Label className="text-sm font-medium text-gray-600">Generated Examination Narrative</Label>
-                <textarea readOnly value={examinationNarrative} rows={6}
-                  className="flex w-full rounded-md border border-teal-200 bg-teal-50/40 px-3 py-2 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-teal-400 resize-y text-gray-800" />
-                <p className="text-xs text-muted-foreground">AI-generated — review and edit as needed before signing.</p>
-              </div>
-            )}
-          </div>
-        </SectionCard>
-
-        {/* Plan */}
-        <SectionCard num={next()} icon={ClipboardList} title="Management Plan" accent="border-l-indigo-400">
-          <div className="space-y-3">
-            <div className="flex justify-end">
-              <Tooltip label="Generate a structured management plan based on the diagnosis above">
-                <Button type="button" variant="outline" size="sm" onClick={handleGeneratePlan} disabled={isGeneratingPlan} className="gap-1.5">
-                  {isGeneratingPlan ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Wand2 className="h-3.5 w-3.5" />}
-                  {isGeneratingPlan ? 'Generating…' : 'Generate Plan'}
-                </Button>
-              </Tooltip>
-            </div>
-            <Controller control={control} name="plan" render={({ field }) => (
-              <SectionTextarea id="plan" label="Management plan" value={field.value} onChange={field.onChange}
-                showAiAssist={false} rows={6} placeholder="Enter management plan…" />
-            )} />
-          </div>
-        </SectionCard>
-
-        {/* ── Footer ── */}
-        <div className="flex flex-wrap items-center justify-between gap-3 pb-8 pt-2">
-          {/* Auto-save indicator (left side) */}
-          <div className="flex items-center gap-3">
-            <Button type="button" variant="ghost" size="sm" onClick={() => router.push(`/patients/${patientId}`)} className="text-gray-500">
-              Cancel
-            </Button>
-            {autoSaveStatus === 'saving' && (
-              <span className="flex items-center gap-1.5 text-xs text-gray-400">
-                <Loader2 className="h-3 w-3 animate-spin" /> Auto-saving…
-              </span>
-            )}
-            {autoSaveStatus === 'saved' && lastAutoSaved && (
-              <span className="flex items-center gap-1.5 text-xs text-teal-600">
-                <Save className="h-3 w-3" /> Auto-saved {format(lastAutoSaved, 'HH:mm:ss')}
-              </span>
-            )}
-          </div>
-
-          {/* Action buttons (right side) */}
-          <div className="flex flex-wrap items-center gap-2">
-            <Tooltip label="Preview the note as a formatted essay before signing">
-              <Button type="button" variant="outline" size="sm" onClick={() => setPreviewOpen(true)} className="gap-1.5">
-                <Eye className="h-4 w-4" /> Preview
-              </Button>
-            </Tooltip>
-            <Tooltip label="Save an unsigned draft — you can continue editing later">
-              <Button type="button" variant="outline" size="sm" onClick={handleSubmit((d) => saveNote(d, 'draft'))} disabled={isSaving} className="gap-1.5">
-                {isSaving ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : null} Save Draft
-              </Button>
-            </Tooltip>
-            <Tooltip label="Finalise and sign the note — this cannot be undone">
-              <Button type="button" size="sm" onClick={handleSubmit((d) => saveNote(d, 'final'))} disabled={isSaving} className="bg-teal-600 hover:bg-teal-700 text-white gap-1.5">
-                {isSaving ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <CheckCircle2 className="h-3.5 w-3.5" />}
-                Sign &amp; Save
-              </Button>
-            </Tooltip>
-          </div>
+      {/* ── Sticky footer ── */}
+      <div className="fixed bottom-0 left-0 right-0 z-20 bg-white/95 backdrop-blur-sm border-t border-gray-200 px-4 py-3 flex items-center justify-between gap-3 shadow-lg">
+        <div className="min-w-0">
+          {autoSaveStatus === 'saving' && (
+            <span className="flex items-center gap-1.5 text-xs text-gray-400">
+              <Loader2 className="h-3 w-3 animate-spin" /> Auto-saving…
+            </span>
+          )}
+          {autoSaveStatus === 'saved' && lastAutoSaved && (
+            <span className="flex items-center gap-1.5 text-xs text-teal-600">
+              <CheckCircle2 className="h-3 w-3" /> Auto-saved {format(lastAutoSaved, 'HH:mm:ss')}
+            </span>
+          )}
         </div>
-      </form>
+        <div className="flex items-center gap-2 shrink-0">
+          <Tooltip label="Preview essay form before signing">
+            <Button type="button" variant="outline" size="sm" onClick={() => { setPreviewValues(getValues()); setShowPreview(true); }} className="gap-1.5 h-8">
+              <Eye className="h-3.5 w-3.5" />
+              <span className="hidden sm:inline">Preview</span>
+            </Button>
+          </Tooltip>
+          <Tooltip label="Save this note as a draft (unsigned)">
+            <Button type="button" variant="outline" size="sm" onClick={() => saveNote('draft')} disabled={isSaving} className="gap-1.5 h-8">
+              {isSaving ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Save className="h-3.5 w-3.5" />}
+              <span className="hidden sm:inline">Save Draft</span>
+            </Button>
+          </Tooltip>
+          <Tooltip label="Sign and finalise this clinical note">
+            <Button type="button" size="sm" onClick={() => saveNote('final')} disabled={isSaving} className="bg-teal-600 hover:bg-teal-700 text-white gap-1.5 h-8">
+              {isSaving ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <CheckCircle2 className="h-3.5 w-3.5" />}
+              <span className="hidden sm:inline">Sign & Save</span>
+            </Button>
+          </Tooltip>
+        </div>
+      </div>
 
-      {/* Note Preview Modal */}
-      <NotePreviewModal
-        isOpen={previewOpen}
-        onClose={() => setPreviewOpen(false)}
-        onEdit={() => setPreviewOpen(false)}
-        data={{
-          presentingComplaints: watch('presentingComplaints'),
-          hpc: watch('hpc'),
-          pastMedicalHistory: watch('pastMedicalHistory'),
-          obstetricsHistory: watch('obstetricsHistory'),
-          gynaecologyHistory: watch('gynaecologyHistory'),
-          familySocialHistory: watch('familySocialHistory'),
-          drugHistory: watch('drugHistory'),
-          otherHistory: watch('otherHistory'),
-          reviewOfSystems: watch('reviewOfSystems'),
-          diagnosis: watch('diagnosis'),
-          plan: watch('plan'),
-          examinationNarrative,
-          isFemale,
-        }}
-      />
-
-      {/* Admit Patient Modal */}
+      {/* ── Modals ── */}
       <AdmitPatientModal
-        patientId={patientId}
-        patientName=""
         isOpen={admitModalOpen}
         onClose={() => setAdmitModalOpen(false)}
-        onAdmitted={() => { setAdmitModalOpen(false); router.push('/ward'); }}
+        onAdmitted={() => setAdmitModalOpen(false)}
+        patientId={patientId}
+        patientName="Patient"
+      />
+      <NotePreviewModal
+        isOpen={showPreview}
+        onClose={() => setShowPreview(false)}
+        onEdit={() => setShowPreview(false)}
+        sections={noteTypeDef.sections}
+        formValues={previewValues}
+        examinationNarrative={examinationNarrative}
+        isFemale={isFemale}
       />
     </div>
   );

@@ -3,28 +3,16 @@
 import React from 'react';
 import { X, Pencil, Printer } from 'lucide-react';
 import { Button } from '@lotto-emr/ui';
-
-interface NotePreviewData {
-  presentingComplaints: string;
-  hpc: string;
-  pastMedicalHistory: string;
-  obstetricsHistory: string;
-  gynaecologyHistory: string;
-  familySocialHistory: string;
-  drugHistory: string;
-  otherHistory: string;
-  reviewOfSystems: string;
-  diagnosis: string;
-  plan: string;
-  examinationNarrative: string;
-  isFemale: boolean;
-}
+import type { NoteSection } from '../data/note-type-definitions';
 
 interface NotePreviewModalProps {
   isOpen: boolean;
   onClose: () => void;
   onEdit: () => void;
-  data: NotePreviewData;
+  sections: NoteSection[];        // from note type definition
+  formValues: Record<string, string>; // form data keyed by field.key
+  examinationNarrative?: string;  // from exam builder
+  isFemale: boolean;
 }
 
 function Section({ heading, content }: { heading: string; content: string }) {
@@ -37,23 +25,20 @@ function Section({ heading, content }: { heading: string; content: string }) {
   );
 }
 
-export function NotePreviewModal({ isOpen, onClose, onEdit, data }: NotePreviewModalProps) {
+export function NotePreviewModal({
+  isOpen,
+  onClose,
+  onEdit,
+  sections,
+  formValues,
+  examinationNarrative,
+  isFemale,
+}: NotePreviewModalProps) {
   if (!isOpen) return null;
 
-  const hasAnyContent = [
-    data.presentingComplaints,
-    data.hpc,
-    data.pastMedicalHistory,
-    data.obstetricsHistory,
-    data.gynaecologyHistory,
-    data.familySocialHistory,
-    data.drugHistory,
-    data.otherHistory,
-    data.reviewOfSystems,
-    data.diagnosis,
-    data.examinationNarrative,
-    data.plan,
-  ].some((v) => v?.trim());
+  const hasAnyContent =
+    Object.values(formValues).some((v) => v?.trim()) ||
+    Boolean(examinationNarrative?.trim());
 
   return (
     <>
@@ -99,22 +84,65 @@ export function NotePreviewModal({ isOpen, onClose, onEdit, data }: NotePreviewM
             </p>
           ) : (
             <article className="max-w-2xl mx-auto print:max-w-none">
-              <Section heading="Presenting Complaints" content={data.presentingComplaints} />
-              <Section heading="History of Presenting Complaints" content={data.hpc} />
-              <Section heading="Past Medical History" content={data.pastMedicalHistory} />
-              {data.isFemale && (
-                <>
-                  <Section heading="Obstetrics History" content={data.obstetricsHistory} />
-                  <Section heading="Gynaecology History" content={data.gynaecologyHistory} />
-                </>
-              )}
-              <Section heading="Family & Social History" content={data.familySocialHistory} />
-              <Section heading="Drug History" content={data.drugHistory} />
-              <Section heading="Other History" content={data.otherHistory} />
-              <Section heading="Review of Systems" content={data.reviewOfSystems} />
-              <Section heading="Diagnosis / Assessment" content={data.diagnosis} />
-              <Section heading="Examination" content={data.examinationNarrative} />
-              <Section heading="Management Plan" content={data.plan} />
+              {sections.map((section) => {
+                // Skip female-only sections for non-female patients
+                if (section.conditionalGender === 'female' && !isFemale) {
+                  return null;
+                }
+
+                // Check if this section contains only an exam-builder field
+                const hasExamBuilder = section.fields.some((f) => f.type === 'exam-builder');
+
+                if (hasExamBuilder) {
+                  // Render exam narrative at this position in the section order
+                  if (!examinationNarrative?.trim()) return null;
+                  return (
+                    <Section
+                      key={section.id}
+                      heading={section.title}
+                      content={examinationNarrative}
+                    />
+                  );
+                }
+
+                // For regular sections, collect non-empty field values
+                const visibleFields = section.fields.filter((f) => f.type !== 'exam-builder');
+
+                if (visibleFields.length === 0) return null;
+
+                if (visibleFields.length === 1) {
+                  // Single field — use section title as heading
+                  const field = visibleFields[0];
+                  const value = formValues[field.key] ?? '';
+                  if (!value.trim()) return null;
+                  return (
+                    <Section
+                      key={section.id}
+                      heading={section.title}
+                      content={value}
+                    />
+                  );
+                }
+
+                // Multiple fields — render each with its own label as heading,
+                // skipping empty ones. Wrap in a fragment keyed to the section.
+                const nonEmptyFields = visibleFields.filter(
+                  (f) => (formValues[f.key] ?? '').trim(),
+                );
+                if (nonEmptyFields.length === 0) return null;
+
+                return (
+                  <React.Fragment key={section.id}>
+                    {nonEmptyFields.map((field) => (
+                      <Section
+                        key={field.key}
+                        heading={field.label}
+                        content={formValues[field.key] ?? ''}
+                      />
+                    ))}
+                  </React.Fragment>
+                );
+              })}
             </article>
           )}
         </div>
