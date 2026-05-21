@@ -1,15 +1,20 @@
 import type { Metadata } from 'next';
+import { Calendar } from 'lucide-react';
 import { AppointmentCalendar } from '@/features/scheduling';
+import { PageHeader } from '@/shared/components/page-header';
 
 export const metadata: Metadata = { title: 'Schedule' };
 
 export default function SchedulePage() {
   return (
-    <div className="space-y-4">
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight">Schedule</h1>
-        <p className="text-muted-foreground text-sm">Manage appointments and slots</p>
-      </div>
+    <div>
+      <PageHeader
+        title="Schedule"
+        description="Manage appointments and availability"
+        icon={Calendar}
+        iconColor="text-emerald-600"
+        iconBg="bg-emerald-50"
+      />
       <AppointmentCalendar />
     </div>
   );

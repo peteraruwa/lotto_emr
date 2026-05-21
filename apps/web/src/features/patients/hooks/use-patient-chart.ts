@@ -49,7 +49,6 @@ export function usePatientChart(patientId: string) {
           queryFn: () =>
             medplum.searchResources('Condition', {
               patient: `Patient/${patientId}`,
-              'clinical-status': 'active',
               _count: '20',
             }),
           enabled: !!patientId,
@@ -59,7 +58,6 @@ export function usePatientChart(patientId: string) {
           queryFn: () =>
             medplum.searchResources('AllergyIntolerance', {
               patient: `Patient/${patientId}`,
-              'clinical-status': 'active',
             }),
           enabled: !!patientId,
         },
@@ -87,29 +85,23 @@ export function usePatientChart(patientId: string) {
       ],
     });
 
-  const isLoading =
-    patientQuery.isLoading ||
-    encountersQuery.isLoading ||
-    conditionsQuery.isLoading ||
-    allergiesQuery.isLoading ||
-    observationsQuery.isLoading ||
-    medsQuery.isLoading;
+  const isLoading = patientQuery.isLoading;
 
-  const error =
-    patientQuery.error ||
-    encountersQuery.error ||
-    conditionsQuery.error ||
-    allergiesQuery.error ||
-    observationsQuery.error ||
-    medsQuery.error;
+  const error = patientQuery.error;
 
   let chartData: PatientChartData | null = null;
 
   if (patientQuery.data) {
     const patient = patientQuery.data;
     const encounters = encountersQuery.data ?? [];
-    const conditions = conditionsQuery.data ?? [];
-    const allergies = allergiesQuery.data ?? [];
+    const conditions = (conditionsQuery.data ?? []).filter((c: any) => {
+      const s = c.clinicalStatus?.coding?.[0]?.code;
+      return !s || s === 'active';
+    });
+    const allergies = (allergiesQuery.data ?? []).filter((a: any) => {
+      const s = a.clinicalStatus?.coding?.[0]?.code;
+      return !s || s === 'active';
+    });
     const observations = observationsQuery.data ?? [];
     const medications = medsQuery.data ?? [];
 

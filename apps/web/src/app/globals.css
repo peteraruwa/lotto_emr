@@ -23,7 +23,7 @@
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
     --ring: 221 83% 53%;
-    --radius: 0.5rem;
+    --radius: 0.625rem;
   }
 
   .dark {
@@ -55,7 +55,22 @@
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground antialiased;
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply bg-gray-200 rounded-full;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-gray-300;
   }
 
   /* Clinical data tables */
@@ -78,5 +93,46 @@
   /* Critical value highlight */
   .critical-value {
     @apply bg-red-50 text-red-700 font-bold rounded px-1;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  /* Gradient text utility */
+  .gradient-text {
+    @apply bg-gradient-to-r from-hospital-600 to-hospital-400 bg-clip-text text-transparent;
+  }
+
+  /* Glass card effect */
+  .glass-card {
+    @apply bg-white/80 backdrop-blur-sm border border-white/60 shadow-sm;
+  }
+
+  /* Stat card gradient */
+  .stat-gradient-blue   { background: linear-gradient(135deg, #1a69f3 0%, #1453e0 100%); }
+  .stat-gradient-green  { background: linear-gradient(135deg, #059669 0%, #047857 100%); }
+  .stat-gradient-amber  { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); }
+  .stat-gradient-violet { background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%); }
+
+  /* Fade in animation */
+  .animate-fade-in {
+    animation: fade-in 0.2s ease-out;
+  }
+
+  @keyframes fade-in {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes slide-in-left {
+    from { opacity: 0; transform: translateX(-8px); }
+    to   { opacity: 1; transform: translateX(0); }
+  }
+
+  .animate-slide-in {
+    animation: slide-in-left 0.18s ease-out;
   }
 }

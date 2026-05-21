@@ -133,10 +133,21 @@ export function PatientProfile({ patientId }: PatientProfileProps) {
     );
   }
 
-  if (error || !profileData) {
+  if (error) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="text-destructive">Failed to load patient profile.</div>
+        <div className="text-center space-y-2">
+          <div className="text-destructive font-semibold">Failed to load patient profile.</div>
+          <div className="text-xs text-muted-foreground max-w-sm">{(error as any)?.message ?? String(error)}</div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!profileData) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="text-muted-foreground">Loading patient profile...</div>
       </div>
     );
   }
