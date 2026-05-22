@@ -25,6 +25,8 @@ export interface NoteListItem {
   docStatus: 'preliminary' | 'final' | string;
   status: 'current' | 'superseded' | 'entered-in-error';
   authorName: string;
+  authorId?: string;
+  noteTypeKey?: string;
   date: string;
   encounterId?: string;
 }

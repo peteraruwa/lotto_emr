@@ -63,8 +63,8 @@ function ChipsField({ field, value, onChange }: {
             onClick={() => onChange(value === opt.value ? '' : opt.value)}
             className={`px-4 py-2 text-sm font-medium rounded-full border transition-all duration-150 ${
               value === opt.value
-                ? 'bg-teal-600 text-white border-teal-600 shadow-sm'
-                : 'bg-white text-gray-600 border-gray-200 hover:border-teal-400 hover:text-teal-600 hover:bg-teal-50'
+                ? 'bg-hospital-600 text-white border-hospital-600 shadow-sm'
+                : 'bg-white text-gray-600 border-gray-200 hover:border-blue-300 hover:text-blue-600 hover:bg-blue-50'
             }`}
           >
             {opt.label}
@@ -76,14 +76,14 @@ function ChipsField({ field, value, onChange }: {
 }
 
 // ── SectionCard ───────────────────────────────────────────────────────────────
-function SectionCard({ num, icon: Icon, title, accent, children }: {
-  num: number; icon: React.ElementType; title: string; accent: string; children: React.ReactNode;
+function SectionCard({ num, icon: Icon, title, children }: {
+  num: number; icon: React.ElementType; title: string; accent?: string; children: React.ReactNode;
 }) {
   return (
-    <Card className={`border-l-4 ${accent} shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden`}>
+    <Card className="border border-gray-100 shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden">
       <CardHeader className="pb-3 pt-5 px-5">
         <CardTitle className="text-sm font-semibold text-gray-800 flex items-center gap-2.5 min-w-0">
-          <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-teal-50 border border-teal-200 text-[11px] font-bold text-teal-600 shrink-0 select-none">
+          <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-blue-50 border border-blue-200 text-[11px] font-bold text-blue-600 shrink-0 select-none">
             {num}
           </span>
           <Icon className="h-4 w-4 text-gray-400 shrink-0" />
@@ -121,7 +121,7 @@ function SectionTextarea({
       <textarea
         id={id} value={value} onChange={(e) => onChange(e.target.value)} rows={rows}
         placeholder={placeholder ?? `Enter ${label.toLowerCase()}…`}
-        className="flex w-full rounded-lg border border-gray-200 bg-white px-4 py-3 text-sm text-gray-900 shadow-sm placeholder:text-gray-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-400/30 focus-visible:border-teal-400 resize-y transition-all duration-150 leading-relaxed"
+        className="flex w-full rounded-lg border border-gray-200 bg-white px-4 py-3 text-sm text-gray-900 shadow-sm placeholder:text-gray-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-hospital-400/30 focus-visible:border-hospital-400 resize-y transition-all duration-150 leading-relaxed"
       />
     </div>
   );
@@ -150,11 +150,12 @@ interface StructuredNoteEditorProps {
   conditions?: string[];
   medications?: string[];
   noteType?: string;
+  existingNoteId?: string;
 }
 
 // ── Main component ────────────────────────────────────────────────────────────
 export function StructuredNoteEditor({
-  patientId, patientGender, patientAge, conditions, medications, noteType,
+  patientId, patientGender, patientAge, conditions, medications, noteType, existingNoteId,
 }: StructuredNoteEditorProps) {
   const medplum = useMedplum();
   const router = useRouter();
@@ -251,11 +252,43 @@ export function StructuredNoteEditor({
 
   const isFemale = resolvedGender === 'female';
 
+  // ── Load existing note for edit mode ─────────────────────────────────────
+  useEffect(() => {
+    if (!existingNoteId) return;
+    savedDocIdRef.current = existingNoteId;
+    medplum.readResource('DocumentReference', existingNoteId).then((doc: any) => {
+      const attachment = doc.content?.[0]?.attachment;
+      if (!attachment?.data) return;
+      try {
+        const raw = Buffer.from(attachment.data, 'base64').toString('binary');
+        let text: string;
+        try { text = decodeURIComponent(escape(raw)); } catch { text = raw; }
+        const parsed = JSON.parse(text);
+        Object.entries(parsed).forEach(([key, val]) => {
+          if (typeof val === 'string') setValue(key as any, val);
+        });
+        if (parsed.examFindings) {
+          setExamFindings(parsed.examFindings);
+          examFindingsRef.current = parsed.examFindings;
+        }
+        if (parsed.examinationNarrative) {
+          setExaminationNarrative(parsed.examinationNarrative);
+          examinationNarrativeRef.current = parsed.examinationNarrative;
+        }
+      } catch { /* ignore parse errors for legacy plain-text notes */ }
+      const encRef = doc.context?.encounter?.[0]?.reference?.split('/')?.[1];
+      if (encRef) savedEncIdRef.current = encRef;
+    }).catch(() => undefined);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [existingNoteId]);
+
   // ── Core persist ──────────────────────────────────────────────────────────
   const persistNote = useCallback(async (
     formData: Record<string, string>,
     docStatus: 'draft' | 'final',
+    options: { createEncounter?: boolean } = {},
   ): Promise<void> => {
+    const { createEncounter = true } = options;
     const currentUser = medplum.getProfile();
     const now = new Date().toISOString();
 
@@ -275,8 +308,8 @@ export function StructuredNoteEditor({
       ? [{ reference: `Practitioner/${currentUser.id}`, display: `${currentUser.name?.[0]?.given?.[0] ?? ''} ${currentUser.name?.[0]?.family ?? ''}`.trim() }]
       : [];
 
-    // Create Encounter exactly once
-    if (!savedEncIdRef.current) {
+    // Create Encounter once on explicit save only (not auto-save)
+    if (createEncounter && !savedEncIdRef.current) {
       try {
         const enc = await medplum.createResource({
           resourceType: 'Encounter',
@@ -346,7 +379,7 @@ export function StructuredNoteEditor({
       autoSaveBusyRef.current = true;
       setAutoSaveStatus('saving');
       try {
-        await persistNoteRef.current(formData, 'draft');
+        await persistNoteRef.current(formData, 'draft', { createEncounter: false });
         setLastAutoSaved(new Date());
         setAutoSaveStatus('saved');
         setTimeout(() => setAutoSaveStatus('idle'), 4000);
@@ -456,7 +489,7 @@ export function StructuredNoteEditor({
             vitals={latestVitals}
           />
           {examinationNarrative && (
-            <div className="mt-3 rounded-lg border border-teal-100 bg-teal-50/40 px-4 py-3 text-sm text-gray-800 whitespace-pre-wrap leading-relaxed">
+            <div className="mt-3 rounded-lg border border-teal-100 bg-blue-50/40 px-4 py-3 text-sm text-gray-800 whitespace-pre-wrap leading-relaxed">
               {examinationNarrative}
             </div>
           )}
@@ -516,11 +549,11 @@ export function StructuredNoteEditor({
 
         {/* ICD results */}
         {showIcdResults && activeIcdFieldKey === field.key && icdResults.length > 0 && (
-          <div className="border border-teal-200 rounded-xl divide-y divide-gray-100 max-h-52 overflow-y-auto shadow-md">
+          <div className="border border-blue-200 rounded-xl divide-y divide-gray-100 max-h-52 overflow-y-auto shadow-md">
             {icdResults.map((code) => (
               <button key={code.code} type="button" onClick={() => handleIcdSelect(code)}
-                className="w-full text-left flex items-center gap-3 px-4 py-2.5 hover:bg-teal-50 transition-colors first:rounded-t-xl last:rounded-b-xl">
-                <span className="font-mono text-xs font-bold text-teal-700 shrink-0 w-16">{code.code}</span>
+                className="w-full text-left flex items-center gap-3 px-4 py-2.5 hover:bg-blue-50 transition-colors first:rounded-t-xl last:rounded-b-xl">
+                <span className="font-mono text-xs font-bold text-blue-700 shrink-0 w-16">{code.code}</span>
                 <span className="text-sm text-gray-700 truncate">{code.description}</span>
               </button>
             ))}
@@ -544,7 +577,7 @@ export function StructuredNoteEditor({
   if (saveStatus !== 'idle') {
     return (
       <div className="flex flex-col items-center justify-center h-64 gap-3">
-        <CheckCircle2 className="h-12 w-12 text-teal-600" />
+        <CheckCircle2 className="h-12 w-12 text-hospital-600" />
         <p className="text-lg font-medium text-gray-900">
           Note {saveStatus === 'final' ? 'signed and saved' : 'saved as draft'}
         </p>
@@ -576,7 +609,7 @@ export function StructuredNoteEditor({
             </Button>
           </Tooltip>
           <Tooltip label="Admit this patient to a ward bed">
-            <Button type="button" size="sm" onClick={() => setAdmitModalOpen(true)} className="bg-teal-600 hover:bg-teal-700 text-white gap-1.5">
+            <Button type="button" size="sm" onClick={() => setAdmitModalOpen(true)} className="bg-hospital-600 hover:bg-hospital-700 text-white gap-1.5">
               <BedDouble className="h-4 w-4" />
               Admit Patient
             </Button>
@@ -618,7 +651,7 @@ export function StructuredNoteEditor({
               className={cn(
                 'flex-1 px-3 py-2 text-sm font-semibold rounded-lg transition-all duration-150',
                 consultTab === tab.id
-                  ? 'bg-white text-teal-700 shadow-sm border border-gray-200'
+                  ? 'bg-white text-hospital-700 shadow-sm border border-gray-200'
                   : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50',
               )}
             >
@@ -654,7 +687,7 @@ export function StructuredNoteEditor({
             </span>
           )}
           {autoSaveStatus === 'saved' && lastAutoSaved && (
-            <span className="flex items-center gap-1.5 text-xs text-teal-600">
+            <span className="flex items-center gap-1.5 text-xs text-hospital-600">
               <CheckCircle2 className="h-3 w-3" /> Auto-saved {format(lastAutoSaved, 'HH:mm:ss')}
             </span>
           )}
@@ -673,7 +706,7 @@ export function StructuredNoteEditor({
             </Button>
           </Tooltip>
           <Tooltip label="Sign and finalise this clinical note">
-            <Button type="button" size="sm" onClick={() => saveNote('final')} disabled={isSaving} className="bg-teal-600 hover:bg-teal-700 text-white gap-1.5 h-8">
+            <Button type="button" size="sm" onClick={() => saveNote('final')} disabled={isSaving} className="bg-hospital-600 hover:bg-hospital-700 text-white gap-1.5 h-8">
               {isSaving ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <CheckCircle2 className="h-3.5 w-3.5" />}
               Sign & Save
             </Button>

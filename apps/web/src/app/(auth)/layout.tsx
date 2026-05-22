@@ -70,6 +70,9 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
           <p className="text-center text-xs text-gray-400 mt-5">
             Authorized personnel only · All access is audited
           </p>
+          <p className="text-center text-[11px] text-gray-300 mt-2">
+            Powered by <span className="font-semibold text-gray-400">SerialQuest</span>
+          </p>
         </div>
       </div>
     </div>

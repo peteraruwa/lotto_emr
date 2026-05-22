@@ -1,12 +1,13 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Plus, FileText, ChevronDown, ChevronRight } from 'lucide-react';
+import Link from 'next/link';
+import { Plus, FileText, ChevronDown, ChevronRight, Lock, Pencil } from 'lucide-react';
 import { cn } from '@lotto-emr/ui';
+import { useMedplum } from '@medplum/react';
 import { RequireRole } from '@/shared/rbac';
 import { formatDateTime } from '@/shared/lib/utils';
 import { useNotes } from '../api/use-notes';
-import { NoteEditor } from './note-editor';
 import type { NoteListItem, NoteType } from '../types';
 
 // ── SOAP section renderer ──────────────────────────────────────────────────────
@@ -28,13 +29,6 @@ function parseSoapText(text: string): { section: string; lines: string[] }[] {
   return sections;
 }
 
-const SECTION_STYLE: Record<string, { border: string; bg: string; text: string }> = {
-  SUBJECTIVE:  { border: 'border-blue-200',   bg: 'bg-blue-50',    text: 'text-blue-700' },
-  OBJECTIVE:   { border: 'border-emerald-200', bg: 'bg-emerald-50', text: 'text-emerald-700' },
-  ASSESSMENT:  { border: 'border-orange-200',  bg: 'bg-orange-50',  text: 'text-orange-700' },
-  PLAN:        { border: 'border-violet-200',  bg: 'bg-violet-50',  text: 'text-violet-700' },
-};
-
 function SoapSections({ text }: { text: string }) {
   const sections = parseSoapText(text);
   if (!sections.length) {
@@ -44,11 +38,10 @@ function SoapSections({ text }: { text: string }) {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 mt-2">
       {sections.map((sec) => {
-        const style = SECTION_STYLE[sec.section] ?? { border: 'border-gray-200', bg: 'bg-gray-50', text: 'text-gray-700' };
         if (!sec.lines.length) return null;
         return (
-          <div key={sec.section} className={cn('rounded-xl border p-3', style.border, style.bg)}>
-            <p className={cn('text-[11px] font-bold uppercase tracking-wide mb-2', style.text)}>
+          <div key={sec.section} className="rounded-xl border border-gray-200 bg-gray-50 p-3">
+            <p className="text-[11px] font-bold uppercase tracking-wide mb-2 text-blue-700">
               {sec.section}
             </p>
             <div className="space-y-1.5">
@@ -72,25 +65,26 @@ function SoapSections({ text }: { text: string }) {
   );
 }
 
-// ── Type badge ────────────────────────────────────────────────────────────────
-
-const TYPE_STYLE: Record<string, string> = {
-  SOAP:      'bg-blue-50 text-blue-700',
-  PROGRESS:  'bg-emerald-50 text-emerald-700',
-  DISCHARGE: 'bg-orange-50 text-orange-700',
-  REFERRAL:  'bg-violet-50 text-violet-700',
-};
-
 // ── Note card ─────────────────────────────────────────────────────────────────
 
 function NoteCard({ note }: { note: NoteListItem }) {
+  const medplum     = useMedplum();
   const [expanded, setExpanded] = useState(false);
+
+  const currentUser   = medplum.getProfile() as any;
+  const currentUserId = currentUser?.id;
+
+  const isFinal    = note.docStatus === 'final';
+  const isOwn      = !!note.authorId && note.authorId === currentUserId;
+  const canEdit    = !isFinal && isOwn;
 
   const isSoap = note.contentPreview?.includes('## SUBJECTIVE') ||
                  note.contentPreview?.includes('## OBJECTIVE') ||
                  note.type === 'SOAP' as NoteType;
 
-  const typeCls = TYPE_STYLE[note.type] ?? 'bg-gray-100 text-gray-600';
+  const editHref = note.noteTypeKey
+    ? `/patients/${note.patientId}/clinical-note/new?type=${note.noteTypeKey}&noteId=${note.id}`
+    : undefined;
 
   return (
     <div className={cn(
@@ -106,9 +100,16 @@ function NoteCard({ note }: { note: NoteListItem }) {
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
             <p className="text-sm font-semibold text-gray-800 truncate leading-tight">{note.title}</p>
-            <span className={cn('px-2 py-0.5 rounded-full text-[11px] font-semibold flex-shrink-0', typeCls)}>
-              {note.type}
-            </span>
+            {isFinal ? (
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-blue-50 text-blue-700 flex-shrink-0">
+                <Lock className="h-2.5 w-2.5" />
+                Final
+              </span>
+            ) : (
+              <span className="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-gray-100 text-gray-600 flex-shrink-0">
+                Draft
+              </span>
+            )}
             {note.status !== 'current' && (
               <span className="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-red-50 text-red-600 flex-shrink-0">
                 {note.status}
@@ -120,18 +121,30 @@ function NoteCard({ note }: { note: NoteListItem }) {
           </p>
         </div>
 
-        <button
-          onClick={() => setExpanded((e) => !e)}
-          className={cn(
-            'flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all flex-shrink-0',
-            expanded
-              ? 'bg-hospital-600 text-white'
-              : 'bg-hospital-50 hover:bg-hospital-100 text-hospital-700',
+        <div className="flex items-center gap-1.5 flex-shrink-0">
+          {canEdit && editHref && (
+            <Link
+              href={editHref}
+              className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-semibold text-gray-600 hover:bg-gray-100 transition-colors border border-gray-200"
+              title="Edit draft note"
+            >
+              <Pencil className="h-3 w-3" />
+              Edit
+            </Link>
           )}
-        >
-          {expanded ? <ChevronDown className="h-3.5 w-3.5" /> : <ChevronRight className="h-3.5 w-3.5" />}
-          {expanded ? 'Collapse' : 'View'}
-        </button>
+          <button
+            onClick={() => setExpanded((e) => !e)}
+            className={cn(
+              'flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all',
+              expanded
+                ? 'bg-hospital-600 text-white'
+                : 'bg-hospital-50 hover:bg-hospital-100 text-hospital-700',
+            )}
+          >
+            {expanded ? <ChevronDown className="h-3.5 w-3.5" /> : <ChevronRight className="h-3.5 w-3.5" />}
+            {expanded ? 'Collapse' : 'View'}
+          </button>
+        </div>
       </div>
 
       {/* Preview — collapsed */}
@@ -140,10 +153,9 @@ function NoteCard({ note }: { note: NoteListItem }) {
           {isSoap ? (
             <div className="flex items-center gap-2 flex-wrap">
               {['SUBJECTIVE', 'OBJECTIVE', 'ASSESSMENT', 'PLAN'].map((s) => {
-                const style = SECTION_STYLE[s] ?? {};
                 const hasSection = note.contentPreview?.includes(`## ${s}`);
                 return hasSection ? (
-                  <span key={s} className={cn('px-2 py-0.5 rounded-full text-[11px] font-semibold border', style.border, style.bg, style.text)}>
+                  <span key={s} className="px-2 py-0.5 rounded-full text-[11px] font-semibold border border-blue-100 bg-blue-50 text-blue-700">
                     {s.charAt(0) + s.slice(1).toLowerCase()}
                   </span>
                 ) : null;
@@ -179,10 +191,10 @@ interface NoteListProps {
   patientId: string;
   typeFilter?: NoteType;
   hideNewButton?: boolean;
+  onNewNote?: () => void;
 }
 
-export function NoteList({ patientId, typeFilter, hideNewButton = false }: NoteListProps) {
-  const [showEditor, setShowEditor] = useState(false);
+export function NoteList({ patientId, typeFilter, hideNewButton = false, onNewNote }: NoteListProps) {
   const { data: allNotes = [], isLoading } = useNotes(patientId);
 
   const notes = typeFilter ? allNotes.filter((n) => n.type === typeFilter) : allNotes;
@@ -193,7 +205,7 @@ export function NoteList({ patientId, typeFilter, hideNewButton = false }: NoteL
         <RequireRole roles={['doctor', 'nurse']}>
           <div className="flex justify-end">
             <button
-              onClick={() => setShowEditor(true)}
+              onClick={onNewNote}
               className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-hospital-600 hover:bg-hospital-700 text-white text-xs font-semibold transition-colors shadow-sm shadow-hospital-600/20"
             >
               <Plus className="h-3.5 w-3.5" />
@@ -201,20 +213,6 @@ export function NoteList({ patientId, typeFilter, hideNewButton = false }: NoteL
             </button>
           </div>
         </RequireRole>
-      )}
-
-      {/* Note editor modal */}
-      {showEditor && (
-        <div className="fixed inset-0 bg-gray-900/60 backdrop-blur-sm z-50 flex items-start justify-center p-4 overflow-y-auto">
-          <div className="bg-white rounded-3xl shadow-2xl w-full max-w-2xl p-6 mt-8 animate-fade-in">
-            <h2 className="text-base font-bold text-gray-900 mb-4">Clinical Note</h2>
-            <NoteEditor
-              patientId={patientId}
-              onSuccess={() => setShowEditor(false)}
-              onCancel={() => setShowEditor(false)}
-            />
-          </div>
-        </div>
       )}
 
       {/* Loading */}
@@ -241,7 +239,7 @@ export function NoteList({ patientId, typeFilter, hideNewButton = false }: NoteL
           <p className="text-sm font-semibold text-gray-500">
             {typeFilter ? `No ${typeFilter.toLowerCase()} notes yet` : 'No clinical notes yet'}
           </p>
-          <p className="text-xs text-gray-400 mt-1">Notes will appear here once created</p>
+          <p className="text-xs text-gray-400 mt-1">Notes will appear here once saved</p>
         </div>
       )}
 

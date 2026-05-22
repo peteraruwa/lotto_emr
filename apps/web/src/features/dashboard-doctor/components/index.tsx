@@ -6,13 +6,10 @@ import { useRouter } from 'next/navigation';
 import { format } from 'date-fns';
 import {
   Search, Bell, Calendar,
-  Activity, FlaskConical, ClipboardList, Sparkles, DatabaseZap, Loader2,
+  Activity, FlaskConical, ClipboardList, Sparkles,
 } from 'lucide-react';
 import { Input } from '@lotto-emr/ui';
 import { useMedplum } from '@medplum/react';
-import { useQueryClient } from '@tanstack/react-query';
-import { formatPatientName } from '@lotto-emr/core';
-import type { Patient } from '@medplum/fhirtypes';
 import { useDoctorDashboardData } from '../hooks/use-dashboard-data';
 import { PatientQueue } from './patient-queue';
 import { RightPanel } from './right-panel';
@@ -116,81 +113,6 @@ function TopBar({
   );
 }
 
-// ── Seed queue button (dev/testing utility) ───────────────────────────────────
-
-const SEED_SLOTS: { offsetMin: number; status: string; visitType: string }[] = [
-  { offsetMin: -150, status: 'arrived',   visitType: 'General Consultation' },
-  { offsetMin: -120, status: 'arrived',   visitType: 'Follow-up' },
-  { offsetMin:  -90, status: 'fulfilled', visitType: 'General Consultation' },
-  { offsetMin:  -60, status: 'booked',    visitType: 'ANC Visit' },
-  { offsetMin:  -30, status: 'booked',    visitType: 'General Consultation' },
-  { offsetMin:    0, status: 'booked',    visitType: 'Specialist Referral' },
-  { offsetMin:   30, status: 'booked',    visitType: 'Follow-up' },
-  { offsetMin:   60, status: 'noshow',    visitType: 'General Consultation' },
-];
-
-function SeedQueueButton() {
-  const medplum     = useMedplum();
-  const queryClient = useQueryClient();
-  const [seeding, setSeeding] = useState(false);
-  const [done, setDone]       = useState(false);
-
-  async function handleSeed() {
-    setSeeding(true);
-    try {
-      const bundle = await medplum.search('Patient', { _count: '10', _sort: '-_lastUpdated' });
-      const patients = (bundle.entry ?? [])
-        .filter((e) => e.resource?.resourceType === 'Patient')
-        .map((e) => e.resource as Patient);
-
-      if (patients.length === 0) return;
-
-      const now = new Date();
-      const limit = Math.min(patients.length, SEED_SLOTS.length);
-
-      await Promise.all(
-        SEED_SLOTS.slice(0, limit).map((slot, i) => {
-          const patient = patients[i];
-          const start   = new Date(now.getTime() + slot.offsetMin * 60_000);
-          const end     = new Date(start.getTime() + 30 * 60_000);
-          return medplum.createResource({
-            resourceType: 'Appointment',
-            status: slot.status as any,
-            start: start.toISOString(),
-            end:   end.toISOString(),
-            participant: [{
-              actor:  { reference: `Patient/${patient.id}`, display: formatPatientName(patient.name) },
-              status: 'accepted',
-            }],
-            serviceType: [{ text: slot.visitType }],
-          });
-        }),
-      );
-
-      await queryClient.invalidateQueries({ queryKey: ['doctor-dash', 'appointments'] });
-      setDone(true);
-      setTimeout(() => setDone(false), 4000);
-    } finally {
-      setSeeding(false);
-    }
-  }
-
-  return (
-    <button
-      onClick={handleSeed}
-      disabled={seeding}
-      title="Seed test appointments for today's queue"
-      className="flex items-center gap-1.5 text-xs font-medium text-gray-400 hover:text-hospital-600 hover:bg-hospital-50 px-3 py-1.5 rounded-lg transition-colors disabled:opacity-50"
-    >
-      {seeding
-        ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
-        : <DatabaseZap className="h-3.5 w-3.5" />
-      }
-      {done ? 'Seeded!' : 'Seed queue'}
-    </button>
-  );
-}
-
 // ── Main dashboard ────────────────────────────────────────────────────────────
 
 export function DoctorDashboard() {
@@ -277,15 +199,12 @@ export function DoctorDashboard() {
                   )}
                 </div>
               </div>
-              <div className="flex items-center gap-2 flex-shrink-0">
-                <SeedQueueButton />
-                <Link
-                  href="/schedule"
-                  className="text-xs font-medium text-hospital-600 hover:text-hospital-700 bg-hospital-50 hover:bg-hospital-100 px-3 py-1.5 rounded-lg transition-colors"
-                >
-                  View schedule
-                </Link>
-              </div>
+              <Link
+                href="/schedule"
+                className="flex-shrink-0 text-xs font-medium text-hospital-600 hover:text-hospital-700 bg-hospital-50 hover:bg-hospital-100 px-3 py-1.5 rounded-lg transition-colors"
+              >
+                View schedule
+              </Link>
             </div>
             <PatientQueue
               rows={data?.schedule ?? []}

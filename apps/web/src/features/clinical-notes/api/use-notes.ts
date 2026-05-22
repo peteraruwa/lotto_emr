@@ -42,6 +42,14 @@ export function useNotes(patientId: string | undefined) {
           }
         }
 
+        let noteTypeKey: string | undefined;
+        if (contentText) {
+          try {
+            const parsed = JSON.parse(contentText);
+            if (parsed.noteType) noteTypeKey = parsed.noteType;
+          } catch { /* plain-text legacy note */ }
+        }
+
         return {
           id: doc.id ?? '',
           patientId: patientId ?? '',
@@ -53,6 +61,8 @@ export function useNotes(patientId: string | undefined) {
           docStatus: doc.docStatus ?? 'preliminary',
           status: doc.status ?? 'current',
           authorName: doc.author?.[0]?.display ?? 'Unknown',
+          authorId: doc.author?.[0]?.reference?.split('/')?.[1],
+          noteTypeKey,
           date: doc.date ?? '',
           encounterId: doc.context?.encounter?.[0]?.reference?.split('/')?.[1],
         };
