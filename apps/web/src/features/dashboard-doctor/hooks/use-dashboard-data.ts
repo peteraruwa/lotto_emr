@@ -7,6 +7,7 @@ import type { Patient } from '@medplum/fhirtypes';
 
 export interface AppointmentRow {
   id: string;
+  patientId: string;
   patientName: string;
   patientRef: string;
   time: string;
@@ -121,6 +122,7 @@ export function useDoctorDashboardData(): { data: DoctorDashboardData | null; is
 
     return {
       id:          a.id ?? '',
+      patientId:   patientId ?? '',
       patientName,
       patientRef:  patientParticipant?.actor?.reference ?? '',
       time:        a.start ?? '',

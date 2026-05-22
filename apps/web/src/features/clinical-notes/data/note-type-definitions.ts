@@ -381,6 +381,7 @@ export const NOTE_TYPE_DEFINITIONS: Record<string, NoteTypeDefinition> = {
         title: 'Subjective',
         icon: FileText,
         accent: 'border-l-blue-400',
+        tab: 'subjective',
         fields: [
           {
             key: 'subjective',
@@ -396,6 +397,7 @@ export const NOTE_TYPE_DEFINITIONS: Record<string, NoteTypeDefinition> = {
         title: 'Objective',
         icon: Activity,
         accent: 'border-l-cyan-500',
+        tab: 'objective',
         fields: [
           {
             key: 'objective',
@@ -411,6 +413,7 @@ export const NOTE_TYPE_DEFINITIONS: Record<string, NoteTypeDefinition> = {
         title: 'Assessment',
         icon: Stethoscope,
         accent: 'border-l-teal-500',
+        tab: 'assessment',
         fields: [
           {
             key: 'assessment',
@@ -426,6 +429,7 @@ export const NOTE_TYPE_DEFINITIONS: Record<string, NoteTypeDefinition> = {
         title: 'Plan',
         icon: ClipboardList,
         accent: 'border-l-indigo-400',
+        tab: 'plan',
         fields: [
           {
             key: 'plan',
@@ -456,6 +460,7 @@ export const NOTE_TYPE_DEFINITIONS: Record<string, NoteTypeDefinition> = {
         title: 'Triage Information',
         icon: Thermometer,
         accent: 'border-l-yellow-400',
+        tab: 'subjective',
         fields: [
           {
             key: 'triageInfo',
@@ -470,6 +475,7 @@ export const NOTE_TYPE_DEFINITIONS: Record<string, NoteTypeDefinition> = {
         title: 'Presenting Complaint',
         icon: AlertCircle,
         accent: 'border-l-red-400',
+        tab: 'subjective',
         fields: [
           {
             key: 'presentingComplaint',
@@ -484,6 +490,7 @@ export const NOTE_TYPE_DEFINITIONS: Record<string, NoteTypeDefinition> = {
         title: 'History of Present Illness',
         icon: Clock,
         accent: 'border-l-orange-400',
+        tab: 'subjective',
         fields: [
           {
             key: 'hpi',
@@ -499,6 +506,7 @@ export const NOTE_TYPE_DEFINITIONS: Record<string, NoteTypeDefinition> = {
         title: 'Vital Signs',
         icon: TrendingUp,
         accent: 'border-l-cyan-400',
+        tab: 'objective',
         fields: [
           {
             key: 'vitalSigns',
@@ -513,6 +521,7 @@ export const NOTE_TYPE_DEFINITIONS: Record<string, NoteTypeDefinition> = {
         title: 'Primary Survey (ABCDE)',
         icon: Zap,
         accent: 'border-l-red-500',
+        tab: 'objective',
         fields: [
           {
             key: 'primarySurvey',
@@ -528,6 +537,7 @@ export const NOTE_TYPE_DEFINITIONS: Record<string, NoteTypeDefinition> = {
         title: 'Focused Examination',
         icon: Stethoscope,
         accent: 'border-l-teal-400',
+        tab: 'objective',
         fields: [
           {
             key: 'focusedExam',
@@ -543,6 +553,7 @@ export const NOTE_TYPE_DEFINITIONS: Record<string, NoteTypeDefinition> = {
         title: 'Emergency Interventions',
         icon: Syringe,
         accent: 'border-l-orange-500',
+        tab: 'objective',
         fields: [
           {
             key: 'emergencyInterventions',
@@ -557,6 +568,7 @@ export const NOTE_TYPE_DEFINITIONS: Record<string, NoteTypeDefinition> = {
         title: 'Assessment',
         icon: Activity,
         accent: 'border-l-teal-500',
+        tab: 'assessment',
         fields: [
           {
             key: 'assessment',
@@ -572,6 +584,7 @@ export const NOTE_TYPE_DEFINITIONS: Record<string, NoteTypeDefinition> = {
         title: 'Differential Diagnosis',
         icon: Brain,
         accent: 'border-l-violet-400',
+        tab: 'assessment',
         fields: [
           {
             key: 'differentialDiagnosis',
@@ -587,6 +600,7 @@ export const NOTE_TYPE_DEFINITIONS: Record<string, NoteTypeDefinition> = {
         title: 'Disposition',
         icon: LogOut,
         accent: 'border-l-gray-400',
+        tab: 'plan',
         fields: [
           {
             key: 'disposition',
@@ -621,6 +635,7 @@ export const NOTE_TYPE_DEFINITIONS: Record<string, NoteTypeDefinition> = {
         title: 'Admission Reason',
         icon: Building2,
         accent: 'border-l-blue-500',
+        tab: 'subjective',
         fields: [
           {
             key: 'admissionReason',
@@ -635,6 +650,7 @@ export const NOTE_TYPE_DEFINITIONS: Record<string, NoteTypeDefinition> = {
         title: 'Chief Complaint',
         icon: AlertCircle,
         accent: 'border-l-red-400',
+        tab: 'subjective',
         fields: [
           {
             key: 'chiefComplaint',
@@ -649,6 +665,7 @@ export const NOTE_TYPE_DEFINITIONS: Record<string, NoteTypeDefinition> = {
         title: 'History of Present Illness',
         icon: Clock,
         accent: 'border-l-orange-400',
+        tab: 'subjective',
         fields: [
           {
             key: 'hpi',
@@ -664,6 +681,7 @@ export const NOTE_TYPE_DEFINITIONS: Record<string, NoteTypeDefinition> = {
         title: 'Past Medical History',
         icon: BookOpen,
         accent: 'border-l-amber-400',
+        tab: 'subjective',
         fields: [
           {
             key: 'pastMedicalHistory',
@@ -679,6 +697,7 @@ export const NOTE_TYPE_DEFINITIONS: Record<string, NoteTypeDefinition> = {
         title: 'Gynaecology History',
         icon: Heart,
         accent: 'border-l-pink-400',
+        tab: 'subjective',
         conditionalGender: 'female',
         fields: [
           {
@@ -695,6 +714,7 @@ export const NOTE_TYPE_DEFINITIONS: Record<string, NoteTypeDefinition> = {
         title: 'Obstetrics History',
         icon: Baby,
         accent: 'border-l-rose-400',
+        tab: 'subjective',
         conditionalGender: 'female',
         fields: [
           {
@@ -711,6 +731,7 @@ export const NOTE_TYPE_DEFINITIONS: Record<string, NoteTypeDefinition> = {
         title: 'Drug History',
         icon: Pill,
         accent: 'border-l-purple-400',
+        tab: 'subjective',
         fields: [
           {
             key: 'drugHistory',
@@ -726,6 +747,7 @@ export const NOTE_TYPE_DEFINITIONS: Record<string, NoteTypeDefinition> = {
         title: 'Allergy History',
         icon: AlertTriangle,
         accent: 'border-l-red-300',
+        tab: 'subjective',
         fields: [
           {
             key: 'allergyHistory',
@@ -740,6 +762,7 @@ export const NOTE_TYPE_DEFINITIONS: Record<string, NoteTypeDefinition> = {
         title: 'Family History',
         icon: Users,
         accent: 'border-l-green-400',
+        tab: 'subjective',
         fields: [
           {
             key: 'familyHistory',
@@ -755,6 +778,7 @@ export const NOTE_TYPE_DEFINITIONS: Record<string, NoteTypeDefinition> = {
         title: 'Social History',
         icon: MapPin,
         accent: 'border-l-emerald-400',
+        tab: 'subjective',
         fields: [
           {
             key: 'socialHistory',
@@ -770,6 +794,7 @@ export const NOTE_TYPE_DEFINITIONS: Record<string, NoteTypeDefinition> = {
         title: 'Review of Systems',
         icon: List,
         accent: 'border-l-blue-400',
+        tab: 'subjective',
         fields: [
           {
             key: 'reviewOfSystems',
@@ -785,6 +810,7 @@ export const NOTE_TYPE_DEFINITIONS: Record<string, NoteTypeDefinition> = {
         title: 'Physical Examination',
         icon: Stethoscope,
         accent: 'border-l-cyan-500',
+        tab: 'objective',
         fields: [
           {
             key: 'examFindings',
@@ -798,6 +824,7 @@ export const NOTE_TYPE_DEFINITIONS: Record<string, NoteTypeDefinition> = {
         title: 'Assessment / Diagnosis',
         icon: Activity,
         accent: 'border-l-teal-500',
+        tab: 'assessment',
         fields: [
           {
             key: 'diagnosis',
@@ -813,6 +840,7 @@ export const NOTE_TYPE_DEFINITIONS: Record<string, NoteTypeDefinition> = {
         title: 'Initial Management Plan',
         icon: ClipboardList,
         accent: 'border-l-indigo-400',
+        tab: 'plan',
         fields: [
           {
             key: 'plan',
@@ -843,6 +871,7 @@ export const NOTE_TYPE_DEFINITIONS: Record<string, NoteTypeDefinition> = {
         title: 'Overnight Events',
         icon: Clock,
         accent: 'border-l-orange-400',
+        tab: 'subjective',
         fields: [
           {
             key: 'overnightEvents',
@@ -858,6 +887,7 @@ export const NOTE_TYPE_DEFINITIONS: Record<string, NoteTypeDefinition> = {
         title: 'Subjective Symptoms',
         icon: FileText,
         accent: 'border-l-blue-400',
+        tab: 'subjective',
         fields: [
           {
             key: 'subjectiveSymptoms',
@@ -873,6 +903,7 @@ export const NOTE_TYPE_DEFINITIONS: Record<string, NoteTypeDefinition> = {
         title: 'Vital Signs',
         icon: TrendingUp,
         accent: 'border-l-cyan-400',
+        tab: 'objective',
         fields: [
           {
             key: 'vitalSigns',
@@ -887,6 +918,7 @@ export const NOTE_TYPE_DEFINITIONS: Record<string, NoteTypeDefinition> = {
         title: 'Intake / Output',
         icon: Activity,
         accent: 'border-l-sky-400',
+        tab: 'objective',
         fields: [
           {
             key: 'intakeOutput',
@@ -901,6 +933,7 @@ export const NOTE_TYPE_DEFINITIONS: Record<string, NoteTypeDefinition> = {
         title: 'Examination Findings',
         icon: Stethoscope,
         accent: 'border-l-teal-400',
+        tab: 'objective',
         fields: [
           {
             key: 'examinationFindings',
@@ -916,6 +949,7 @@ export const NOTE_TYPE_DEFINITIONS: Record<string, NoteTypeDefinition> = {
         title: 'Investigation Updates',
         icon: FlaskConical,
         accent: 'border-l-emerald-400',
+        tab: 'objective',
         fields: [
           {
             key: 'investigationUpdates',
@@ -931,6 +965,7 @@ export const NOTE_TYPE_DEFINITIONS: Record<string, NoteTypeDefinition> = {
         title: 'Assessment',
         icon: Activity,
         accent: 'border-l-teal-500',
+        tab: 'assessment',
         fields: [
           {
             key: 'assessment',
@@ -946,6 +981,7 @@ export const NOTE_TYPE_DEFINITIONS: Record<string, NoteTypeDefinition> = {
         title: 'Response to Treatment',
         icon: TrendingUp,
         accent: 'border-l-green-400',
+        tab: 'assessment',
         fields: [
           {
             key: 'responseToTreatment',
@@ -961,6 +997,7 @@ export const NOTE_TYPE_DEFINITIONS: Record<string, NoteTypeDefinition> = {
         title: 'Updated Plan',
         icon: ClipboardList,
         accent: 'border-l-indigo-400',
+        tab: 'plan',
         fields: [
           {
             key: 'plan',
@@ -976,6 +1013,7 @@ export const NOTE_TYPE_DEFINITIONS: Record<string, NoteTypeDefinition> = {
         title: 'Pending Tasks',
         icon: CheckSquare,
         accent: 'border-l-gray-400',
+        tab: 'plan',
         fields: [
           {
             key: 'pendingTasks',
@@ -1005,6 +1043,7 @@ export const NOTE_TYPE_DEFINITIONS: Record<string, NoteTypeDefinition> = {
         title: 'Procedure Name',
         icon: Syringe,
         accent: 'border-l-blue-400',
+        tab: 'subjective',
         fields: [
           {
             key: 'procedureName',
@@ -1019,6 +1058,7 @@ export const NOTE_TYPE_DEFINITIONS: Record<string, NoteTypeDefinition> = {
         title: 'Indication',
         icon: AlertCircle,
         accent: 'border-l-amber-400',
+        tab: 'subjective',
         fields: [
           {
             key: 'indication',
@@ -1033,6 +1073,7 @@ export const NOTE_TYPE_DEFINITIONS: Record<string, NoteTypeDefinition> = {
         title: 'Consent',
         icon: Shield,
         accent: 'border-l-green-400',
+        tab: 'subjective',
         fields: [
           {
             key: 'consent',
@@ -1047,6 +1088,7 @@ export const NOTE_TYPE_DEFINITIONS: Record<string, NoteTypeDefinition> = {
         title: 'Pre-procedure Assessment',
         icon: BookOpen,
         accent: 'border-l-orange-400',
+        tab: 'subjective',
         fields: [
           {
             key: 'preProcedureAssessment',
@@ -1062,6 +1104,7 @@ export const NOTE_TYPE_DEFINITIONS: Record<string, NoteTypeDefinition> = {
         title: 'Anesthesia Used',
         icon: Syringe,
         accent: 'border-l-purple-400',
+        tab: 'objective',
         fields: [
           {
             key: 'anesthesia',
@@ -1076,6 +1119,7 @@ export const NOTE_TYPE_DEFINITIONS: Record<string, NoteTypeDefinition> = {
         title: 'Procedure Details',
         icon: ClipboardList,
         accent: 'border-l-teal-400',
+        tab: 'objective',
         fields: [
           {
             key: 'procedureDetails',
@@ -1091,6 +1135,7 @@ export const NOTE_TYPE_DEFINITIONS: Record<string, NoteTypeDefinition> = {
         title: 'Findings',
         icon: Activity,
         accent: 'border-l-cyan-400',
+        tab: 'objective',
         fields: [
           {
             key: 'findings',
@@ -1106,6 +1151,7 @@ export const NOTE_TYPE_DEFINITIONS: Record<string, NoteTypeDefinition> = {
         title: 'Complications',
         icon: AlertTriangle,
         accent: 'border-l-red-400',
+        tab: 'assessment',
         fields: [
           {
             key: 'complications',
@@ -1120,6 +1166,7 @@ export const NOTE_TYPE_DEFINITIONS: Record<string, NoteTypeDefinition> = {
         title: 'Post-procedure Status',
         icon: TrendingUp,
         accent: 'border-l-emerald-400',
+        tab: 'assessment',
         fields: [
           {
             key: 'postProcedureStatus',
@@ -1135,6 +1182,7 @@ export const NOTE_TYPE_DEFINITIONS: Record<string, NoteTypeDefinition> = {
         title: 'Follow-up Plan',
         icon: Calendar,
         accent: 'border-l-gray-400',
+        tab: 'plan',
         fields: [
           {
             key: 'followUpPlan',
@@ -1164,6 +1212,7 @@ export const NOTE_TYPE_DEFINITIONS: Record<string, NoteTypeDefinition> = {
         title: 'Referral Specialty',
         icon: Users,
         accent: 'border-l-blue-400',
+        tab: 'subjective',
         fields: [
           {
             key: 'referralSpecialty',
@@ -1178,6 +1227,7 @@ export const NOTE_TYPE_DEFINITIONS: Record<string, NoteTypeDefinition> = {
         title: 'Reason for Referral',
         icon: AlertCircle,
         accent: 'border-l-red-400',
+        tab: 'subjective',
         fields: [
           {
             key: 'reasonForReferral',
@@ -1192,6 +1242,7 @@ export const NOTE_TYPE_DEFINITIONS: Record<string, NoteTypeDefinition> = {
         title: 'Brief History',
         icon: BookOpen,
         accent: 'border-l-amber-400',
+        tab: 'subjective',
         fields: [
           {
             key: 'briefHistory',
@@ -1207,6 +1258,7 @@ export const NOTE_TYPE_DEFINITIONS: Record<string, NoteTypeDefinition> = {
         title: 'Relevant Findings',
         icon: Activity,
         accent: 'border-l-teal-400',
+        tab: 'objective',
         fields: [
           {
             key: 'relevantFindings',
@@ -1222,6 +1274,7 @@ export const NOTE_TYPE_DEFINITIONS: Record<string, NoteTypeDefinition> = {
         title: 'Investigations Done',
         icon: FlaskConical,
         accent: 'border-l-sky-400',
+        tab: 'objective',
         fields: [
           {
             key: 'investigationsDone',
@@ -1237,6 +1290,7 @@ export const NOTE_TYPE_DEFINITIONS: Record<string, NoteTypeDefinition> = {
         title: 'Current Diagnosis',
         icon: Stethoscope,
         accent: 'border-l-teal-500',
+        tab: 'assessment',
         fields: [
           {
             key: 'currentDiagnosis',
@@ -1252,6 +1306,7 @@ export const NOTE_TYPE_DEFINITIONS: Record<string, NoteTypeDefinition> = {
         title: 'Current Treatment',
         icon: Pill,
         accent: 'border-l-purple-400',
+        tab: 'assessment',
         fields: [
           {
             key: 'currentTreatment',
@@ -1267,6 +1322,7 @@ export const NOTE_TYPE_DEFINITIONS: Record<string, NoteTypeDefinition> = {
         title: 'Specific Questions / Requests',
         icon: List,
         accent: 'border-l-indigo-400',
+        tab: 'plan',
         fields: [
           {
             key: 'specificQuestions',
@@ -1281,6 +1337,7 @@ export const NOTE_TYPE_DEFINITIONS: Record<string, NoteTypeDefinition> = {
         title: 'Urgency Level',
         icon: Zap,
         accent: 'border-l-orange-400',
+        tab: 'plan',
         fields: [
           {
             key: 'urgencyLevel',
@@ -1314,6 +1371,7 @@ export const NOTE_TYPE_DEFINITIONS: Record<string, NoteTypeDefinition> = {
         title: 'Admission Diagnosis',
         icon: Building2,
         accent: 'border-l-blue-400',
+        tab: 'subjective',
         fields: [
           {
             key: 'admissionDiagnosis',
@@ -1328,6 +1386,7 @@ export const NOTE_TYPE_DEFINITIONS: Record<string, NoteTypeDefinition> = {
         title: 'Final Diagnosis',
         icon: Stethoscope,
         accent: 'border-l-teal-500',
+        tab: 'assessment',
         fields: [
           {
             key: 'finalDiagnosis',
@@ -1343,6 +1402,7 @@ export const NOTE_TYPE_DEFINITIONS: Record<string, NoteTypeDefinition> = {
         title: 'Hospital Course',
         icon: Clock,
         accent: 'border-l-orange-400',
+        tab: 'subjective',
         fields: [
           {
             key: 'hospitalCourse',
@@ -1358,6 +1418,7 @@ export const NOTE_TYPE_DEFINITIONS: Record<string, NoteTypeDefinition> = {
         title: 'Procedures Performed',
         icon: Syringe,
         accent: 'border-l-purple-400',
+        tab: 'objective',
         fields: [
           {
             key: 'proceduresPerformed',
@@ -1373,6 +1434,7 @@ export const NOTE_TYPE_DEFINITIONS: Record<string, NoteTypeDefinition> = {
         title: 'Key Investigations',
         icon: FlaskConical,
         accent: 'border-l-sky-400',
+        tab: 'objective',
         fields: [
           {
             key: 'keyInvestigations',
@@ -1388,6 +1450,7 @@ export const NOTE_TYPE_DEFINITIONS: Record<string, NoteTypeDefinition> = {
         title: 'Treatments Given',
         icon: Pill,
         accent: 'border-l-green-400',
+        tab: 'objective',
         fields: [
           {
             key: 'treatmentsGiven',
@@ -1403,6 +1466,7 @@ export const NOTE_TYPE_DEFINITIONS: Record<string, NoteTypeDefinition> = {
         title: 'Condition at Discharge',
         icon: UserCheck,
         accent: 'border-l-emerald-400',
+        tab: 'assessment',
         fields: [
           {
             key: 'conditionAtDischarge',
@@ -1417,6 +1481,7 @@ export const NOTE_TYPE_DEFINITIONS: Record<string, NoteTypeDefinition> = {
         title: 'Discharge Medications',
         icon: ClipboardList,
         accent: 'border-l-indigo-400',
+        tab: 'plan',
         fields: [
           {
             key: 'dischargeMedications',
@@ -1432,6 +1497,7 @@ export const NOTE_TYPE_DEFINITIONS: Record<string, NoteTypeDefinition> = {
         title: 'Follow-up Instructions',
         icon: FileText,
         accent: 'border-l-amber-400',
+        tab: 'plan',
         fields: [
           {
             key: 'followUpInstructions',
@@ -1447,6 +1513,7 @@ export const NOTE_TYPE_DEFINITIONS: Record<string, NoteTypeDefinition> = {
         title: 'Follow-up Appointments',
         icon: Calendar,
         accent: 'border-l-gray-400',
+        tab: 'plan',
         fields: [
           {
             key: 'followUpAppointments',
@@ -1461,6 +1528,7 @@ export const NOTE_TYPE_DEFINITIONS: Record<string, NoteTypeDefinition> = {
         title: 'Counseling Given',
         icon: Users,
         accent: 'border-l-slate-400',
+        tab: 'plan',
         fields: [
           {
             key: 'counselingGiven',

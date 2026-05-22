@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { format } from 'date-fns';
 import {
   Search, Bell, Calendar,
@@ -9,10 +10,9 @@ import {
 } from 'lucide-react';
 import { Button, Input } from '@lotto-emr/ui';
 import { useMedplum } from '@medplum/react';
-import { useDoctorDashboardData, type AppointmentRow } from '../hooks/use-dashboard-data';
+import { useDoctorDashboardData } from '../hooks/use-dashboard-data';
 import { PatientQueue } from './patient-queue';
 import { RightPanel } from './right-panel';
-import { ConsultationView } from './consultation-view';
 
 // ── Stat card ─────────────────────────────────────────────────────────────────
 
@@ -125,8 +125,8 @@ function TopBar({
 
 export function DoctorDashboard() {
   const medplum = useMedplum();
+  const router = useRouter();
   const { data, isLoading } = useDoctorDashboardData();
-  const [activeAppt, setActiveAppt] = useState<AppointmentRow | null>(null);
 
   const profile   = medplum.getProfile() as any;
   const firstName = profile?.name?.[0]?.given?.[0] ?? 'Doctor';
@@ -188,47 +188,40 @@ export function DoctorDashboard() {
       {/* Main workspace */}
       <div className="grid grid-cols-1 xl:grid-cols-[1fr_300px] gap-4">
 
-        {/* Centre: queue or consultation */}
+        {/* Centre: patient queue */}
         <div className="min-w-0">
-          {activeAppt ? (
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden animate-fade-in">
-              <ConsultationView
-                appointment={activeAppt}
-                onBack={() => setActiveAppt(null)}
-              />
-            </div>
-          ) : (
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-              <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
-                <div className="flex items-center gap-3 min-w-0">
-                  <div className="w-8 h-8 rounded-xl bg-hospital-50 flex items-center justify-center flex-shrink-0">
-                    <Calendar className="h-4 w-4 text-hospital-600" />
-                  </div>
-                  <div className="min-w-0">
-                    <h2 className="font-semibold text-sm text-gray-800 leading-tight">
-                      Today's Patient Queue
-                    </h2>
-                    {!isLoading && (data?.todayAppointments ?? 0) > 0 && (
-                      <p className="text-xs text-gray-400 leading-tight">
-                        {data!.todayAppointments} appointment{data!.todayAppointments !== 1 ? 's' : ''}
-                      </p>
-                    )}
-                  </div>
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="w-8 h-8 rounded-xl bg-hospital-50 flex items-center justify-center flex-shrink-0">
+                  <Calendar className="h-4 w-4 text-hospital-600" />
                 </div>
-                <Link
-                  href="/schedule"
-                  className="flex-shrink-0 text-xs font-medium text-hospital-600 hover:text-hospital-700 bg-hospital-50 hover:bg-hospital-100 px-3 py-1.5 rounded-lg transition-colors"
-                >
-                  View schedule
-                </Link>
+                <div className="min-w-0">
+                  <h2 className="font-semibold text-sm text-gray-800 leading-tight">
+                    Today's Patient Queue
+                  </h2>
+                  {!isLoading && (data?.todayAppointments ?? 0) > 0 && (
+                    <p className="text-xs text-gray-400 leading-tight">
+                      {data!.todayAppointments} appointment{data!.todayAppointments !== 1 ? 's' : ''}
+                    </p>
+                  )}
+                </div>
               </div>
-              <PatientQueue
-                rows={data?.schedule ?? []}
-                loading={isLoading}
-                onOpenPatient={(appt) => setActiveAppt(appt)}
-              />
+              <Link
+                href="/schedule"
+                className="flex-shrink-0 text-xs font-medium text-hospital-600 hover:text-hospital-700 bg-hospital-50 hover:bg-hospital-100 px-3 py-1.5 rounded-lg transition-colors"
+              >
+                View schedule
+              </Link>
             </div>
-          )}
+            <PatientQueue
+              rows={data?.schedule ?? []}
+              loading={isLoading}
+              onOpenPatient={(appt) => {
+                if (appt.patientId) router.push(`/patients/${appt.patientId}`);
+              }}
+            />
+          </div>
         </div>
 
         {/* Right panel */}

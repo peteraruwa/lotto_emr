@@ -1,12 +1,14 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useMedplum } from '@medplum/react';
 import { useRole } from '@/shared/rbac/use-role';
 import { getRoleConfig, NavItem } from '@/shared/rbac/role-config';
 import { cn } from '@lotto-emr/ui';
+import { MessagingPanel } from '@/features/messaging';
+import { AnnouncementBanner } from './announcement-banner';
 import {
   LayoutDashboard,
   Users,
@@ -28,6 +30,10 @@ import {
   ChevronRight,
   PanelLeftClose,
   PanelLeftOpen,
+  Settings,
+  Baby,
+  Sun,
+  Moon,
 } from 'lucide-react';
 
 const ICON_MAP: Record<string, React.ElementType> = {
@@ -45,8 +51,33 @@ const ICON_MAP: Record<string, React.ElementType> = {
   FolderOpen,
   BedDouble,
   DollarSign,
+  Settings,
+  Baby,
 };
 
+// ── Dark mode hook ────────────────────────────────────────────────────────────
+function useDarkMode() {
+  const [dark, setDark] = useState(false);
+
+  useEffect(() => {
+    const stored = localStorage.getItem('emr-theme');
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const isDark = stored === 'dark' || (stored !== 'light' && prefersDark);
+    setDark(isDark);
+    document.documentElement.classList.toggle('dark', isDark);
+  }, []);
+
+  function toggle() {
+    const next = !dark;
+    setDark(next);
+    document.documentElement.classList.toggle('dark', next);
+    localStorage.setItem('emr-theme', next ? 'dark' : 'light');
+  }
+
+  return { dark, toggle };
+}
+
+// ── NavLink ───────────────────────────────────────────────────────────────────
 function NavLink({
   item,
   collapsed,
@@ -86,7 +117,7 @@ function NavLink({
         <span className="truncate leading-none">{item.label}</span>
       )}
 
-      {/* Tooltip shown when collapsed */}
+      {/* Tooltip when collapsed */}
       {collapsed && (
         <span className="pointer-events-none absolute left-full ml-3 z-50 whitespace-nowrap rounded-lg bg-gray-900 px-2.5 py-1.5 text-xs text-white opacity-0 group-hover:opacity-100 transition-all duration-150 shadow-xl">
           {item.label}
@@ -103,6 +134,7 @@ interface AppShellProps {
 export function AppShell({ children }: AppShellProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [collapsed, setCollapsed]   = useState(false);
+  const { dark, toggle: toggleDark } = useDarkMode();
 
   const medplum    = useMedplum();
   const role       = useRole();
@@ -118,7 +150,7 @@ export function AppShell({ children }: AppShellProps) {
 
   const initials = displayName
     .split(' ')
-    .map((w) => w[0])
+    .map((w: string) => w[0])
     .join('')
     .toUpperCase()
     .slice(0, 2);
@@ -161,6 +193,14 @@ export function AppShell({ children }: AppShellProps) {
           <NavLink key={item.href} item={item} collapsed={collapsed} />
         ))}
       </nav>
+
+      {/* Settings link */}
+      <div className={cn('border-t border-gray-100 pt-2', collapsed ? 'px-2' : 'px-3')}>
+        <NavLink
+          item={{ label: 'Settings', href: '/settings', icon: 'Settings' }}
+          collapsed={collapsed}
+        />
+      </div>
 
       {/* User + collapse */}
       <div className={cn('border-t border-gray-100 py-3', collapsed ? 'px-2 space-y-1' : 'px-3 space-y-1')}>
@@ -244,6 +284,13 @@ export function AppShell({ children }: AppShellProps) {
               onClick={() => setMobileOpen(false)}
             />
           ))}
+          <div className="border-t border-gray-100 pt-2 mt-2">
+            <NavLink
+              item={{ label: 'Settings', href: '/settings', icon: 'Settings' }}
+              collapsed={false}
+              onClick={() => setMobileOpen(false)}
+            />
+          </div>
         </nav>
 
         {/* User */}
@@ -277,6 +324,10 @@ export function AppShell({ children }: AppShellProps) {
     </div>
   );
 
+  const profile   = medplum.getProfile() as any;
+  const userId    = profile?.id ?? 'user';
+  const userName  = displayName;
+
   return (
     <div className="flex h-screen bg-gray-50/80 overflow-hidden">
       {desktopSidebar}
@@ -291,11 +342,21 @@ export function AppShell({ children }: AppShellProps) {
           >
             <Menu className="h-5 w-5" />
           </button>
-          <div className="flex items-center gap-2 min-w-0">
+          <div className="flex items-center gap-2 min-w-0 flex-1">
             <div className="w-6 h-6 bg-gradient-to-br from-hospital-500 to-hospital-700 rounded-lg flex items-center justify-center text-white text-[10px] font-bold flex-shrink-0">
               LC
             </div>
             <p className="text-sm font-bold text-gray-900 truncate">Lotto Central</p>
+          </div>
+          <div className="flex items-center gap-2 flex-shrink-0">
+            <MessagingPanel userId={userId} userName={userName} userRole={role ?? 'admin'} />
+            <button
+              onClick={toggleDark}
+              className="w-9 h-9 flex items-center justify-center rounded-xl bg-gray-100 text-gray-500 hover:bg-gray-200 transition-colors"
+              title={dark ? 'Switch to light mode' : 'Switch to dark mode'}
+            >
+              {dark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+            </button>
           </div>
         </header>
 
@@ -304,15 +365,31 @@ export function AppShell({ children }: AppShellProps) {
           <div className="min-w-0">
             <p className="text-sm font-semibold text-gray-800 truncate">Lotto Central Hospital</p>
           </div>
-          <div className="flex items-center gap-3 flex-shrink-0">
+          <div className="flex items-center gap-2 flex-shrink-0">
             <span className="text-xs font-medium text-gray-400 capitalize bg-gray-100 px-2.5 py-1 rounded-full">
               {role ?? ''}
             </span>
+
+            {/* Messaging */}
+            <MessagingPanel userId={userId} userName={userName} userRole={role ?? 'admin'} />
+
+            {/* Dark mode toggle */}
+            <button
+              onClick={toggleDark}
+              className="w-9 h-9 flex items-center justify-center rounded-xl bg-gray-100 text-gray-500 hover:bg-gray-200 transition-colors"
+              title={dark ? 'Switch to light mode' : 'Switch to dark mode'}
+            >
+              {dark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+            </button>
+
             <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-hospital-400 to-hospital-600 flex items-center justify-center text-white text-xs font-bold shadow-sm">
               {initials}
             </div>
           </div>
         </header>
+
+        {/* Announcement banner */}
+        <AnnouncementBanner />
 
         {/* Page content */}
         <main className="flex-1 overflow-y-auto p-4 md:p-5">
