@@ -6,13 +6,12 @@ import {
   ArrowLeft, AlertTriangle, Plus, Activity, Baby,
   FileText, FlaskConical, ClipboardList, Calendar,
   Pill, Phone, MapPin, Shield, Loader2, User,
-  Heart, Stethoscope, ChevronRight,
+  Heart, Stethoscope, ChevronRight, BedDouble,
 } from 'lucide-react';
 import { cn } from '@lotto-emr/ui';
 import { capitalize, formatDate, formatDateTime } from '@/shared/lib/utils';
 import { usePatientProfile } from '../hooks/use-patient-profile';
 import type { VitalRow } from '../hooks/use-patient-profile';
-import { useMedplum } from '@medplum/react';
 import { NoteList } from '@/features/clinical-notes';
 import { EncounterList } from '@/features/encounters';
 import { ResultsList } from '@/features/results';
@@ -115,30 +114,11 @@ interface PatientProfileProps {
 }
 
 export function PatientProfile({ patientId }: PatientProfileProps) {
-  const medplum = useMedplum();
   const { profileData, isLoading, error } = usePatientProfile(patientId);
 
-  const [activeTab, setActiveTab]               = useState<Tab>('summary');
-  const [noteTypeFilter, setNoteTypeFilter]      = useState<NoteTypeFilter>('ALL');
-  const [noteModalOpen, setNoteModalOpen]        = useState(false);
-  const [openingVisit, setOpeningVisit]          = useState(false);
-  const [freshEncounterId, setFreshEncounterId]  = useState<string | undefined>();
-
-  async function openVisit() {
-    setOpeningVisit(true);
-    try {
-      const enc = await medplum.createResource({
-        resourceType: 'Encounter',
-        status: 'arrived',
-        class: { system: 'http://terminology.hl7.org/CodeSystem/v3-ActCode', code: 'AMB', display: 'ambulatory' },
-        subject: { reference: `Patient/${patientId}` },
-        period: { start: new Date().toISOString() },
-      } as any);
-      setFreshEncounterId((enc as any).id as string);
-    } catch { /* non-critical */ } finally {
-      setOpeningVisit(false);
-    }
-  }
+  const [activeTab, setActiveTab]       = useState<Tab>('summary');
+  const [noteTypeFilter, setNoteTypeFilter] = useState<NoteTypeFilter>('ALL');
+  const [noteModalOpen, setNoteModalOpen]   = useState(false);
 
   // ── Loading ──────────────────────────────────────────────────────────────────
 
@@ -169,14 +149,12 @@ export function PatientProfile({ patientId }: PatientProfileProps) {
     );
   }
 
-  const { biodata, hasActiveEncounter, allergies, conditions, vitalRows, latestVitals, encounters, medications } = profileData;
+  const { biodata, hasActiveEncounter, allergies, conditions, vitalRows, latestVitals, medications } = profileData;
   const isFemale = biodata.gender === 'female';
   const initials = biodata.fullName.split(' ').map((w) => w[0]).join('').toUpperCase().slice(0, 2);
   const tabs = isFemale
     ? [...MAIN_TABS, { id: 'anc' as Tab, label: 'ANC', icon: Baby }]
     : MAIN_TABS;
-
-  const hasActiveEnc = hasActiveEncounter || !!freshEncounterId;
 
   return (
     <div className="min-h-screen bg-gray-50/50 pb-12">
@@ -205,7 +183,7 @@ export function PatientProfile({ patientId }: PatientProfileProps) {
                 <span className="text-[11px] font-mono bg-gray-100 text-gray-600 px-2 py-0.5 rounded-md">
                   {biodata.mrn}
                 </span>
-                {hasActiveEnc && (
+                {hasActiveEncounter && (
                   <span className="text-[11px] font-semibold bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded-full border border-emerald-200">
                     Active Encounter
                   </span>
@@ -229,18 +207,6 @@ export function PatientProfile({ patientId }: PatientProfileProps) {
 
             {/* Action buttons */}
             <div className="flex flex-wrap items-center gap-2 flex-shrink-0">
-              {!hasActiveEnc && (
-                <button
-                  onClick={openVisit}
-                  disabled={openingVisit}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold transition-colors shadow-sm shadow-emerald-600/20"
-                >
-                  {openingVisit
-                    ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                    : <Plus className="h-3.5 w-3.5" />}
-                  Open Visit
-                </button>
-              )}
               <button
                 onClick={() => { setActiveTab('notes'); setNoteModalOpen(true); }}
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-hospital-600 hover:bg-hospital-700 text-white text-xs font-semibold transition-colors shadow-sm shadow-hospital-600/20"
@@ -248,13 +214,13 @@ export function PatientProfile({ patientId }: PatientProfileProps) {
                 <FileText className="h-3.5 w-3.5" />
                 New Note
               </button>
-              {isFemale && (
+              {!hasActiveEncounter && (
                 <Link
-                  href={`/patients/${patientId}/anc`}
+                  href={`/patients/${patientId}/admit`}
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-gray-200 text-gray-600 hover:bg-gray-50 text-xs font-semibold transition-colors"
                 >
-                  <Baby className="h-3.5 w-3.5" />
-                  ANC
+                  <BedDouble className="h-3.5 w-3.5" />
+                  Admit
                 </Link>
               )}
             </div>
