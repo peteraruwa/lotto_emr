@@ -83,8 +83,8 @@ function SingleSelectRow({ item, selected, onSelect }: {
             className={
               'px-2.5 py-1 rounded-full text-xs font-medium transition-colors border ' +
               (selected === opt
-                ? 'bg-teal-600 text-white border-teal-600'
-                : 'bg-white text-gray-700 border-gray-300 hover:border-teal-400 hover:text-teal-700')
+                ? 'bg-hospital-600 text-white border-hospital-600'
+                : 'bg-white text-gray-700 border-gray-300 hover:border-blue-400 hover:text-blue-700')
             }
           >
             {opt}
@@ -110,8 +110,8 @@ function MultiSelectRow({ item, selected, onToggle }: {
             className={
               'px-2.5 py-1 rounded-full text-xs font-medium transition-colors border ' +
               (selected.includes(opt)
-                ? 'bg-teal-600 text-white border-teal-600'
-                : 'bg-white text-gray-700 border-gray-300 hover:border-teal-400 hover:text-teal-700')
+                ? 'bg-hospital-600 text-white border-hospital-600'
+                : 'bg-white text-gray-700 border-gray-300 hover:border-blue-400 hover:text-blue-700')
             }
           >
             {opt}
@@ -133,7 +133,7 @@ function FreeNumericTextRow({ item, value, vitals, onChange }: {
       <div className="flex items-center gap-2">
         <p className="text-xs font-medium text-gray-600">{item.category}</p>
         {hasVital && (
-          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-teal-50 text-teal-700 border border-teal-200">
+          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200">
             {vitalValue} · from nurse vitals
           </span>
         )}
@@ -236,7 +236,7 @@ function FixedModuleCard({
             Fixed
           </span>
           {normal && (
-            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-teal-50 text-teal-700 border border-teal-200">
+            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200">
               ✓ All normal
             </span>
           )}
@@ -298,7 +298,7 @@ function SortableModuleCard({
           <div className="flex items-center gap-2">
             <span className="text-sm font-semibold text-gray-800">{mod.label}</span>
             {normal && (
-              <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-teal-50 text-teal-700 border border-teal-200">
+              <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200">
                 ✓ All normal
               </span>
             )}

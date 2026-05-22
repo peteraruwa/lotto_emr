@@ -129,7 +129,7 @@ function SectionTextarea({
 
 // ── Context badge config ──────────────────────────────────────────────────────
 const CONTEXT_BADGE = {
-  outpatient: { label: 'Outpatient', cls: 'bg-teal-50 text-teal-700 border-teal-200' },
+  outpatient: { label: 'Outpatient', cls: 'bg-blue-50 text-blue-700 border-blue-200' },
   inpatient:  { label: 'Inpatient',  cls: 'bg-blue-50 text-blue-700 border-blue-200' },
   emergency:  { label: 'Emergency',  cls: 'bg-red-50 text-red-700 border-red-200' },
 };
@@ -489,7 +489,7 @@ export function StructuredNoteEditor({
             vitals={latestVitals}
           />
           {examinationNarrative && (
-            <div className="mt-3 rounded-lg border border-teal-100 bg-blue-50/40 px-4 py-3 text-sm text-gray-800 whitespace-pre-wrap leading-relaxed">
+            <div className="mt-3 rounded-lg border border-blue-100 bg-blue-50/40 px-4 py-3 text-sm text-gray-800 whitespace-pre-wrap leading-relaxed">
               {examinationNarrative}
             </div>
           )}

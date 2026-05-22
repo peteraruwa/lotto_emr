@@ -160,7 +160,7 @@ export function NotePreviewModal({
             type="button"
             size="sm"
             onClick={() => window.print()}
-            className="bg-teal-600 hover:bg-teal-700 text-white gap-1.5"
+            className="bg-hospital-600 hover:bg-hospital-700 text-white gap-1.5"
           >
             <Printer className="h-3.5 w-3.5" />
             Print
