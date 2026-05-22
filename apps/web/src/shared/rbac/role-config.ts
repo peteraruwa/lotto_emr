@@ -25,6 +25,7 @@ export const ROLE_CONFIG: Record<Role, RoleConfig> = {
     navItems: [
       { label: 'Dashboard',    href: '/',          icon: 'LayoutDashboard' },
       { label: 'Patients',     href: '/patients',  icon: 'Users' },
+      { label: 'Antenatal',    href: '/anc',       icon: 'Baby' },
       { label: 'Appointments', href: '/schedule',  icon: 'Calendar' },
       { label: 'Ward',         href: '/ward',      icon: 'BedDouble' },
       { label: 'Orders',       href: '/orders',    icon: 'ClipboardList' },
@@ -51,6 +52,7 @@ export const ROLE_CONFIG: Record<Role, RoleConfig> = {
       { label: 'Dashboard',    href: '/',        icon: 'LayoutDashboard' },
       { label: 'Triage Queue', href: '/triage',  icon: 'Activity' },
       { label: 'Patients',     href: '/patients', icon: 'Users' },
+      { label: 'Antenatal',    href: '/anc',      icon: 'Baby' },
       { label: 'Schedule',     href: '/schedule', icon: 'Calendar' },
       { label: 'Ward',         href: '/ward',     icon: 'BedDouble' },
       { label: 'Vitals',       href: '/results',  icon: 'Activity' },

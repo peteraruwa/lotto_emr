@@ -2,17 +2,17 @@
 
 import React, { useState } from 'react';
 import {
-  User, Building2, Bell, SlidersHorizontal, Palette,
-  ShieldCheck, ChevronRight, Camera, Save, Loader2,
+  User, Bell, SlidersHorizontal, Palette,
+  ShieldCheck, ChevronRight, Camera, Save, Loader2, Lock, Eye, EyeOff,
 } from 'lucide-react';
 import { cn } from '@lotto-emr/ui';
 import { useMedplum } from '@medplum/react';
 
-type SettingsTab = 'profile' | 'hospital' | 'notifications' | 'preferences' | 'theme' | 'roles';
+type SettingsTab = 'profile' | 'security' | 'notifications' | 'preferences' | 'theme' | 'roles';
 
 const TABS: { id: SettingsTab; label: string; icon: React.ElementType; description: string }[] = [
   { id: 'profile',       label: 'Profile',             icon: User,             description: 'Your name, photo, and contact details' },
-  { id: 'hospital',      label: 'Hospital Settings',   icon: Building2,        description: 'Facility name, address, and contact' },
+  { id: 'security',      label: 'Security',            icon: Lock,             description: 'Password and authentication settings' },
   { id: 'notifications', label: 'Notifications',       icon: Bell,             description: 'Email, SMS, and in-app alerts' },
   { id: 'preferences',   label: 'User Preferences',    icon: SlidersHorizontal,description: 'Language, date format, and defaults' },
   { id: 'theme',         label: 'Theme',               icon: Palette,          description: 'Appearance and colour scheme' },
@@ -93,17 +93,37 @@ function SaveButton({ saving, onClick }: { saving: boolean; onClick: () => void 
 }
 
 function ProfileTab() {
-  const medplum = useMedplum();
-  const profile = medplum.getProfile() as any;
-  const [given, setGiven] = useState(profile?.name?.[0]?.given?.[0] ?? '');
+  const medplum  = useMedplum();
+  const profile  = medplum.getProfile() as any;
+  const userId   = profile?.id ?? 'user';
+  const photoKey = `emr-profile-photo-${userId}`;
+
+  const [given,  setGiven]  = useState(profile?.name?.[0]?.given?.[0] ?? '');
   const [family, setFamily] = useState(profile?.name?.[0]?.family ?? '');
-  const [email, setEmail] = useState(profile?.telecom?.find((t: any) => t.system === 'email')?.value ?? '');
-  const [phone, setPhone] = useState(profile?.telecom?.find((t: any) => t.system === 'phone')?.value ?? '');
+  const [email,  setEmail]  = useState(profile?.telecom?.find((t: any) => t.system === 'email')?.value ?? '');
+  const [phone,  setPhone]  = useState(profile?.telecom?.find((t: any) => t.system === 'phone')?.value ?? '');
+  const [photoSrc, setPhotoSrc] = useState<string | null>(() => {
+    if (typeof window === 'undefined') return null;
+    return localStorage.getItem(photoKey);
+  });
   const [saving, setSaving] = useState(false);
-  const [saved, setSaved] = useState(false);
+  const [saved,  setSaved]  = useState(false);
+  const fileRef = React.useRef<HTMLInputElement>(null);
+
+  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      const dataUrl = reader.result as string;
+      setPhotoSrc(dataUrl);
+    };
+    reader.readAsDataURL(file);
+  }
 
   async function handleSave() {
     setSaving(true);
+    if (photoSrc) localStorage.setItem(photoKey, photoSrc);
     await new Promise((r) => setTimeout(r, 600));
     setSaving(false);
     setSaved(true);
@@ -119,16 +139,40 @@ function ProfileTab() {
       {/* Avatar */}
       <div className="flex items-center gap-4">
         <div className="relative">
-          <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-hospital-400 to-hospital-600 flex items-center justify-center text-white text-xl font-bold shadow-md">
-            {initials}
-          </div>
-          <button className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-white border border-gray-200 flex items-center justify-center shadow-sm hover:bg-gray-50 transition-colors">
+          {photoSrc ? (
+            <img src={photoSrc} alt="Profile" className="w-16 h-16 rounded-2xl object-cover shadow-md" />
+          ) : (
+            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-hospital-400 to-hospital-600 flex items-center justify-center text-white text-xl font-bold shadow-md">
+              {initials}
+            </div>
+          )}
+          <button
+            type="button"
+            onClick={() => fileRef.current?.click()}
+            className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-white border border-gray-200 flex items-center justify-center shadow-sm hover:bg-gray-50 transition-colors"
+          >
             <Camera className="h-3 w-3 text-gray-500" />
           </button>
+          <input
+            ref={fileRef}
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={handleFileChange}
+          />
         </div>
         <div>
           <p className="text-sm font-semibold text-gray-800">{given} {family}</p>
           <p className="text-xs text-gray-400 mt-0.5">Click the camera icon to upload a photo</p>
+          {photoSrc && (
+            <button
+              type="button"
+              onClick={() => { setPhotoSrc(null); localStorage.removeItem(photoKey); }}
+              className="text-xs text-red-500 hover:text-red-600 mt-0.5 underline"
+            >
+              Remove photo
+            </button>
+          )}
         </div>
       </div>
 
@@ -155,48 +199,110 @@ function ProfileTab() {
   );
 }
 
-function HospitalTab() {
-  const [name, setName] = useState('Lotto Central Hospital');
-  const [address, setAddress] = useState('');
-  const [city, setCity] = useState('');
-  const [phone, setPhone] = useState('');
-  const [email, setEmail] = useState('');
-  const [regNo, setRegNo] = useState('');
-  const [saving, setSaving] = useState(false);
-
-  async function handleSave() {
-    setSaving(true);
-    await new Promise((r) => setTimeout(r, 600));
-    setSaving(false);
-  }
-
+function PasswordInput({ value, onChange, placeholder }: {
+  value: string; onChange: (v: string) => void; placeholder?: string;
+}) {
+  const [show, setShow] = useState(false);
   return (
-    <div className="space-y-6">
-      <SectionHeading title="Hospital Settings" description="Facility information used in documents and headers" />
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <FormField label="Facility Name" hint="Appears on all clinical documents">
-          <TextInput value={name} onChange={setName} placeholder="Hospital name" />
-        </FormField>
-        <FormField label="Registration Number">
-          <TextInput value={regNo} onChange={setRegNo} placeholder="MOH/…" />
-        </FormField>
-        <FormField label="Address">
-          <TextInput value={address} onChange={setAddress} placeholder="Street address" />
-        </FormField>
-        <FormField label="City / State">
-          <TextInput value={city} onChange={setCity} placeholder="City, State" />
-        </FormField>
-        <FormField label="Contact Phone">
-          <TextInput value={phone} onChange={setPhone} placeholder="+234…" />
-        </FormField>
-        <FormField label="Contact Email">
-          <TextInput value={email} onChange={setEmail} placeholder="info@hospital.com" />
-        </FormField>
-      </div>
-      <SaveButton saving={saving} onClick={handleSave} />
+    <div className="relative">
+      <input
+        type={show ? 'text' : 'password'}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder}
+        className="w-full px-3 py-2 pr-10 text-sm rounded-lg border border-gray-200 bg-white text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-hospital-400/30 focus:border-hospital-400 transition-all"
+      />
+      <button
+        type="button"
+        onClick={() => setShow((s) => !s)}
+        className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+      >
+        {show ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+      </button>
     </div>
   );
 }
+
+function SecurityTab() {
+  const [current,  setCurrent]  = useState('');
+  const [next,     setNext]     = useState('');
+  const [confirm,  setConfirm]  = useState('');
+  const [saving,   setSaving]   = useState(false);
+  const [saved,    setSaved]    = useState(false);
+  const [error,    setError]    = useState('');
+
+  async function handleChangePassword() {
+    setError('');
+    if (!current) { setError('Please enter your current password.'); return; }
+    if (next.length < 8) { setError('New password must be at least 8 characters.'); return; }
+    if (next !== confirm) { setError('New passwords do not match.'); return; }
+    setSaving(true);
+    await new Promise((r) => setTimeout(r, 800));
+    setSaving(false);
+    setSaved(true);
+    setCurrent(''); setNext(''); setConfirm('');
+    setTimeout(() => setSaved(false), 4000);
+  }
+
+  const strength = next.length === 0 ? 0
+    : next.length < 8 ? 1
+    : (next.length >= 12 && /[A-Z]/.test(next) && /[0-9]/.test(next) && /[^A-Za-z0-9]/.test(next)) ? 3
+    : 2;
+  const strengthLabel = ['', 'Weak', 'Moderate', 'Strong'];
+  const strengthColor = ['', 'bg-red-400', 'bg-amber-400', 'bg-emerald-500'];
+
+  return (
+    <div className="space-y-6">
+      <SectionHeading title="Security" description="Change your password and manage authentication" />
+
+      <div className="max-w-sm space-y-4">
+        <FormField label="Current Password">
+          <PasswordInput value={current} onChange={setCurrent} placeholder="Enter current password" />
+        </FormField>
+
+        <FormField label="New Password" hint="Minimum 8 characters">
+          <PasswordInput value={next} onChange={setNext} placeholder="Enter new password" />
+          {next.length > 0 && (
+            <div className="flex items-center gap-2 mt-1.5">
+              <div className="flex-1 h-1 rounded-full bg-gray-100 overflow-hidden">
+                <div
+                  className={cn('h-full rounded-full transition-all', strengthColor[strength])}
+                  style={{ width: `${(strength / 3) * 100}%` }}
+                />
+              </div>
+              <span className={cn('text-xs font-medium', strength === 1 ? 'text-red-500' : strength === 2 ? 'text-amber-500' : 'text-emerald-600')}>
+                {strengthLabel[strength]}
+              </span>
+            </div>
+          )}
+        </FormField>
+
+        <FormField label="Confirm New Password">
+          <PasswordInput value={confirm} onChange={setConfirm} placeholder="Re-enter new password" />
+          {confirm.length > 0 && next !== confirm && (
+            <p className="text-xs text-red-500 mt-1">Passwords do not match</p>
+          )}
+        </FormField>
+
+        {error && <p className="text-sm text-red-600">{error}</p>}
+        {saved && <p className="text-sm text-emerald-600 font-medium">Password changed successfully.</p>}
+      </div>
+
+      <div className="pt-4 border-t border-gray-100">
+        <button
+          type="button"
+          onClick={handleChangePassword}
+          disabled={saving}
+          className="flex items-center gap-2 px-4 py-2 rounded-xl bg-hospital-600 hover:bg-hospital-700 text-white text-sm font-semibold transition-colors disabled:opacity-60"
+        >
+          {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Lock className="h-4 w-4" />}
+          {saving ? 'Updating…' : 'Change Password'}
+        </button>
+      </div>
+    </div>
+  );
+}
+
 
 function NotificationsTab() {
   const [emailAppt, setEmailAppt] = useState(true);
@@ -421,7 +527,7 @@ export default function SettingsPage() {
 
   const TAB_CONTENT: Record<SettingsTab, React.ReactNode> = {
     profile:       <ProfileTab />,
-    hospital:      <HospitalTab />,
+    security:      <SecurityTab />,
     notifications: <NotificationsTab />,
     preferences:   <PreferencesTab />,
     theme:         <ThemeTab />,

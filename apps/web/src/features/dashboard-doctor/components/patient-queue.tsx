@@ -161,7 +161,9 @@ export function PatientQueue({ rows, loading, onOpenPatient }: PatientQueueProps
     const rank = (s: string) =>
       ['arrived', 'checkedin'].includes(s) ? 0 :
       ['booked', 'pending', 'proposed'].includes(s) ? 1 : 2;
-    return rank(a.status) - rank(b.status);
+    const rankDiff = rank(a.status) - rank(b.status);
+    if (rankDiff !== 0) return rankDiff;
+    return new Date(a.time).getTime() - new Date(b.time).getTime();
   });
 
   return (
