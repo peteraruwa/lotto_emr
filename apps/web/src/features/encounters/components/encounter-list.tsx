@@ -30,10 +30,10 @@ function parseSoapText(text: string): { section: string; lines: string[] }[] {
 }
 
 const SECTION_STYLE: Record<string, { border: string; bg: string; text: string }> = {
-  SUBJECTIVE:  { border: 'border-blue-300',   bg: 'bg-blue-50',   text: 'text-blue-700' },
-  OBJECTIVE:   { border: 'border-emerald-300', bg: 'bg-emerald-50', text: 'text-emerald-700' },
-  ASSESSMENT:  { border: 'border-orange-300',  bg: 'bg-orange-50', text: 'text-orange-700' },
-  PLAN:        { border: 'border-violet-300',  bg: 'bg-violet-50', text: 'text-violet-700' },
+  SUBJECTIVE:  { border: 'border-blue-200', bg: 'bg-blue-50/50',  text: 'text-blue-700' },
+  OBJECTIVE:   { border: 'border-gray-200', bg: 'bg-gray-50',     text: 'text-blue-700' },
+  ASSESSMENT:  { border: 'border-gray-200', bg: 'bg-gray-50',     text: 'text-blue-700' },
+  PLAN:        { border: 'border-gray-200', bg: 'bg-gray-50',     text: 'text-blue-700' },
 };
 
 function SoapNoteView({ encounterId }: { encounterId: string }) {

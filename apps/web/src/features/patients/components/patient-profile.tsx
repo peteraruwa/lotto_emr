@@ -208,7 +208,7 @@ export function PatientProfile({ patientId }: PatientProfileProps) {
             {/* Action buttons */}
             <div className="flex flex-wrap items-center gap-2 flex-shrink-0">
               <button
-                onClick={() => { setActiveTab('notes'); setNoteModalOpen(true); }}
+                onClick={() => setNoteModalOpen(true)}
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-hospital-600 hover:bg-hospital-700 text-white text-xs font-semibold transition-colors shadow-sm shadow-hospital-600/20"
               >
                 <FileText className="h-3.5 w-3.5" />

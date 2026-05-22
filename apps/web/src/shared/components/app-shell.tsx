@@ -28,6 +28,7 @@ import {
   Menu,
   X,
   ChevronRight,
+  ChevronDown,
   PanelLeftClose,
   PanelLeftOpen,
   Settings,
@@ -127,6 +128,71 @@ function NavLink({
   );
 }
 
+// ── NavGroup: expandable nav item with children ───────────────────────────────
+function NavGroup({ item, collapsed, onChildClick }: {
+  item: NavItem;
+  collapsed: boolean;
+  onChildClick?: () => void;
+}) {
+  const pathname = usePathname();
+  const Icon = ICON_MAP[item.icon] ?? ChevronRight;
+
+  const isChildActive = item.children?.some((c) => {
+    const base = c.href.split('?')[0];
+    return pathname === base || pathname.startsWith(base);
+  }) ?? false;
+
+  const [open, setOpen] = useState(isChildActive);
+
+  // In collapsed sidebar, render just the parent as a plain link
+  if (collapsed) {
+    return (
+      <Link
+        href={item.href}
+        title={item.label}
+        className={cn(
+          'flex items-center justify-center p-2.5 rounded-xl text-sm font-medium transition-all duration-150 group relative',
+          isChildActive
+            ? 'bg-hospital-600 text-white shadow-sm shadow-hospital-600/30'
+            : 'text-gray-500 hover:bg-gray-100 hover:text-gray-800',
+        )}
+      >
+        <Icon className={cn('h-[18px] w-[18px] flex-shrink-0', isChildActive ? 'text-white' : 'text-gray-400 group-hover:text-gray-700')} />
+        <span className="pointer-events-none absolute left-full ml-3 z-50 whitespace-nowrap rounded-lg bg-gray-900 px-2.5 py-1.5 text-xs text-white opacity-0 group-hover:opacity-100 transition-all duration-150 shadow-xl">
+          {item.label}
+        </span>
+      </Link>
+    );
+  }
+
+  return (
+    <div>
+      <button
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        className={cn(
+          'w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150',
+          isChildActive
+            ? 'bg-hospital-50 text-hospital-700'
+            : 'text-gray-500 hover:bg-gray-100 hover:text-gray-800',
+        )}
+      >
+        <Icon className={cn('h-[18px] w-[18px] flex-shrink-0', isChildActive ? 'text-hospital-600' : 'text-gray-400')} />
+        <span className="truncate leading-none flex-1 text-left">{item.label}</span>
+        <ChevronDown className={cn('h-3.5 w-3.5 flex-shrink-0 transition-transform duration-150', open ? 'rotate-180' : '')} />
+      </button>
+
+      {open && (
+        <div className="mt-0.5 ml-3 pl-3 border-l border-gray-100 space-y-0.5">
+          {item.children?.map((child) => (
+            <NavLink key={child.href} item={child} collapsed={false} onClick={onChildClick} />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 interface AppShellProps {
   children: React.ReactNode;
 }
@@ -189,9 +255,11 @@ export function AppShell({ children }: AppShellProps) {
 
       {/* Nav */}
       <nav className={cn('flex-1 py-3 space-y-0.5 overflow-y-auto', collapsed ? 'px-2' : 'px-3')}>
-        {navItems.map((item) => (
-          <NavLink key={item.href} item={item} collapsed={collapsed} />
-        ))}
+        {navItems.map((item) =>
+          item.children && item.children.length > 0
+            ? <NavGroup key={item.label} item={item} collapsed={collapsed} />
+            : <NavLink key={item.href} item={item} collapsed={collapsed} />,
+        )}
       </nav>
 
       {/* Settings link */}
@@ -276,14 +344,11 @@ export function AppShell({ children }: AppShellProps) {
 
         {/* Nav */}
         <nav className="flex-1 px-3 py-3 space-y-0.5 overflow-y-auto">
-          {navItems.map((item) => (
-            <NavLink
-              key={item.href}
-              item={item}
-              collapsed={false}
-              onClick={() => setMobileOpen(false)}
-            />
-          ))}
+          {navItems.map((item) =>
+            item.children && item.children.length > 0
+              ? <NavGroup key={item.label} item={item} collapsed={false} onChildClick={() => setMobileOpen(false)} />
+              : <NavLink key={item.href} item={item} collapsed={false} onClick={() => setMobileOpen(false)} />,
+          )}
           <div className="border-t border-gray-100 pt-2 mt-2">
             <NavLink
               item={{ label: 'Settings', href: '/settings', icon: 'Settings' }}

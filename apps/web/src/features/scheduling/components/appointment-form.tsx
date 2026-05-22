@@ -100,7 +100,7 @@ export function AppointmentForm({ patientId, defaultDate = new Date(), onSuccess
           </Button>
         )}
         <Button type="submit" disabled={isPending}>
-          {isPending ? 'Booking...' : 'Book Appointment'}
+          {isPending ? 'Scheduling...' : 'Schedule Appointment'}
         </Button>
       </div>
     </form>

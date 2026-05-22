@@ -92,7 +92,7 @@ export function AdminDashboard() {
           <Button asChild size="sm" variant="outline">
             <Link href="/schedule">
               <Plus className="h-4 w-4 mr-1.5" />
-              Book Appointment
+              New Appointment
             </Link>
           </Button>
           <Button asChild size="sm" variant="outline">

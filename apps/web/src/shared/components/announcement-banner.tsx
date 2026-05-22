@@ -53,22 +53,26 @@ export function AnnouncementBanner() {
   return (
     <div
       className={cn(
-        'flex items-center gap-2 px-4 py-2.5 border-b text-sm flex-shrink-0',
+        'flex items-start gap-3 px-4 py-3 border-b text-sm flex-shrink-0',
         cfg.cls,
       )}
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
     >
-      {item.priority && (
-        <span className="flex-shrink-0 w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
-      )}
-      <div className="flex items-center gap-2 flex-shrink-0">
+      {/* Left: icon + label */}
+      <div className="flex items-center gap-2 flex-shrink-0 pt-0.5">
+        {item.priority && (
+          <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse flex-shrink-0" />
+        )}
         <Icon className="h-4 w-4 flex-shrink-0" />
-        <span className="font-semibold hidden sm:inline">{cfg.label}:</span>
+        <span className="font-bold hidden sm:inline text-xs uppercase tracking-wide">{cfg.label}</span>
       </div>
-      <p className="flex-1 min-w-0 truncate font-medium">{item.text}</p>
 
-      <div className="flex items-center gap-1 flex-shrink-0 ml-2">
+      {/* Message — full text, wraps naturally */}
+      <p className="flex-1 min-w-0 font-medium leading-relaxed">{item.text}</p>
+
+      {/* Controls */}
+      <div className="flex items-center gap-1 flex-shrink-0">
         <button
           type="button"
           onClick={() => setIdx((i) => (i - 1 + ANNOUNCEMENTS.length) % ANNOUNCEMENTS.length)}
@@ -77,7 +81,7 @@ export function AnnouncementBanner() {
         >
           <ChevronLeft className="h-3.5 w-3.5" />
         </button>
-        <span className="text-xs tabular-nums">{idx + 1}/{ANNOUNCEMENTS.length}</span>
+        <span className="text-xs tabular-nums opacity-70">{idx + 1}/{ANNOUNCEMENTS.length}</span>
         <button
           type="button"
           onClick={advance}
@@ -89,7 +93,7 @@ export function AnnouncementBanner() {
         <button
           type="button"
           onClick={() => setDismissed(true)}
-          className="p-1 rounded hover:bg-black/10 transition-colors ml-1"
+          className="p-1 rounded hover:bg-black/10 transition-colors ml-0.5"
           title="Dismiss"
         >
           <X className="h-3.5 w-3.5" />

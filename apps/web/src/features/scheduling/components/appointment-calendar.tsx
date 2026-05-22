@@ -42,11 +42,11 @@ export function AppointmentCalendar() {
         </Button>
       </div>
 
-      {/* Book appointment button */}
+      {/* New appointment button */}
       <div className="flex justify-end">
         <Button size="sm" onClick={() => setShowForm(true)}>
           <Plus className="h-4 w-4 mr-1" />
-          Book Appointment
+          New Appointment
         </Button>
       </div>
 
@@ -54,7 +54,7 @@ export function AppointmentCalendar() {
       {showForm && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-xl shadow-xl w-full max-w-md p-6">
-            <h2 className="text-lg font-semibold mb-4">Book Appointment</h2>
+            <h2 className="text-lg font-semibold mb-4">New Appointment</h2>
             <AppointmentForm
               defaultDate={selectedDate}
               onSuccess={() => setShowForm(false)}

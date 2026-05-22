@@ -4,6 +4,7 @@ export interface NavItem {
   label: string;
   href: string;
   icon: string; // Lucide icon name
+  children?: NavItem[];
 }
 
 export interface RoleConfig {
@@ -28,8 +29,21 @@ export const ROLE_CONFIG: Record<Role, RoleConfig> = {
       { label: 'Antenatal',    href: '/anc',       icon: 'Baby' },
       { label: 'Appointments', href: '/schedule',  icon: 'Calendar' },
       { label: 'Ward',         href: '/ward',      icon: 'BedDouble' },
-      { label: 'Orders',       href: '/orders',    icon: 'ClipboardList' },
-      { label: 'Results',      href: '/results',   icon: 'FlaskConical' },
+      {
+        label: 'Orders', href: '/orders', icon: 'ClipboardList',
+        children: [
+          { label: 'Lab Orders',  href: '/orders?category=lab',       icon: 'FlaskConical' },
+          { label: 'Radiology',   href: '/orders?category=imaging',   icon: 'Scan' },
+          { label: 'Pharmacy',    href: '/orders?category=medication', icon: 'Pill' },
+        ],
+      },
+      {
+        label: 'Results', href: '/results', icon: 'BarChart2',
+        children: [
+          { label: 'Lab Results', href: '/results?category=lab',     icon: 'FlaskConical' },
+          { label: 'Imaging',     href: '/results?category=imaging', icon: 'Scan' },
+        ],
+      },
       { label: 'Billing',      href: '/billing',   icon: 'DollarSign' },
       { label: 'Analytics',    href: '/analytics', icon: 'BarChart2' },
     ],
