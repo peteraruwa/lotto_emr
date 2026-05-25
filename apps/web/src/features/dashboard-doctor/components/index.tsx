@@ -7,7 +7,7 @@ import { format, formatDistanceToNow } from 'date-fns';
 import {
   Search, Bell, Calendar,
   Activity, FlaskConical, ClipboardList, Sparkles,
-  CheckCircle2, Clock, ChevronRight, UserCheck,
+  CheckCircle2, Clock, ChevronRight, ChevronDown, UserCheck,
 } from 'lucide-react';
 import { Input } from '@lotto-emr/ui';
 import { cn } from '@lotto-emr/ui';
@@ -211,14 +211,20 @@ function SeenRow({ row, onOpen }: { row: SeenPatientRow; onOpen: (r: SeenPatient
 interface SeenTodayProps {
   rows: SeenPatientRow[];
   loading: boolean;
+  open: boolean;
+  onToggle: () => void;
   onOpen: (row: SeenPatientRow) => void;
 }
 
-function SeenToday({ rows, loading, onOpen }: SeenTodayProps) {
+function SeenToday({ rows, loading, open, onToggle, onOpen }: SeenTodayProps) {
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-      {/* Header */}
-      <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
+      {/* Header — click anywhere to toggle */}
+      <button
+        type="button"
+        onClick={onToggle}
+        className="w-full flex items-center justify-between px-5 py-4 border-b border-gray-100 hover:bg-gray-50/60 transition-colors text-left"
+      >
         <div className="flex items-center gap-3 min-w-0">
           <div className="w-8 h-8 rounded-xl bg-emerald-50 flex items-center justify-center flex-shrink-0">
             <UserCheck className="h-4 w-4 text-emerald-600" />
@@ -234,32 +240,46 @@ function SeenToday({ rows, loading, onOpen }: SeenTodayProps) {
             )}
           </div>
         </div>
-        <Link
-          href="/patients"
-          className="flex-shrink-0 text-xs font-medium text-hospital-600 hover:text-hospital-700 bg-hospital-50 hover:bg-hospital-100 px-3 py-1.5 rounded-lg transition-colors"
-        >
-          All records
-        </Link>
-      </div>
+        <div className="flex items-center gap-2 flex-shrink-0">
+          <Link
+            href="/patients"
+            onClick={(e) => e.stopPropagation()}
+            className="text-xs font-medium text-hospital-600 hover:text-hospital-700 bg-hospital-50 hover:bg-hospital-100 px-3 py-1.5 rounded-lg transition-colors"
+          >
+            All records
+          </Link>
+          <ChevronDown className={cn(
+            'h-4 w-4 text-gray-400 transition-transform duration-200 flex-shrink-0',
+            open ? 'rotate-180' : 'rotate-0',
+          )} />
+        </div>
+      </button>
 
-      {/* Body */}
-      {loading ? (
-        <div>{[1, 2, 3].map((i) => <SeenSkeletonRow key={i} />)}</div>
-      ) : rows.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-12 text-center px-4">
-          <div className="w-12 h-12 rounded-2xl bg-gray-50 flex items-center justify-center mb-3">
-            <UserCheck className="h-6 w-6 text-gray-300" />
-          </div>
-          <p className="text-sm font-semibold text-gray-500">No consultations yet today</p>
-          <p className="text-xs text-gray-400 mt-1">Completed encounters will appear here</p>
+      {/* Collapsible body */}
+      <div className={cn(
+        'grid transition-all duration-200 ease-in-out',
+        open ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]',
+      )}>
+        <div className="overflow-hidden">
+          {loading ? (
+            <div>{[1, 2, 3].map((i) => <SeenSkeletonRow key={i} />)}</div>
+          ) : rows.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-12 text-center px-4">
+              <div className="w-12 h-12 rounded-2xl bg-gray-50 flex items-center justify-center mb-3">
+                <UserCheck className="h-6 w-6 text-gray-300" />
+              </div>
+              <p className="text-sm font-semibold text-gray-500">No consultations yet today</p>
+              <p className="text-xs text-gray-400 mt-1">Completed encounters will appear here</p>
+            </div>
+          ) : (
+            <div>
+              {rows.map((row) => (
+                <SeenRow key={row.id} row={row} onOpen={onOpen} />
+              ))}
+            </div>
+          )}
         </div>
-      ) : (
-        <div>
-          {rows.map((row) => (
-            <SeenRow key={row.id} row={row} onOpen={onOpen} />
-          ))}
-        </div>
-      )}
+      </div>
     </div>
   );
 }
@@ -271,6 +291,9 @@ export function DoctorDashboard() {
   const router = useRouter();
   const { data, isLoading } = useDoctorDashboardData();
   const startConsultation = useStartConsultation();
+
+  const [queueOpen, setQueueOpen] = useState(true);
+  const [seenOpen,  setSeenOpen]  = useState(true);
 
   const profile   = medplum.getProfile() as any;
   const firstName = profile?.name?.[0]?.given?.[0] ?? 'Doctor';
@@ -334,9 +357,14 @@ export function DoctorDashboard() {
 
         {/* Centre: patient queue + seen today */}
         <div className="min-w-0 space-y-4">
+
           {/* Today's patient queue */}
           <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-            <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
+            <button
+              type="button"
+              onClick={() => setQueueOpen((o) => !o)}
+              className="w-full flex items-center justify-between px-5 py-4 border-b border-gray-100 hover:bg-gray-50/60 transition-colors text-left"
+            >
               <div className="flex items-center gap-3 min-w-0">
                 <div className="w-8 h-8 rounded-xl bg-hospital-50 flex items-center justify-center flex-shrink-0">
                   <Calendar className="h-4 w-4 text-hospital-600" />
@@ -352,35 +380,52 @@ export function DoctorDashboard() {
                   )}
                 </div>
               </div>
-              <Link
-                href="/schedule"
-                className="flex-shrink-0 text-xs font-medium text-hospital-600 hover:text-hospital-700 bg-hospital-50 hover:bg-hospital-100 px-3 py-1.5 rounded-lg transition-colors"
-              >
-                View schedule
-              </Link>
+              <div className="flex items-center gap-2 flex-shrink-0">
+                <Link
+                  href="/schedule"
+                  onClick={(e) => e.stopPropagation()}
+                  className="text-xs font-medium text-hospital-600 hover:text-hospital-700 bg-hospital-50 hover:bg-hospital-100 px-3 py-1.5 rounded-lg transition-colors"
+                >
+                  View schedule
+                </Link>
+                <ChevronDown className={cn(
+                  'h-4 w-4 text-gray-400 transition-transform duration-200 flex-shrink-0',
+                  queueOpen ? 'rotate-180' : 'rotate-0',
+                )} />
+              </div>
+            </button>
+
+            <div className={cn(
+              'grid transition-all duration-200 ease-in-out',
+              queueOpen ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]',
+            )}>
+              <div className="overflow-hidden">
+                <PatientQueue
+                  rows={data?.schedule ?? []}
+                  loading={isLoading}
+                  onOpenPatient={(appt) => {
+                    router.push(appt.patientId ? `/patients/${appt.patientId}` : '/patients');
+                  }}
+                  onConsult={async (appt) => {
+                    if (!appt.patientId) return;
+                    await startConsultation.mutateAsync({
+                      patientId: appt.patientId,
+                      visitReason: appt.visitType,
+                      appointmentId: appt.isMock ? undefined : appt.id,
+                    });
+                    router.push(`/patients/${appt.patientId}`);
+                  }}
+                />
+              </div>
             </div>
-            <PatientQueue
-              rows={data?.schedule ?? []}
-              loading={isLoading}
-              onOpenPatient={(appt) => {
-                router.push(appt.patientId ? `/patients/${appt.patientId}` : '/patients');
-              }}
-              onConsult={async (appt) => {
-                if (!appt.patientId) return;
-                await startConsultation.mutateAsync({
-                  patientId: appt.patientId,
-                  visitReason: appt.visitType,
-                  appointmentId: appt.isMock ? undefined : appt.id,
-                });
-                router.push(`/patients/${appt.patientId}`);
-              }}
-            />
           </div>
 
           {/* Patients seen by me today */}
           <SeenToday
             rows={data?.seenToday ?? []}
             loading={isLoading}
+            open={seenOpen}
+            onToggle={() => setSeenOpen((o) => !o)}
             onOpen={(row) => {
               if (row.patientId) router.push(`/patients/${row.patientId}`);
             }}
