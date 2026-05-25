@@ -14,7 +14,11 @@ import { HrDashboard } from '@/features/dashboard-hr';
 import { RecordsDashboard } from '@/features/dashboard-records';
 import { BillingDashboard } from '@/features/billing';
 import { SuperadminDashboard } from '@/features/dashboard-superadmin';
+import { TodayTeamWidget } from '@/features/roster';
 import type { Role } from '@/shared/rbac/roles';
+
+// Roles that have their own right-panel and already embed TodayTeamWidget
+const ROLES_WITH_OWN_PANEL = new Set<Role>([ROLES.DOCTOR]);
 
 function RoleDashboard({ role }: { role: Role }) {
   switch (role) {
@@ -67,5 +71,18 @@ export default function DashboardPage() {
     return <NoRolePage />;
   }
 
-  return <RoleDashboard role={roleState.role} />;
+  const showSideWidget = !ROLES_WITH_OWN_PANEL.has(roleState.role) && roleState.role !== ROLES.HR;
+
+  return (
+    <div className={showSideWidget ? 'grid grid-cols-1 xl:grid-cols-[1fr_320px] gap-6 items-start' : undefined}>
+      <div className="min-w-0">
+        <RoleDashboard role={roleState.role} />
+      </div>
+      {showSideWidget && (
+        <div className="xl:sticky xl:top-4">
+          <TodayTeamWidget />
+        </div>
+      )}
+    </div>
+  );
 }

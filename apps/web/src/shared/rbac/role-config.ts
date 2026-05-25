@@ -29,6 +29,7 @@ export const ROLE_CONFIG: Record<Role, RoleConfig> = {
       { label: 'Antenatal',    href: '/anc',       icon: 'Baby' },
       { label: 'Appointments', href: '/schedule',  icon: 'Calendar' },
       { label: 'Ward',         href: '/ward',      icon: 'BedDouble' },
+      { label: 'Roster',       href: '/roster',    icon: 'CalendarRange' },
       {
         label: 'Orders', href: '/orders', icon: 'ClipboardList',
         children: [
@@ -70,6 +71,7 @@ export const ROLE_CONFIG: Record<Role, RoleConfig> = {
       { label: 'Schedule',     href: '/schedule', icon: 'Calendar' },
       { label: 'Ward',         href: '/ward',     icon: 'BedDouble' },
       { label: 'Vitals',       href: '/results',  icon: 'Activity' },
+      { label: 'Roster',       href: '/roster',   icon: 'CalendarRange' },
     ],
     allowedActions: [
       'patient:read',
@@ -84,8 +86,9 @@ export const ROLE_CONFIG: Record<Role, RoleConfig> = {
   [ROLES.PHARMACIST]: {
     homeRoute: '/',
     navItems: [
-      { label: 'Dashboard', href: '/', icon: 'LayoutDashboard' },
-      { label: 'Prescriptions', href: '/orders', icon: 'Pill' },
+      { label: 'Dashboard',    href: '/',        icon: 'LayoutDashboard' },
+      { label: 'Prescriptions',href: '/orders',  icon: 'Pill' },
+      { label: 'Roster',       href: '/roster',  icon: 'CalendarRange' },
     ],
     allowedActions: [
       'patient:read',
@@ -98,9 +101,10 @@ export const ROLE_CONFIG: Record<Role, RoleConfig> = {
   [ROLES.LAB]: {
     homeRoute: '/',
     navItems: [
-      { label: 'Dashboard', href: '/', icon: 'LayoutDashboard' },
-      { label: 'Lab Orders', href: '/orders', icon: 'FlaskConical' },
-      { label: 'Results', href: '/results', icon: 'BarChart2' },
+      { label: 'Dashboard', href: '/',        icon: 'LayoutDashboard' },
+      { label: 'Lab Orders', href: '/orders', icon: 'FlaskConical'    },
+      { label: 'Results',    href: '/results', icon: 'BarChart2'      },
+      { label: 'Roster',     href: '/roster',  icon: 'CalendarRange'  },
     ],
     allowedActions: [
       'patient:read',
@@ -114,9 +118,10 @@ export const ROLE_CONFIG: Record<Role, RoleConfig> = {
   [ROLES.RADIOLOGIST]: {
     homeRoute: '/',
     navItems: [
-      { label: 'Dashboard', href: '/', icon: 'LayoutDashboard' },
-      { label: 'Imaging Orders', href: '/orders', icon: 'Scan' },
-      { label: 'Reports', href: '/results', icon: 'FileText' },
+      { label: 'Dashboard',     href: '/',        icon: 'LayoutDashboard' },
+      { label: 'Imaging Orders',href: '/orders',  icon: 'Scan'            },
+      { label: 'Reports',       href: '/results', icon: 'FileText'        },
+      { label: 'Roster',        href: '/roster',  icon: 'CalendarRange'   },
     ],
     allowedActions: [
       'patient:read',
@@ -130,9 +135,10 @@ export const ROLE_CONFIG: Record<Role, RoleConfig> = {
     homeRoute: '/',
     navItems: [
       { label: 'Dashboard', href: '/',         icon: 'LayoutDashboard' },
-      { label: 'Patients',  href: '/patients', icon: 'Users' },
-      { label: 'Schedule',  href: '/schedule', icon: 'Calendar' },
-      { label: 'Ward',      href: '/ward',     icon: 'BedDouble' },
+      { label: 'Patients',  href: '/patients', icon: 'Users'           },
+      { label: 'Schedule',  href: '/schedule', icon: 'Calendar'        },
+      { label: 'Ward',      href: '/ward',     icon: 'BedDouble'       },
+      { label: 'Roster',    href: '/roster',   icon: 'CalendarRange'   },
     ],
     allowedActions: [
       'patient:create', 'patient:update',
@@ -157,8 +163,9 @@ export const ROLE_CONFIG: Record<Role, RoleConfig> = {
     homeRoute: '/',
     navItems: [
       { label: 'Dashboard', href: '/',         icon: 'LayoutDashboard' },
-      { label: 'Patients',  href: '/patients', icon: 'Users' },
-      { label: 'Records',   href: '/patients', icon: 'FolderOpen' },
+      { label: 'Patients',  href: '/patients', icon: 'Users'           },
+      { label: 'Records',   href: '/patients', icon: 'FolderOpen'      },
+      { label: 'Roster',    href: '/roster',   icon: 'CalendarRange'   },
     ],
     allowedActions: [
       'patient:read', 'patient:update',
@@ -171,8 +178,9 @@ export const ROLE_CONFIG: Record<Role, RoleConfig> = {
     homeRoute: '/',
     navItems: [
       { label: 'Dashboard', href: '/',        icon: 'LayoutDashboard' },
-      { label: 'Billing',   href: '/billing', icon: 'DollarSign' },
-      { label: 'Patients',  href: '/patients', icon: 'Users' },
+      { label: 'Billing',   href: '/billing', icon: 'DollarSign'      },
+      { label: 'Patients',  href: '/patients', icon: 'Users'          },
+      { label: 'Roster',    href: '/roster',   icon: 'CalendarRange'  },
     ],
     allowedActions: [
       'patient:read',
@@ -185,11 +193,12 @@ export const ROLE_CONFIG: Record<Role, RoleConfig> = {
     homeRoute: '/',
     navItems: [
       { label: 'Dashboard',  href: '/',            icon: 'LayoutDashboard' },
-      { label: 'Employees',  href: '/hr',           icon: 'UsersRound' },
-      { label: 'Patients',   href: '/patients',     icon: 'Users' },
-      { label: 'Schedule',   href: '/schedule',     icon: 'Calendar' },
-      { label: 'Ward',       href: '/ward',         icon: 'BedDouble' },
-      { label: 'Analytics',  href: '/analytics',    icon: 'BarChart2' },
+      { label: 'Employees',  href: '/hr',          icon: 'UsersRound'      },
+      { label: 'Patients',   href: '/patients',    icon: 'Users'           },
+      { label: 'Schedule',   href: '/schedule',    icon: 'Calendar'        },
+      { label: 'Ward',       href: '/ward',        icon: 'BedDouble'       },
+      { label: 'Roster',     href: '/roster',      icon: 'CalendarRange'   },
+      { label: 'Analytics',  href: '/analytics',   icon: 'BarChart2'       },
     ],
     allowedActions: [
       'employee:create', 'employee:read', 'employee:update',

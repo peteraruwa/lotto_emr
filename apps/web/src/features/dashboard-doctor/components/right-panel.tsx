@@ -8,6 +8,7 @@ import {
   FlaskConical, Users, ClipboardCheck, Clock,
 } from 'lucide-react';
 import { cn } from '@lotto-emr/ui';
+import { TodayTeamWidget } from '@/features/roster';
 import type { DoctorDashboardData } from '../hooks/use-dashboard-data';
 
 interface RightPanelProps {
@@ -79,6 +80,9 @@ function PanelSection({
 export function RightPanel({ data, isLoading }: RightPanelProps) {
   return (
     <div className="space-y-3">
+
+      {/* Today's On-Duty Team */}
+      <TodayTeamWidget />
 
       {/* Results & Alerts */}
       <PanelSection
