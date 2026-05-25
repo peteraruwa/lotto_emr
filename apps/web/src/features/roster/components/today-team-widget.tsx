@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import {
   CalendarRange, MessageCircle, Phone, Sun, Moon,
-  ArrowRight, Users,
+  ArrowRight, Users, ChevronDown,
 } from 'lucide-react';
 import { cn } from '@lotto-emr/ui';
 import { format } from 'date-fns';
@@ -124,6 +124,7 @@ export function TodayTeamWidget() {
   const [team, setTeam] = useState<RosterEntry[] | null>(null);
   const [shift, setShift] = useState<'morning' | 'night'>('morning');
   const [today, setToday] = useState('');
+  const [open, setOpen] = useState(true);
 
   useEffect(() => {
     setTeam(getTodayOnDutyTeam());
@@ -147,8 +148,12 @@ export function TodayTeamWidget() {
 
   return (
     <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-      {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
+      {/* Header — click anywhere to toggle */}
+      <button
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        className="w-full flex items-center justify-between px-4 py-3 border-b border-gray-100 hover:bg-gray-50/60 transition-colors text-left"
+      >
         <div className="flex items-center gap-2 min-w-0">
           <div className="w-7 h-7 rounded-lg bg-hospital-50 flex items-center justify-center flex-shrink-0">
             <CalendarRange className="h-3.5 w-3.5 text-hospital-600" />
@@ -166,62 +171,80 @@ export function TodayTeamWidget() {
             <ShiftIcon className="h-2.5 w-2.5" />
             {shiftMeta.label}
           </span>
+          {/* Stop propagation so the roster link doesn't toggle */}
           <Link
             href="/roster"
+            onClick={(e) => e.stopPropagation()}
             className="flex items-center gap-0.5 text-xs font-medium text-hospital-600 hover:text-hospital-700 transition-colors"
           >
             All <ArrowRight className="h-3 w-3" />
           </Link>
+          <ChevronDown
+            className={cn(
+              'h-4 w-4 text-gray-400 transition-transform duration-200 flex-shrink-0',
+              open ? 'rotate-180' : 'rotate-0',
+            )}
+          />
         </div>
-      </div>
+      </button>
 
-      {/* Body */}
-      <div className="py-2 max-h-[480px] overflow-y-auto">
-        {team === null ? (
-          /* Skeleton */
-          <div className="space-y-2 px-3 py-2">
-            {[1, 2, 3, 4, 5].map((i) => (
-              <div key={i} className="flex items-center gap-2">
-                <div className="w-7 h-7 rounded-full bg-gray-100 animate-pulse flex-shrink-0" />
-                <div className="flex-1 space-y-1">
-                  <div className="h-2.5 w-28 bg-gray-100 rounded-full animate-pulse" />
-                  <div className="h-2 w-20 bg-gray-100 rounded-full animate-pulse" />
-                </div>
-              </div>
-            ))}
-          </div>
-        ) : activeDepts.length === 0 ? (
-          <div className="flex flex-col items-center gap-2 py-8 px-4 text-center">
-            <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center">
-              <Users className="h-4 w-4 text-gray-400" />
-            </div>
-            <p className="text-xs font-medium text-gray-500">No roster data for today</p>
-            <Link
-              href="/roster"
-              className="text-xs text-hospital-600 hover:underline"
-            >
-              View full roster →
-            </Link>
-          </div>
-        ) : (
-          activeDepts.map((dept) => (
-            <DeptGroup key={dept} department={dept} entries={byDept[dept]} />
-          ))
+      {/* Collapsible body */}
+      <div
+        className={cn(
+          'grid transition-all duration-200 ease-in-out',
+          open ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]',
         )}
-      </div>
+      >
+        <div className="overflow-hidden">
+          {/* Body */}
+          <div className="py-2 max-h-[480px] overflow-y-auto">
+            {team === null ? (
+              /* Skeleton */
+              <div className="space-y-2 px-3 py-2">
+                {[1, 2, 3, 4, 5].map((i) => (
+                  <div key={i} className="flex items-center gap-2">
+                    <div className="w-7 h-7 rounded-full bg-gray-100 animate-pulse flex-shrink-0" />
+                    <div className="flex-1 space-y-1">
+                      <div className="h-2.5 w-28 bg-gray-100 rounded-full animate-pulse" />
+                      <div className="h-2 w-20 bg-gray-100 rounded-full animate-pulse" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : activeDepts.length === 0 ? (
+              <div className="flex flex-col items-center gap-2 py-8 px-4 text-center">
+                <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center">
+                  <Users className="h-4 w-4 text-gray-400" />
+                </div>
+                <p className="text-xs font-medium text-gray-500">No roster data for today</p>
+                <Link
+                  href="/roster"
+                  className="text-xs text-hospital-600 hover:underline"
+                >
+                  View full roster →
+                </Link>
+              </div>
+            ) : (
+              activeDepts.map((dept) => (
+                <DeptGroup key={dept} department={dept} entries={byDept[dept]} />
+              ))
+            )}
+          </div>
 
-      {/* Footer */}
-      {team !== null && activeDepts.length > 0 && (
-        <div className="border-t border-gray-100 px-4 py-2.5">
-          <Link
-            href="/roster"
-            className="flex items-center justify-between text-xs text-hospital-600 hover:text-hospital-700 font-medium transition-colors"
-          >
-            <span>View full monthly roster</span>
-            <ArrowRight className="h-3.5 w-3.5" />
-          </Link>
+          {/* Footer */}
+          {team !== null && activeDepts.length > 0 && (
+            <div className="border-t border-gray-100 px-4 py-2.5">
+              <Link
+                href="/roster"
+                className="flex items-center justify-between text-xs text-hospital-600 hover:text-hospital-700 font-medium transition-colors"
+              >
+                <span>View full monthly roster</span>
+                <ArrowRight className="h-3.5 w-3.5" />
+              </Link>
+            </div>
+          )}
         </div>
-      )}
+      </div>
     </div>
   );
 }
