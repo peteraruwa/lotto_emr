@@ -387,8 +387,8 @@ export function DoctorDashboard() {
           />
         </div>
 
-        {/* Right panel */}
-        <div className="min-w-0">
+        {/* Right panel — slate tint sets it apart from the main column */}
+        <div className="min-w-0 bg-slate-50 rounded-2xl p-3 border border-slate-100">
           <RightPanel data={data} isLoading={isLoading} />
         </div>
 

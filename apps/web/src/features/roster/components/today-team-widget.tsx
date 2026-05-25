@@ -159,7 +159,7 @@ export function TodayTeamWidget() {
             <CalendarRange className="h-3.5 w-3.5 text-hospital-600" />
           </div>
           <div className="min-w-0">
-            <p className="text-sm font-semibold text-gray-800 leading-tight">On Duty Today</p>
+            <p className="text-sm font-semibold text-gray-800 leading-tight">On Duty</p>
             <p className="text-[10px] text-gray-400 truncate">{today}</p>
           </div>
         </div>
