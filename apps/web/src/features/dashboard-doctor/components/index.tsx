@@ -347,7 +347,7 @@ export function DoctorDashboard() {
               rows={data?.schedule ?? []}
               loading={isLoading}
               onOpenPatient={(appt) => {
-                if (appt.patientId) router.push(`/patients/${appt.patientId}`);
+                router.push(appt.patientId ? `/patients/${appt.patientId}` : '/patients');
               }}
               onConsult={async (appt) => {
                 if (!appt.patientId) return;

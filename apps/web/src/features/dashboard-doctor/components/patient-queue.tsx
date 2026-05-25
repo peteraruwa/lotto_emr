@@ -71,13 +71,8 @@ function QueueRow({
   const ini      = initials(appt.patientName);
 
   function handleClick() {
-    if (appt.isMock) return;
-    if (isInRoom) {
-      if (onConsult) {
-        onConsult(appt);
-      } else {
-        onOpenPatient(appt);
-      }
+    if (isInRoom && !appt.isMock && onConsult) {
+      onConsult(appt);
     } else {
       onOpenPatient(appt);
     }
@@ -115,13 +110,10 @@ function QueueRow({
 
       <button
         onClick={handleClick}
-        disabled={isDone || appt.isMock}
-        title={appt.isMock ? 'Demo patient' : undefined}
+        disabled={isDone}
         className={cn(
           'flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all flex-shrink-0',
-          appt.isMock
-            ? 'bg-gray-100 text-gray-400 opacity-50 cursor-not-allowed'
-            : isInRoom
+          isInRoom
             ? 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm shadow-emerald-600/20'
             : isDone
             ? 'bg-gray-100 text-gray-400 cursor-default'
@@ -152,13 +144,8 @@ function QueueCard({
   const ini      = initials(appt.patientName);
 
   function handleClick() {
-    if (appt.isMock) return;
-    if (isInRoom) {
-      if (onConsult) {
-        onConsult(appt);
-      } else {
-        onOpenPatient(appt);
-      }
+    if (isInRoom && !appt.isMock && onConsult) {
+      onConsult(appt);
     } else {
       onOpenPatient(appt);
     }
@@ -184,13 +171,10 @@ function QueueCard({
       </div>
       <button
         onClick={handleClick}
-        disabled={isDone || appt.isMock}
-        title={appt.isMock ? 'Demo patient' : undefined}
+        disabled={isDone}
         className={cn(
           'w-8 h-8 flex items-center justify-center rounded-lg flex-shrink-0 transition-colors',
-          appt.isMock
-            ? 'bg-gray-100 text-gray-300 opacity-50 cursor-not-allowed'
-            : isInRoom
+          isInRoom
             ? 'bg-emerald-600 text-white'
             : isDone
             ? 'bg-gray-100 text-gray-300 cursor-default'
