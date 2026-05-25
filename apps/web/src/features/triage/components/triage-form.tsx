@@ -5,6 +5,7 @@ import { useForm, Controller } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
 import { useMedplum } from '@medplum/react';
 import type { Observation, Encounter } from '@medplum/fhirtypes';
+import { safeUpdateResource } from '@/shared/lib/fhir-safe-update';
 import { Button, Card, CardContent, CardHeader, CardTitle, Label } from '@lotto-emr/ui';
 import type { TriageFormData, TriageUrgency, TriageRouting } from '../types';
 import { LOINC_VITALS, FHIR_SYSTEMS } from '@/shared/constants/loinc';
@@ -126,21 +127,13 @@ export function TriageForm({ patientId, encounterId, onComplete }: TriageFormPro
     await Promise.all(vitalPromises);
 
     // Update Encounter
-    const existingEncounter = await medplum.readResource('Encounter', encounterId) as Encounter;
-
-    await medplum.updateResource({
-      ...existingEncounter,
-      status: 'in-progress',
+    await safeUpdateResource<Encounter>(medplum, 'Encounter', encounterId, () => ({
+      status: 'in-progress' as const,
       priority: {
-        coding: [
-          {
-            system: FHIR_SYSTEMS.ACT_PRIORITY,
-            code: urgencyToActPriority(data.urgency),
-          },
-        ],
+        coding: [{ system: FHIR_SYSTEMS.ACT_PRIORITY, code: urgencyToActPriority(data.urgency) }],
       },
       reasonCode: [{ text: data.chiefComplaint }],
-    } as Encounter);
+    }));
 
     onComplete();
   }

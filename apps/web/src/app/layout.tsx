@@ -4,10 +4,10 @@ import { Providers } from './providers';
 
 export const metadata: Metadata = {
   title: {
-    default: 'Lotto Central Hospital EMR',
-    template: '%s | Lotto Central Hospital',
+    default: 'SerialQuest EMR',
+    template: '%s | SerialQuest EMR',
   },
-  description: 'Electronic Medical Records system for Lotto Central Hospital',
+  description: 'Electronic Medical Records — SerialQuest Clinical Intelligence Platform',
   robots: { index: false, follow: false }, // Never index internal clinical systems
 };
 

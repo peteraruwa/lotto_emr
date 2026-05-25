@@ -15,6 +15,7 @@ import { useMedplum } from '@medplum/react';
 import { useDoctorDashboardData } from '../hooks/use-dashboard-data';
 import type { SeenPatientRow } from '../hooks/use-dashboard-data';
 import { PatientQueue } from './patient-queue';
+import { useStartConsultation } from '../api/use-start-consultation';
 import { RightPanel } from './right-panel';
 
 // ── Stat card ─────────────────────────────────────────────────────────────────
@@ -253,6 +254,7 @@ export function DoctorDashboard() {
   const medplum = useMedplum();
   const router = useRouter();
   const { data, isLoading } = useDoctorDashboardData();
+  const startConsultation = useStartConsultation();
 
   const profile   = medplum.getProfile() as any;
   const firstName = profile?.name?.[0]?.given?.[0] ?? 'Doctor';
@@ -346,6 +348,14 @@ export function DoctorDashboard() {
               loading={isLoading}
               onOpenPatient={(appt) => {
                 if (appt.patientId) router.push(`/patients/${appt.patientId}`);
+              }}
+              onConsult={async (appt) => {
+                if (!appt.patientId) return;
+                await startConsultation.mutateAsync({
+                  patientId: appt.patientId,
+                  visitReason: appt.visitType,
+                });
+                router.push(`/patients/${appt.patientId}`);
               }}
             />
           </div>

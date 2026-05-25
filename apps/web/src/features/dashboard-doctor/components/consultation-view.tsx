@@ -10,6 +10,8 @@ import {
 } from 'lucide-react';
 import { cn } from '@lotto-emr/ui';
 import { useMedplum } from '@medplum/react';
+import type { Encounter } from '@medplum/fhirtypes';
+import { safeUpdateResource, FhirConflictError } from '@/shared/lib/fhir-safe-update';
 import { usePatientSnapshot } from '../hooks/use-patient-snapshot';
 import { SoapNoteEditor } from '@/features/clinical-notes/components/soap-note-editor';
 import type { AppointmentRow } from '../hooks/use-dashboard-data';
@@ -60,6 +62,7 @@ export function ConsultationView({ appointment, onBack }: ConsultationViewProps)
 
   const [completing, setCompleting] = useState(false);
   const [completed, setCompleted]   = useState(false);
+  const [conflictMsg, setConflictMsg] = useState<string | null>(null);
 
   const d = appointment.time ? new Date(appointment.time) : null;
   const timeStr = d && !isNaN(d.getTime()) ? format(d, 'HH:mm, d MMM yyyy') : '—';
@@ -70,11 +73,18 @@ export function ConsultationView({ appointment, onBack }: ConsultationViewProps)
   async function completeEncounter() {
     if (!snap?.activeEncounterId) return;
     setCompleting(true);
+    setConflictMsg(null);
     try {
-      const enc = await medplum.readResource('Encounter', snap.activeEncounterId);
-      await medplum.updateResource({ ...enc, status: 'finished', period: { ...enc.period, end: new Date().toISOString() } });
+      await safeUpdateResource<Encounter>(medplum, 'Encounter', snap.activeEncounterId, (enc) => ({
+        status: 'finished',
+        period: { ...enc.period, end: new Date().toISOString() },
+      }));
       setCompleted(true);
-    } catch { /* silent */ } finally {
+    } catch (err) {
+      if (err instanceof FhirConflictError) {
+        setConflictMsg('This encounter was updated by someone else. Please refresh.');
+      }
+    } finally {
       setCompleting(false);
     }
   }
@@ -126,6 +136,9 @@ export function ConsultationView({ appointment, onBack }: ConsultationViewProps)
             </span>
           )}
         </div>
+        {conflictMsg && (
+          <p className="w-full text-xs text-red-600 mt-1">{conflictMsg}</p>
+        )}
       </div>
 
       {/* ── Loading ─────────────────────────────────────────────────────────── */}

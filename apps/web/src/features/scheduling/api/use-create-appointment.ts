@@ -49,7 +49,7 @@ export function useCreateAppointment() {
           sendAppointmentConfirmation({
             patientName:  name,
             phoneNumber:  phone,
-            facilityName: 'Lotto Central Hospital',
+            facilityName: 'SerialQuest EMR',
             dateTime:     dateTimeStr,
           }).catch(() => undefined);
         }).catch(() => undefined);

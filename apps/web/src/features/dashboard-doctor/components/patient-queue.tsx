@@ -25,6 +25,7 @@ interface PatientQueueProps {
   rows: AppointmentRow[];
   loading: boolean;
   onOpenPatient: (row: AppointmentRow) => void;
+  onConsult?: (row: AppointmentRow) => void;
 }
 
 function SkeletonRow() {
@@ -53,13 +54,34 @@ function EmptyQueue() {
   );
 }
 
-function QueueRow({ appt, onOpenPatient }: { appt: AppointmentRow; onOpenPatient: (a: AppointmentRow) => void }) {
+function QueueRow({
+  appt,
+  onOpenPatient,
+  onConsult,
+}: {
+  appt: AppointmentRow;
+  onOpenPatient: (a: AppointmentRow) => void;
+  onConsult?: (a: AppointmentRow) => void;
+}) {
   const d = appt.time ? new Date(appt.time) : null;
   const timeStr = d && !isNaN(d.getTime()) ? format(d, 'HH:mm') : '—';
   const isInRoom = ['arrived', 'checkedin'].includes(appt.status);
   const isDone   = ['fulfilled', 'cancelled', 'noshow'].includes(appt.status);
   const cfg      = STATUS_CONFIG[appt.status] ?? { label: appt.status, className: 'bg-gray-100 text-gray-500' };
   const ini      = initials(appt.patientName);
+
+  function handleClick() {
+    if (appt.isMock) return;
+    if (isInRoom) {
+      if (onConsult) {
+        onConsult(appt);
+      } else {
+        onOpenPatient(appt);
+      }
+    } else {
+      onOpenPatient(appt);
+    }
+  }
 
   return (
     <div
@@ -92,11 +114,14 @@ function QueueRow({ appt, onOpenPatient }: { appt: AppointmentRow; onOpenPatient
       </span>
 
       <button
-        onClick={() => onOpenPatient(appt)}
-        disabled={isDone}
+        onClick={handleClick}
+        disabled={isDone || appt.isMock}
+        title={appt.isMock ? 'Demo patient' : undefined}
         className={cn(
           'flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all flex-shrink-0',
-          isInRoom
+          appt.isMock
+            ? 'bg-gray-100 text-gray-400 opacity-50 cursor-not-allowed'
+            : isInRoom
             ? 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm shadow-emerald-600/20'
             : isDone
             ? 'bg-gray-100 text-gray-400 cursor-default'
@@ -110,13 +135,34 @@ function QueueRow({ appt, onOpenPatient }: { appt: AppointmentRow; onOpenPatient
   );
 }
 
-function QueueCard({ appt, onOpenPatient }: { appt: AppointmentRow; onOpenPatient: (a: AppointmentRow) => void }) {
+function QueueCard({
+  appt,
+  onOpenPatient,
+  onConsult,
+}: {
+  appt: AppointmentRow;
+  onOpenPatient: (a: AppointmentRow) => void;
+  onConsult?: (a: AppointmentRow) => void;
+}) {
   const d = appt.time ? new Date(appt.time) : null;
   const timeStr = d && !isNaN(d.getTime()) ? format(d, 'h:mm a') : '—';
   const isInRoom = ['arrived', 'checkedin'].includes(appt.status);
   const isDone   = ['fulfilled', 'cancelled', 'noshow'].includes(appt.status);
   const cfg      = STATUS_CONFIG[appt.status] ?? { label: appt.status, className: 'bg-gray-100 text-gray-500' };
   const ini      = initials(appt.patientName);
+
+  function handleClick() {
+    if (appt.isMock) return;
+    if (isInRoom) {
+      if (onConsult) {
+        onConsult(appt);
+      } else {
+        onOpenPatient(appt);
+      }
+    } else {
+      onOpenPatient(appt);
+    }
+  }
 
   return (
     <div className={cn(
@@ -137,11 +183,18 @@ function QueueCard({ appt, onOpenPatient }: { appt: AppointmentRow; onOpenPatien
         </div>
       </div>
       <button
-        onClick={() => onOpenPatient(appt)}
-        disabled={isDone}
+        onClick={handleClick}
+        disabled={isDone || appt.isMock}
+        title={appt.isMock ? 'Demo patient' : undefined}
         className={cn(
           'w-8 h-8 flex items-center justify-center rounded-lg flex-shrink-0 transition-colors',
-          isInRoom ? 'bg-emerald-600 text-white' : isDone ? 'bg-gray-100 text-gray-300 cursor-default' : 'bg-hospital-600 text-white',
+          appt.isMock
+            ? 'bg-gray-100 text-gray-300 opacity-50 cursor-not-allowed'
+            : isInRoom
+            ? 'bg-emerald-600 text-white'
+            : isDone
+            ? 'bg-gray-100 text-gray-300 cursor-default'
+            : 'bg-hospital-600 text-white',
         )}
       >
         <ChevronRight className="h-4 w-4" />
@@ -150,7 +203,7 @@ function QueueCard({ appt, onOpenPatient }: { appt: AppointmentRow; onOpenPatien
   );
 }
 
-export function PatientQueue({ rows, loading, onOpenPatient }: PatientQueueProps) {
+export function PatientQueue({ rows, loading, onOpenPatient, onConsult }: PatientQueueProps) {
   if (loading) {
     return <div>{[1, 2, 3, 4].map((i) => <SkeletonRow key={i} />)}</div>;
   }
@@ -169,10 +222,14 @@ export function PatientQueue({ rows, loading, onOpenPatient }: PatientQueueProps
   return (
     <>
       <div className="sm:hidden py-2">
-        {sorted.map((appt) => <QueueCard key={appt.id} appt={appt} onOpenPatient={onOpenPatient} />)}
+        {sorted.map((appt) => (
+          <QueueCard key={appt.id} appt={appt} onOpenPatient={onOpenPatient} onConsult={onConsult} />
+        ))}
       </div>
       <div className="hidden sm:block">
-        {sorted.map((appt) => <QueueRow key={appt.id} appt={appt} onOpenPatient={onOpenPatient} />)}
+        {sorted.map((appt) => (
+          <QueueRow key={appt.id} appt={appt} onOpenPatient={onOpenPatient} onConsult={onConsult} />
+        ))}
       </div>
     </>
   );

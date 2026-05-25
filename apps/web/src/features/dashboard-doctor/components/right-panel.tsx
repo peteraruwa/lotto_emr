@@ -1,11 +1,12 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import { isToday, format, formatDistanceToNow } from 'date-fns';
 import {
   AlertCircle, CheckCircle2, ArrowRight,
   FlaskConical, Users, ClipboardCheck, Clock,
+  ChevronDown,
 } from 'lucide-react';
 import { cn } from '@lotto-emr/ui';
 import { TodayTeamWidget } from '@/features/roster';
@@ -40,6 +41,8 @@ function PanelSection({
   count,
   viewAllHref,
   children,
+  collapsible = false,
+  defaultOpen = true,
 }: {
   icon: React.ElementType;
   iconColor: string;
@@ -48,31 +51,72 @@ function PanelSection({
   count?: number;
   viewAllHref?: string;
   children: React.ReactNode;
+  collapsible?: boolean;
+  defaultOpen?: boolean;
 }) {
-  return (
-    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-      <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
-        <div className="flex items-center gap-2 min-w-0">
-          <div className={cn('w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0', iconBg)}>
-            <Icon className={cn('h-3.5 w-3.5', iconColor)} />
-          </div>
-          <span className="text-sm font-semibold text-gray-800 truncate">{title}</span>
-          {count !== undefined && count > 0 && (
-            <span className="flex-shrink-0 w-5 h-5 rounded-full bg-red-500 text-white text-[10px] font-bold flex items-center justify-center">
-              {count > 9 ? '9+' : count}
-            </span>
-          )}
+  const [open, setOpen] = useState(defaultOpen);
+
+  const headerContent = (
+    <>
+      <div className="flex items-center gap-2 min-w-0">
+        <div className={cn('w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0', iconBg)}>
+          <Icon className={cn('h-3.5 w-3.5', iconColor)} />
         </div>
+        <span className="text-sm font-semibold text-gray-800 truncate">{title}</span>
+        {count !== undefined && count > 0 && (
+          <span className="flex-shrink-0 w-5 h-5 rounded-full bg-red-500 text-white text-[10px] font-bold flex items-center justify-center">
+            {count > 9 ? '9+' : count}
+          </span>
+        )}
+      </div>
+      <div className="flex items-center gap-1 flex-shrink-0">
         {viewAllHref && (
           <Link
             href={viewAllHref}
-            className="flex-shrink-0 flex items-center gap-0.5 text-xs font-medium text-hospital-600 hover:text-hospital-700 transition-colors"
+            onClick={(e) => e.stopPropagation()}
+            className="flex items-center gap-0.5 text-xs font-medium text-hospital-600 hover:text-hospital-700 transition-colors"
           >
             All <ArrowRight className="h-3 w-3" />
           </Link>
         )}
+        {collapsible && (
+          <ChevronDown
+            className={cn(
+              'h-4 w-4 text-gray-400 transition-transform duration-200',
+              open && 'rotate-180',
+            )}
+          />
+        )}
       </div>
-      <div>{children}</div>
+    </>
+  );
+
+  return (
+    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+      {collapsible ? (
+        <button
+          type="button"
+          onClick={() => setOpen((prev) => !prev)}
+          className="w-full flex items-center justify-between px-4 py-3 border-b border-gray-100 text-left"
+        >
+          {headerContent}
+        </button>
+      ) : (
+        <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
+          {headerContent}
+        </div>
+      )}
+
+      <div
+        className={cn(
+          'grid transition-all duration-200 ease-in-out',
+          open ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]',
+        )}
+      >
+        <div className="overflow-hidden">
+          {children}
+        </div>
+      </div>
     </div>
   );
 }
@@ -124,6 +168,8 @@ export function RightPanel({ data, isLoading }: RightPanelProps) {
         iconBg="bg-hospital-50"
         title="Recent Patients"
         viewAllHref="/patients"
+        collapsible
+        defaultOpen={true}
       >
         {isLoading ? (
           <SectionSkeleton lines={4} />
@@ -180,6 +226,8 @@ export function RightPanel({ data, isLoading }: RightPanelProps) {
         title="Pending Orders"
         count={data?.pendingOrdersCount}
         viewAllHref="/orders"
+        collapsible
+        defaultOpen={true}
       >
         {isLoading ? (
           <SectionSkeleton lines={3} />

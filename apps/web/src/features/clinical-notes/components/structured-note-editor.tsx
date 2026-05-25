@@ -355,7 +355,8 @@ export function StructuredNoteEditor({
     };
 
     if (savedDocIdRef.current) {
-      await medplum.updateResource({ ...docPayload, id: savedDocIdRef.current } as any);
+      const existing = await medplum.readResource('DocumentReference', savedDocIdRef.current!);
+      await medplum.updateResource({ ...existing, ...docPayload, id: savedDocIdRef.current } as any);
     } else {
       const created = await medplum.createResource(docPayload);
       savedDocIdRef.current = (created as any).id as string | undefined;
