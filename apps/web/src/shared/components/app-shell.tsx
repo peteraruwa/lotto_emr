@@ -31,7 +31,6 @@ import {
   ChevronRight,
   ChevronDown,
   PanelLeftClose,
-  PanelLeftOpen,
   Settings,
   Baby,
   Sun,
@@ -237,21 +236,40 @@ export function AppShell({ children }: AppShellProps) {
         collapsed ? 'md:w-[60px]' : 'md:w-[220px]',
       )}
     >
-      {/* Logo */}
+      {/* Logo + collapse toggle */}
       <div
         className={cn(
           'flex items-center border-b border-gray-100 flex-shrink-0',
           collapsed ? 'justify-center py-[18px] px-0' : 'gap-2.5 px-4 py-[18px]',
         )}
       >
-        <div className="flex-shrink-0 w-8 h-8 bg-gradient-to-br from-hospital-500 to-hospital-700 rounded-xl flex items-center justify-center text-white text-xs font-bold shadow-md shadow-hospital-600/25">
-          LC
-        </div>
-        {!collapsed && (
-          <div className="min-w-0">
-            <p className="text-sm font-bold text-gray-900 truncate leading-tight">Lotto Central</p>
-            <p className="text-[11px] text-gray-400 leading-tight">Hospital EMR</p>
-          </div>
+        {collapsed ? (
+          /* Collapsed: logo acts as expand button */
+          <button
+            onClick={() => setCollapsed(false)}
+            title="Expand sidebar"
+            className="w-8 h-8 bg-gradient-to-br from-hospital-500 to-hospital-700 rounded-xl flex items-center justify-center text-white text-xs font-bold shadow-md shadow-hospital-600/25 hover:ring-2 hover:ring-hospital-300 transition-all"
+          >
+            SQ
+          </button>
+        ) : (
+          <>
+            <div className="flex-shrink-0 w-8 h-8 bg-gradient-to-br from-hospital-500 to-hospital-700 rounded-xl flex items-center justify-center text-white text-xs font-bold shadow-md shadow-hospital-600/25">
+              SQ
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="text-sm font-bold text-gray-900 truncate leading-tight">SerialQuest</p>
+              <p className="text-[11px] text-gray-400 leading-tight">EMR Platform</p>
+            </div>
+            {/* Collapse button — at the top, away from logout */}
+            <button
+              onClick={() => setCollapsed(true)}
+              title="Collapse sidebar"
+              className="flex-shrink-0 w-7 h-7 flex items-center justify-center rounded-lg text-gray-300 hover:bg-gray-100 hover:text-gray-500 transition-colors"
+            >
+              <PanelLeftClose className="h-3.5 w-3.5" />
+            </button>
+          </>
         )}
       </div>
 
@@ -306,20 +324,6 @@ export function AppShell({ children }: AppShellProps) {
           <LogOut className="h-4 w-4 flex-shrink-0" />
           {!collapsed && <span className="text-xs font-medium">Sign out</span>}
         </button>
-
-        <button
-          onClick={() => setCollapsed((c) => !c)}
-          title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-          className={cn(
-            'w-full flex items-center rounded-xl text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors',
-            collapsed ? 'justify-center p-2.5' : 'gap-2.5 px-3 py-2',
-          )}
-        >
-          {collapsed
-            ? <PanelLeftOpen className="h-4 w-4" />
-            : <><PanelLeftClose className="h-4 w-4" /><span className="text-xs font-medium">Collapse</span></>
-          }
-        </button>
       </div>
     </aside>
   );
@@ -336,11 +340,11 @@ export function AppShell({ children }: AppShellProps) {
         {/* Logo */}
         <div className="flex items-center gap-2.5 px-4 py-[18px] border-b border-gray-100">
           <div className="w-8 h-8 bg-gradient-to-br from-hospital-500 to-hospital-700 rounded-xl flex items-center justify-center text-white text-xs font-bold shadow-md shadow-hospital-600/25">
-            LC
+            SQ
           </div>
           <div>
-            <p className="text-sm font-bold text-gray-900 leading-tight">Lotto Central</p>
-            <p className="text-[11px] text-gray-400 leading-tight">Hospital EMR</p>
+            <p className="text-sm font-bold text-gray-900 leading-tight">SerialQuest</p>
+            <p className="text-[11px] text-gray-400 leading-tight">EMR Platform</p>
           </div>
         </div>
 
@@ -411,9 +415,9 @@ export function AppShell({ children }: AppShellProps) {
           </button>
           <div className="flex items-center gap-2 min-w-0 flex-1">
             <div className="w-6 h-6 bg-gradient-to-br from-hospital-500 to-hospital-700 rounded-lg flex items-center justify-center text-white text-[10px] font-bold flex-shrink-0">
-              LC
+              SQ
             </div>
-            <p className="text-sm font-bold text-gray-900 truncate">Lotto Central</p>
+            <p className="text-sm font-bold text-gray-900 truncate">SerialQuest EMR</p>
           </div>
           <div className="flex items-center gap-2 flex-shrink-0">
             <MessagingPanel userId={userId} userName={userName} userRole={role ?? 'admin'} />
@@ -430,7 +434,7 @@ export function AppShell({ children }: AppShellProps) {
         {/* Desktop top bar */}
         <header className="hidden md:flex items-center justify-between px-5 py-3 bg-white border-b border-gray-100 flex-shrink-0">
           <div className="min-w-0">
-            <p className="text-sm font-semibold text-gray-800 truncate">Lotto Central Hospital</p>
+            <p className="text-sm font-semibold text-gray-800 truncate">SerialQuest EMR</p>
           </div>
           <div className="flex items-center gap-2 flex-shrink-0">
             <span className="text-xs font-medium text-gray-400 capitalize bg-gray-100 px-2.5 py-1 rounded-full">
