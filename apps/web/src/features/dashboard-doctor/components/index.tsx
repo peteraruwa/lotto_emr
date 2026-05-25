@@ -146,7 +146,13 @@ function SeenRow({ row, onOpen }: { row: SeenPatientRow; onOpen: (r: SeenPatient
     : '—';
 
   return (
-    <div className="flex items-center gap-3 px-5 py-3 border-b border-gray-50 last:border-0 hover:bg-gray-50/80 transition-colors">
+    <div
+      className={cn(
+        'flex items-center gap-3 px-5 py-3 border-b border-gray-50 last:border-0 transition-colors',
+        row.patientId ? 'hover:bg-gray-50/80 cursor-pointer' : '',
+      )}
+      onClick={() => { if (row.patientId) onOpen(row); }}
+    >
       {/* Avatar */}
       <div className="w-9 h-9 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center text-xs font-bold flex-shrink-0">
         {ini}
@@ -154,7 +160,17 @@ function SeenRow({ row, onOpen }: { row: SeenPatientRow; onOpen: (r: SeenPatient
 
       {/* Name + reason */}
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-semibold text-gray-800 truncate leading-tight">{row.patientName}</p>
+        {row.patientId ? (
+          <Link
+            href={`/patients/${row.patientId}`}
+            onClick={(e) => e.stopPropagation()}
+            className="text-sm font-semibold text-gray-800 truncate leading-tight hover:text-hospital-700 hover:underline transition-colors block"
+          >
+            {row.patientName}
+          </Link>
+        ) : (
+          <p className="text-sm font-semibold text-gray-800 truncate leading-tight">{row.patientName}</p>
+        )}
         <div className="flex items-center gap-2 mt-0.5 flex-wrap">
           <span className="flex items-center gap-1 text-xs text-gray-400 flex-shrink-0">
             <Clock className="h-3 w-3" />{timeFormatted}
@@ -180,7 +196,7 @@ function SeenRow({ row, onOpen }: { row: SeenPatientRow; onOpen: (r: SeenPatient
       {/* Open button (only for real patients with an ID) */}
       {row.patientId ? (
         <button
-          onClick={() => onOpen(row)}
+          onClick={(e) => { e.stopPropagation(); onOpen(row); }}
           className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold bg-gray-100 hover:bg-hospital-50 hover:text-hospital-700 text-gray-500 transition-all flex-shrink-0"
         >
           View <ChevronRight className="h-3 w-3" />
@@ -354,6 +370,7 @@ export function DoctorDashboard() {
                 await startConsultation.mutateAsync({
                   patientId: appt.patientId,
                   visitReason: appt.visitType,
+                  appointmentId: appt.isMock ? undefined : appt.id,
                 });
                 router.push(`/patients/${appt.patientId}`);
               }}

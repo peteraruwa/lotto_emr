@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Link from 'next/link';
 import { format } from 'date-fns';
 import { Calendar, ChevronRight, Clock } from 'lucide-react';
 import { cn } from '@lotto-emr/ui';
@@ -93,7 +94,17 @@ function QueueRow({
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-1.5 min-w-0">
           {isInRoom && <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 flex-shrink-0" />}
-          <p className="text-sm font-semibold text-gray-800 truncate leading-tight">{appt.patientName}</p>
+          {appt.patientId ? (
+            <Link
+              href={`/patients/${appt.patientId}`}
+              onClick={(e) => e.stopPropagation()}
+              className="text-sm font-semibold text-gray-800 truncate leading-tight hover:text-hospital-700 hover:underline transition-colors"
+            >
+              {appt.patientName}
+            </Link>
+          ) : (
+            <p className="text-sm font-semibold text-gray-800 truncate leading-tight">{appt.patientName}</p>
+          )}
         </div>
         <div className="flex items-center gap-2 mt-0.5 min-w-0">
           <span className="flex items-center gap-1 text-xs text-gray-400 flex-shrink-0">
@@ -161,7 +172,17 @@ function QueueCard({
         {ini}
       </div>
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-semibold text-gray-800 truncate leading-tight">{appt.patientName}</p>
+        {appt.patientId ? (
+          <Link
+            href={`/patients/${appt.patientId}`}
+            onClick={(e) => e.stopPropagation()}
+            className="text-sm font-semibold text-gray-800 truncate leading-tight hover:text-hospital-700 hover:underline transition-colors block"
+          >
+            {appt.patientName}
+          </Link>
+        ) : (
+          <p className="text-sm font-semibold text-gray-800 truncate leading-tight">{appt.patientName}</p>
+        )}
         <div className="flex items-center gap-2 mt-0.5 flex-wrap">
           <span className="text-xs text-gray-400 flex-shrink-0">{timeStr}</span>
           <span className={cn('inline-flex px-2 py-0.5 rounded-full text-[11px] font-semibold flex-shrink-0', cfg.className)}>

@@ -201,6 +201,7 @@ export function useDoctorDashboardData(): { data: DoctorDashboardData | null; is
     queries: [
       {
         queryKey: ['doctor-dash', 'appointments', todayStr],
+        refetchInterval: 60_000,
         queryFn: async () => {
           const bundle = await medplum.search('Appointment', {
             date:     `ge${todayStr}`,
@@ -231,6 +232,7 @@ export function useDoctorDashboardData(): { data: DoctorDashboardData | null; is
       },
       {
         queryKey: ['doctor-dash', 'encounters'],
+        refetchInterval: 60_000,
         queryFn: () =>
           medplum.searchResources('Encounter', {
             _sort:  '-date',
@@ -240,6 +242,7 @@ export function useDoctorDashboardData(): { data: DoctorDashboardData | null; is
       {
         // Encounters finished today — "patients seen by me today"
         queryKey: ['doctor-dash', 'seen-today', todayStr],
+        refetchInterval: 60_000,
         queryFn: () =>
           medplum.searchResources('Encounter', {
             date:    `ge${todayStr}`,
