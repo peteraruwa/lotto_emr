@@ -3,14 +3,17 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { format } from 'date-fns';
+import { format, formatDistanceToNow } from 'date-fns';
 import {
   Search, Bell, Calendar,
   Activity, FlaskConical, ClipboardList, Sparkles,
+  CheckCircle2, Clock, ChevronRight, UserCheck,
 } from 'lucide-react';
 import { Input } from '@lotto-emr/ui';
+import { cn } from '@lotto-emr/ui';
 import { useMedplum } from '@medplum/react';
 import { useDoctorDashboardData } from '../hooks/use-dashboard-data';
+import type { SeenPatientRow } from '../hooks/use-dashboard-data';
 import { PatientQueue } from './patient-queue';
 import { RightPanel } from './right-panel';
 
@@ -113,6 +116,137 @@ function TopBar({
   );
 }
 
+// ── Patients Seen Today ───────────────────────────────────────────────────────
+
+function seenInitials(name: string) {
+  return name.split(' ').filter(Boolean).map((w) => w[0]).join('').toUpperCase().slice(0, 2);
+}
+
+function SeenSkeletonRow() {
+  return (
+    <div className="flex items-center gap-3 px-5 py-3.5 border-b border-gray-50 last:border-0">
+      <div className="w-9 h-9 rounded-xl bg-gray-100 animate-pulse flex-shrink-0" />
+      <div className="flex-1 min-w-0 space-y-1.5">
+        <div className="h-3 w-40 rounded-full bg-gray-100 animate-pulse" />
+        <div className="h-2.5 w-28 rounded-full bg-gray-100 animate-pulse" />
+      </div>
+      <div className="h-5 w-24 rounded-full bg-gray-100 animate-pulse flex-shrink-0" />
+    </div>
+  );
+}
+
+function SeenRow({ row, onOpen }: { row: SeenPatientRow; onOpen: (r: SeenPatientRow) => void }) {
+  const ini = seenInitials(row.patientName);
+  const timeAgo = row.timeSeen
+    ? formatDistanceToNow(new Date(row.timeSeen), { addSuffix: true })
+    : '—';
+  const timeFormatted = row.timeSeen
+    ? format(new Date(row.timeSeen), 'HH:mm')
+    : '—';
+
+  return (
+    <div className="flex items-center gap-3 px-5 py-3 border-b border-gray-50 last:border-0 hover:bg-gray-50/80 transition-colors">
+      {/* Avatar */}
+      <div className="w-9 h-9 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center text-xs font-bold flex-shrink-0">
+        {ini}
+      </div>
+
+      {/* Name + reason */}
+      <div className="flex-1 min-w-0">
+        <p className="text-sm font-semibold text-gray-800 truncate leading-tight">{row.patientName}</p>
+        <div className="flex items-center gap-2 mt-0.5 flex-wrap">
+          <span className="flex items-center gap-1 text-xs text-gray-400 flex-shrink-0">
+            <Clock className="h-3 w-3" />{timeFormatted}
+          </span>
+          <span className="text-gray-200 flex-shrink-0">·</span>
+          <span className="text-xs text-gray-400 truncate">{row.reason}</span>
+        </div>
+      </div>
+
+      {/* Time ago badge */}
+      <span className="hidden sm:inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-700 flex-shrink-0">
+        <CheckCircle2 className="h-3 w-3" />
+        {timeAgo}
+      </span>
+
+      {/* Duration chip */}
+      {row.duration && row.duration > 0 && (
+        <span className="hidden md:inline-flex text-[11px] text-gray-400 font-medium flex-shrink-0">
+          {row.duration} min
+        </span>
+      )}
+
+      {/* Open button (only for real patients with an ID) */}
+      {row.patientId ? (
+        <button
+          onClick={() => onOpen(row)}
+          className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold bg-gray-100 hover:bg-hospital-50 hover:text-hospital-700 text-gray-500 transition-all flex-shrink-0"
+        >
+          View <ChevronRight className="h-3 w-3" />
+        </button>
+      ) : (
+        <div className="w-[60px] flex-shrink-0" />
+      )}
+    </div>
+  );
+}
+
+interface SeenTodayProps {
+  rows: SeenPatientRow[];
+  loading: boolean;
+  onOpen: (row: SeenPatientRow) => void;
+}
+
+function SeenToday({ rows, loading, onOpen }: SeenTodayProps) {
+  return (
+    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+      {/* Header */}
+      <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
+        <div className="flex items-center gap-3 min-w-0">
+          <div className="w-8 h-8 rounded-xl bg-emerald-50 flex items-center justify-center flex-shrink-0">
+            <UserCheck className="h-4 w-4 text-emerald-600" />
+          </div>
+          <div className="min-w-0">
+            <h2 className="font-semibold text-sm text-gray-800 leading-tight">
+              My Consultations Today
+            </h2>
+            {!loading && rows.length > 0 && (
+              <p className="text-xs text-gray-400 leading-tight">
+                {rows.length} patient{rows.length !== 1 ? 's' : ''} seen so far
+              </p>
+            )}
+          </div>
+        </div>
+        <Link
+          href="/patients"
+          className="flex-shrink-0 text-xs font-medium text-hospital-600 hover:text-hospital-700 bg-hospital-50 hover:bg-hospital-100 px-3 py-1.5 rounded-lg transition-colors"
+        >
+          All records
+        </Link>
+      </div>
+
+      {/* Body */}
+      {loading ? (
+        <div>{[1, 2, 3].map((i) => <SeenSkeletonRow key={i} />)}</div>
+      ) : rows.length === 0 ? (
+        <div className="flex flex-col items-center justify-center py-12 text-center px-4">
+          <div className="w-12 h-12 rounded-2xl bg-gray-50 flex items-center justify-center mb-3">
+            <UserCheck className="h-6 w-6 text-gray-300" />
+          </div>
+          <p className="text-sm font-semibold text-gray-500">No consultations yet today</p>
+          <p className="text-xs text-gray-400 mt-1">Completed encounters will appear here</p>
+        </div>
+      ) : (
+        <div>
+          {rows.map((row) => (
+            <SeenRow key={row.id} row={row} onOpen={onOpen} />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ── Main dashboard ────────────────────────────────────────────────────────────
 
 export function DoctorDashboard() {
@@ -180,8 +314,9 @@ export function DoctorDashboard() {
       {/* Main workspace */}
       <div className="grid grid-cols-1 xl:grid-cols-[1fr_300px] gap-4">
 
-        {/* Centre: patient queue */}
-        <div className="min-w-0">
+        {/* Centre: patient queue + seen today */}
+        <div className="min-w-0 space-y-4">
+          {/* Today's patient queue */}
           <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
             <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
               <div className="flex items-center gap-3 min-w-0">
@@ -192,9 +327,9 @@ export function DoctorDashboard() {
                   <h2 className="font-semibold text-sm text-gray-800 leading-tight">
                     Today's Patient Queue
                   </h2>
-                  {!isLoading && (data?.todayAppointments ?? 0) > 0 && (
+                  {!isLoading && (data?.schedule?.length ?? 0) > 0 && (
                     <p className="text-xs text-gray-400 leading-tight">
-                      {data!.todayAppointments} appointment{data!.todayAppointments !== 1 ? 's' : ''}
+                      {data!.schedule.length} appointment{data!.schedule.length !== 1 ? 's' : ''} scheduled
                     </p>
                   )}
                 </div>
@@ -214,6 +349,15 @@ export function DoctorDashboard() {
               }}
             />
           </div>
+
+          {/* Patients seen by me today */}
+          <SeenToday
+            rows={data?.seenToday ?? []}
+            loading={isLoading}
+            onOpen={(row) => {
+              if (row.patientId) router.push(`/patients/${row.patientId}`);
+            }}
+          />
         </div>
 
         {/* Right panel */}
