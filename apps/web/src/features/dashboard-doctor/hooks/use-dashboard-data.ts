@@ -37,6 +37,7 @@ export interface EncounterRow {
 
 export interface PendingResult {
   id: string;
+  patientId: string;
   title: string;
   patientName: string;
   issued: string;
@@ -52,7 +53,7 @@ export interface DoctorDashboardData {
   seenToday:          SeenPatientRow[];
   recentEncounters:   EncounterRow[];
   pendingResults:     PendingResult[];
-  pendingOrders:      { id: string; title: string; patientName: string; priority: string }[];
+  pendingOrders:      { id: string; patientId: string; title: string; patientName: string; priority: string }[];
 }
 
 // ── Mock seed data ─────────────────────────────────────────────────────────────
@@ -336,20 +337,28 @@ export function useDoctorDashboardData(): { data: DoctorDashboardData | null; is
     };
   });
 
-  const pendingResults: PendingResult[] = reports.map((r: any) => ({
-    id:          r.id ?? '',
-    title:       r.code?.text ?? r.code?.coding?.[0]?.display ?? 'Diagnostic Report',
-    patientName: r.subject?.display ?? 'Patient',
-    issued:      r.issued ?? r.effectiveDateTime ?? '',
-    status:      r.status ?? '',
-  }));
+  const pendingResults: PendingResult[] = reports.map((r: any) => {
+    const patientId = r.subject?.reference?.replace('Patient/', '') ?? '';
+    return {
+      id:          r.id ?? '',
+      patientId,
+      title:       r.code?.text ?? r.code?.coding?.[0]?.display ?? 'Diagnostic Report',
+      patientName: (patientId && patientMap[patientId]) ?? r.subject?.display ?? 'Patient',
+      issued:      r.issued ?? r.effectiveDateTime ?? '',
+      status:      r.status ?? '',
+    };
+  });
 
-  const pendingOrders = orders.map((o: any) => ({
-    id:          o.id ?? '',
-    title:       o.code?.text ?? o.code?.coding?.[0]?.display ?? 'Order',
-    patientName: o.subject?.display ?? 'Patient',
-    priority:    o.priority ?? 'routine',
-  }));
+  const pendingOrders = orders.map((o: any) => {
+    const patientId = o.subject?.reference?.replace('Patient/', '') ?? '';
+    return {
+      id:          o.id ?? '',
+      patientId,
+      title:       o.code?.text ?? o.code?.coding?.[0]?.display ?? 'Order',
+      patientName: (patientId && patientMap[patientId]) ?? o.subject?.display ?? 'Patient',
+      priority:    o.priority ?? 'routine',
+    };
+  });
 
   const activeCount = encounters.filter((e: any) =>
     ['in-progress', 'arrived', 'onleave'].includes(e.status),

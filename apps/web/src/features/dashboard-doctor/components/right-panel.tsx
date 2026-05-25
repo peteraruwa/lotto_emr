@@ -146,17 +146,24 @@ export function RightPanel({ data, isLoading }: RightPanelProps) {
           </div>
         ) : (
           <div className="divide-y divide-gray-50">
-            {data!.pendingResults.slice(0, 5).map((r) => (
-              <div key={r.id} className="flex items-start gap-3 px-4 py-3">
-                <div className="w-7 h-7 rounded-lg bg-amber-50 flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <AlertCircle className="h-3.5 w-3.5 text-amber-500" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-xs font-semibold text-gray-800 truncate leading-tight">{r.title}</p>
-                  <p className="text-[11px] text-gray-400 truncate mt-0.5">{r.patientName}</p>
-                </div>
-              </div>
-            ))}
+            {data!.pendingResults.slice(0, 5).map((r) => {
+              const href = r.patientId ? `/patients/${r.patientId}` : '/results';
+              return (
+                <Link
+                  key={r.id}
+                  href={href}
+                  className="flex items-start gap-3 px-4 py-3 hover:bg-amber-50/40 transition-colors group"
+                >
+                  <div className="w-7 h-7 rounded-lg bg-amber-50 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <AlertCircle className="h-3.5 w-3.5 text-amber-500" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs font-semibold text-gray-800 truncate leading-tight group-hover:text-amber-700 transition-colors">{r.title}</p>
+                    <p className="text-[11px] text-gray-400 truncate mt-0.5 group-hover:text-amber-600 transition-colors">{r.patientName}</p>
+                  </div>
+                </Link>
+              );
+            })}
           </div>
         )}
       </PanelSection>
@@ -247,17 +254,22 @@ export function RightPanel({ data, isLoading }: RightPanelProps) {
                 ? 'bg-orange-100 text-orange-700'
                 : 'bg-gray-100 text-gray-500';
               const priorityLabel = o.priority === 'routine' ? 'RTN' : o.priority.toUpperCase().slice(0, 4);
+              const href = o.patientId ? `/patients/${o.patientId}` : '/orders';
 
               return (
-                <div key={o.id} className="flex items-center gap-3 px-4 py-3">
+                <Link
+                  key={o.id}
+                  href={href}
+                  className="flex items-center gap-3 px-4 py-3 hover:bg-violet-50/40 transition-colors group"
+                >
                   <span className={cn('text-[10px] font-bold px-1.5 py-0.5 rounded-md flex-shrink-0', priorityCls)}>
                     {priorityLabel}
                   </span>
                   <div className="flex-1 min-w-0">
-                    <p className="text-xs font-semibold text-gray-800 truncate leading-tight">{o.title}</p>
-                    <p className="text-[11px] text-gray-400 truncate mt-0.5">{o.patientName}</p>
+                    <p className="text-xs font-semibold text-gray-800 truncate leading-tight group-hover:text-violet-700 transition-colors">{o.title}</p>
+                    <p className="text-[11px] text-gray-400 truncate mt-0.5 group-hover:text-violet-500 transition-colors">{o.patientName}</p>
                   </div>
-                </div>
+                </Link>
               );
             })}
           </div>

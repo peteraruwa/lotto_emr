@@ -5,32 +5,86 @@ const MRN_SYSTEM   = 'https://lotto-hospital.local/fhir/identifier/mrn';
 const LOINC_SYSTEM = 'http://loinc.org';
 
 // ── Seed data ─────────────────────────────────────────────────────────────────
+// 25 patients — 16 Nigerian, 3 Chinese, 3 Indian, 3 European
+// No name overlaps with mock/staff data.
 
-const PATIENTS = [
-  { firstName: 'Adaeze',      lastName: 'Okonkwo',  gender: 'female', dob: '1990-03-14', phone: '08012345001', state: 'Anambra', bloodGroup: 'O+',  genotype: 'AA' },
-  { firstName: 'Emeka',       lastName: 'Chukwu',   gender: 'male',   dob: '1979-07-22', phone: '08023456002', state: 'Enugu',   bloodGroup: 'A+',  genotype: 'AS' },
-  { firstName: 'Ngozi',       lastName: 'Eze',      gender: 'female', dob: '1996-11-05', phone: '08034567003', state: 'Imo',     bloodGroup: 'B+',  genotype: 'AA' },
-  { firstName: 'Chukwuemeka', lastName: 'Nwosu',    gender: 'male',   dob: '1962-01-18', phone: '08045678004', state: 'Abia',    bloodGroup: 'AB+', genotype: 'AA' },
-  { firstName: 'Amara',       lastName: 'Obi',      gender: 'female', dob: '2005-09-30', phone: '08056789005', state: 'Lagos',   bloodGroup: 'O-',  genotype: 'AS' },
-  { firstName: 'Femi',        lastName: 'Adeyemi',  gender: 'male',   dob: '1986-04-08', phone: '08067890006', state: 'Ogun',    bloodGroup: 'A-',  genotype: 'AA' },
-  { firstName: 'Chidinma',    lastName: 'Okeke',    gender: 'female', dob: '1969-06-25', phone: '08078901007', state: 'Anambra', bloodGroup: 'B-',  genotype: 'AS' },
-  { firstName: 'Babatunde',   lastName: 'Afolabi',  gender: 'male',   dob: '1982-12-11', phone: '08089012008', state: 'Ekiti',   bloodGroup: 'O+',  genotype: 'AA' },
-  { firstName: 'Yetunde',     lastName: 'Olawale',  gender: 'female', dob: '1993-08-19', phone: '08090123009', state: 'Oyo',     bloodGroup: 'A+',  genotype: 'AA' },
-  { firstName: 'Nnamdi',      lastName: 'Igwe',     gender: 'male',   dob: '1974-02-27', phone: '08001234010', state: 'Rivers',  bloodGroup: 'AB-', genotype: 'SS' },
+interface PatientSeed {
+  firstName: string;
+  lastName: string;
+  gender: 'male' | 'female';
+  dob: string;
+  phone: string;
+  city: string;
+  state: string;
+  country: string;
+  bloodGroup: string;
+  genotype: string;
+}
+
+const PATIENTS: PatientSeed[] = [
+  // ── Nigerian – Igbo ─────────────────────────────────────────────────────────
+  { firstName: 'Ifeanyi',    lastName: 'Okafor',    gender: 'male',   dob: '1985-06-12', phone: '08021001001', city: 'Onitsha',  state: 'Anambra', country: 'NG', bloodGroup: 'O+',  genotype: 'AA' },
+  { firstName: 'Chisom',     lastName: 'Nwosu',     gender: 'female', dob: '1992-03-28', phone: '08031002002', city: 'Owerri',   state: 'Imo',     country: 'NG', bloodGroup: 'A+',  genotype: 'AS' },
+  { firstName: 'Emeka',      lastName: 'Okoye',     gender: 'male',   dob: '1966-09-22', phone: '08041003003', city: 'Nnewi',    state: 'Anambra', country: 'NG', bloodGroup: 'AB+', genotype: 'AA' },
+  { firstName: 'Adaora',     lastName: 'Okonkwo',   gender: 'female', dob: '2000-01-14', phone: '08051004004', city: 'Asaba',    state: 'Delta',   country: 'NG', bloodGroup: 'B+',  genotype: 'AA' },
+  { firstName: 'Chidi',      lastName: 'Ezema',     gender: 'male',   dob: '1983-10-11', phone: '08061005005', city: 'Enugu',    state: 'Enugu',   country: 'NG', bloodGroup: 'AB-', genotype: 'AA' },
+  // ── Nigerian – Yoruba ───────────────────────────────────────────────────────
+  { firstName: 'Segun',      lastName: 'Adeyemi',   gender: 'male',   dob: '1978-11-04', phone: '08071006006', city: 'Ibadan',   state: 'Oyo',     country: 'NG', bloodGroup: 'B+',  genotype: 'AS' },
+  { firstName: 'Bukola',     lastName: 'Adeleke',   gender: 'female', dob: '1995-07-17', phone: '08081007007', city: 'Osogbo',   state: 'Osun',    country: 'NG', bloodGroup: 'O-',  genotype: 'AA' },
+  { firstName: 'Folake',     lastName: 'Balogun',   gender: 'female', dob: '1988-01-30', phone: '08091008008', city: 'Abeokuta', state: 'Ogun',    country: 'NG', bloodGroup: 'A-',  genotype: 'AA' },
+  { firstName: 'Kehinde',    lastName: 'Oduola',    gender: 'male',   dob: '1976-02-16', phone: '08101009009', city: 'Lagos',    state: 'Lagos',   country: 'NG', bloodGroup: 'A+',  genotype: 'AS' },
+  { firstName: 'Sade',       lastName: 'Afolabi',   gender: 'female', dob: '1997-04-25', phone: '08111010010', city: 'Lagos',    state: 'Lagos',   country: 'NG', bloodGroup: 'O+',  genotype: 'AA' },
+  { firstName: 'Damilola',   lastName: 'Adewale',   gender: 'male',   dob: '2003-08-05', phone: '08121011011', city: 'Sagamu',   state: 'Ogun',    country: 'NG', bloodGroup: 'O+',  genotype: 'AA' },
+  { firstName: 'Keji',       lastName: 'Oyelaran',  gender: 'female', dob: '1961-11-29', phone: '08131012012', city: 'Ilorin',   state: 'Kwara',   country: 'NG', bloodGroup: 'A-',  genotype: 'AA' },
+  // ── Nigerian – Hausa / Northern ─────────────────────────────────────────────
+  { firstName: 'Ibrahim',    lastName: 'Musa',      gender: 'male',   dob: '1959-08-03', phone: '08141013013', city: 'Katsina',  state: 'Katsina', country: 'NG', bloodGroup: 'A+',  genotype: 'AA' },
+  { firstName: 'Amina',      lastName: 'Bello',     gender: 'female', dob: '2001-12-14', phone: '08151014014', city: 'Kano',     state: 'Kano',    country: 'NG', bloodGroup: 'O+',  genotype: 'AA' },
+  { firstName: 'Abubakar',   lastName: 'Aliyu',     gender: 'male',   dob: '1970-05-19', phone: '08161015015', city: 'Kaduna',   state: 'Kaduna',  country: 'NG', bloodGroup: 'B-',  genotype: 'AA' },
+  // ── Nigerian – Rivers / South-South ─────────────────────────────────────────
+  { firstName: 'Ikenna',     lastName: 'Dike',      gender: 'male',   dob: '1990-03-07', phone: '08171016016', city: 'Port Harcourt', state: 'Rivers', country: 'NG', bloodGroup: 'O+', genotype: 'AS' },
+  // ── Chinese ─────────────────────────────────────────────────────────────────
+  { firstName: 'Wei',        lastName: 'Zhang',     gender: 'male',   dob: '1980-07-15', phone: '+8613811001700', city: 'Lagos', state: 'Lagos', country: 'CN', bloodGroup: 'B+',  genotype: 'AA' },
+  { firstName: 'Mei Ling',   lastName: 'Chen',      gender: 'female', dob: '1993-11-22', phone: '+8613811001800', city: 'Lagos', state: 'Lagos', country: 'CN', bloodGroup: 'O+',  genotype: 'AA' },
+  { firstName: 'Jian',       lastName: 'Wang',      gender: 'male',   dob: '1971-04-08', phone: '+8613811001900', city: 'Lagos', state: 'Lagos', country: 'CN', bloodGroup: 'A+',  genotype: 'AA' },
+  // ── Indian ──────────────────────────────────────────────────────────────────
+  { firstName: 'Raj',        lastName: 'Patel',     gender: 'male',   dob: '1977-09-30', phone: '+919911002000', city: 'Lagos', state: 'Lagos', country: 'IN', bloodGroup: 'B+',  genotype: 'AA' },
+  { firstName: 'Priya',      lastName: 'Sharma',    gender: 'female', dob: '1989-02-14', phone: '+919911002100', city: 'Lagos', state: 'Lagos', country: 'IN', bloodGroup: 'O+',  genotype: 'AA' },
+  { firstName: 'Arjun',      lastName: 'Nair',      gender: 'male',   dob: '1994-06-27', phone: '+919911002200', city: 'Lagos', state: 'Lagos', country: 'IN', bloodGroup: 'A-',  genotype: 'AA' },
+  // ── European ────────────────────────────────────────────────────────────────
+  { firstName: 'James',      lastName: 'Harrison',  gender: 'male',   dob: '1965-12-03', phone: '+447700900100', city: 'Lagos', state: 'Lagos', country: 'GB', bloodGroup: 'A+',  genotype: 'AA' },
+  { firstName: 'Sophie',     lastName: 'Müller',    gender: 'female', dob: '1987-08-19', phone: '+4917600900200', city: 'Lagos', state: 'Lagos', country: 'DE', bloodGroup: 'O+',  genotype: 'AA' },
+  { firstName: 'Pierre',     lastName: 'Dubois',    gender: 'male',   dob: '1972-05-11', phone: '+33612900300',  city: 'Lagos', state: 'Lagos', country: 'FR', bloodGroup: 'B-',  genotype: 'AA' },
 ];
 
-// Today's schedule: time (hour, minute), visit type, status
+// ── Today's schedule (25 slots, 7:30 AM – 4:20 PM) ───────────────────────────
+// First 5 → fulfilled (seen); 6–7 → arrived (in room); 8–25 → booked (upcoming)
+
 const SCHEDULE: { hour: number; minute: number; visitType: string; status: string }[] = [
-  { hour:  8, minute:  0, visitType: 'General Consultation', status: 'arrived'   },
-  { hour:  8, minute: 30, visitType: 'Internal Medicine',    status: 'arrived'   },
-  { hour:  9, minute:  0, visitType: 'Surgery',              status: 'booked'    },
-  { hour:  9, minute: 30, visitType: 'Obs/Gynecology',       status: 'booked'    },
-  { hour: 10, minute:  0, visitType: 'Physiotherapy',        status: 'booked'    },
-  { hour: 10, minute: 30, visitType: 'General Consultation', status: 'booked'    },
-  { hour: 11, minute:  0, visitType: 'Internal Medicine',    status: 'booked'    },
-  { hour: 11, minute: 30, visitType: 'Surgery',              status: 'fulfilled' },
-  { hour: 14, minute:  0, visitType: 'Obs/Gynecology',       status: 'fulfilled' },
-  { hour: 14, minute: 30, visitType: 'Physiotherapy',        status: 'fulfilled' },
+  { hour:  7, minute: 30, visitType: 'General Consultation',  status: 'fulfilled' },
+  { hour:  8, minute:  0, visitType: 'Internal Medicine',     status: 'fulfilled' },
+  { hour:  8, minute: 30, visitType: 'Surgical Consultation', status: 'fulfilled' },
+  { hour:  8, minute: 50, visitType: 'Antenatal Care',        status: 'fulfilled' },
+  { hour:  9, minute: 10, visitType: 'Obs / Gynecology',      status: 'fulfilled' },
+  { hour:  9, minute: 30, visitType: 'General Consultation',  status: 'arrived'   },
+  { hour:  9, minute: 50, visitType: 'Cardiology Consult',    status: 'arrived'   },
+  { hour: 10, minute: 10, visitType: 'General Consultation',  status: 'booked'    },
+  { hour: 10, minute: 30, visitType: 'Diabetes Review',       status: 'booked'    },
+  { hour: 10, minute: 50, visitType: 'Internal Medicine',     status: 'booked'    },
+  { hour: 11, minute: 10, visitType: 'Physiotherapy',         status: 'booked'    },
+  { hour: 11, minute: 30, visitType: 'ENT',                   status: 'booked'    },
+  { hour: 11, minute: 50, visitType: 'General Consultation',  status: 'booked'    },
+  { hour: 12, minute: 10, visitType: 'Dermatology',           status: 'booked'    },
+  { hour: 12, minute: 40, visitType: 'General Consultation',  status: 'booked'    },
+  { hour: 13, minute: 10, visitType: 'Internal Medicine',     status: 'booked'    },
+  { hour: 13, minute: 30, visitType: 'Post-op Review',        status: 'booked'    },
+  { hour: 13, minute: 50, visitType: 'General Consultation',  status: 'booked'    },
+  { hour: 14, minute: 10, visitType: 'Obs / Gynecology',      status: 'booked'    },
+  { hour: 14, minute: 30, visitType: 'Paediatrics',           status: 'booked'    },
+  { hour: 14, minute: 50, visitType: 'General Consultation',  status: 'booked'    },
+  { hour: 15, minute: 10, visitType: 'Surgical Consultation', status: 'booked'    },
+  { hour: 15, minute: 30, visitType: 'Eye Clinic',            status: 'booked'    },
+  { hour: 15, minute: 50, visitType: 'General Consultation',  status: 'booked'    },
+  { hour: 16, minute: 20, visitType: 'Internal Medicine',     status: 'booked'    },
 ];
 
 function todayAt(hour: number, minute: number): { start: string; end: string } {
@@ -121,7 +175,10 @@ export async function POST(req: NextRequest) {
   }
 
   const h = fhirHeaders(token);
-  const results: { name: string; mrn: string; visitType: string; apptStatus: string; status: string; error?: string }[] = [];
+  const results: {
+    name: string; mrn: string; country: string;
+    visitType: string; apptStatus: string; status: string; error?: string;
+  }[] = [];
 
   for (let i = 0; i < PATIENTS.length; i++) {
     const p        = PATIENTS[i];
@@ -137,14 +194,16 @@ export async function POST(req: NextRequest) {
           resourceType: 'Patient',
           active: true,
           identifier: [
-            { system: MRN_SYSTEM, value: mrn, use: 'official',
-              type: { coding: [{ system: 'http://terminology.hl7.org/CodeSystem/v2-0203', code: 'MR' }], text: 'MRN' } },
+            {
+              system: MRN_SYSTEM, value: mrn, use: 'official',
+              type: { coding: [{ system: 'http://terminology.hl7.org/CodeSystem/v2-0203', code: 'MR' }], text: 'MRN' },
+            },
           ],
-          name:     [{ use: 'official', given: [p.firstName], family: p.lastName }],
-          gender:   p.gender,
+          name:      [{ use: 'official', given: p.firstName.split(' '), family: p.lastName }],
+          gender:    p.gender,
           birthDate: p.dob,
-          telecom:  [{ system: 'phone', value: p.phone, use: 'mobile' }],
-          address:  [{ use: 'home', city: 'Lagos', state: p.state, country: 'NG' }],
+          telecom:   [{ system: 'phone', value: p.phone, use: 'mobile' }],
+          address:   [{ use: 'home', city: p.city, state: p.state, country: p.country }],
           extension: [
             { url: 'https://lotto-hospital.local/fhir/StructureDefinition/blood-group', valueString: p.bloodGroup },
             { url: 'https://lotto-hospital.local/fhir/StructureDefinition/genotype',    valueString: p.genotype  },
@@ -161,7 +220,7 @@ export async function POST(req: NextRequest) {
         await fetch(`${base}fhir/R4/Observation`, { method: 'POST', headers: h, body: JSON.stringify(obs) });
       }
 
-      // 3. Create today's appointment — include patient display so name resolves without _include
+      // 3. Create today's appointment (include display name so it resolves without _include)
       const { start, end } = todayAt(slot.hour, slot.minute);
       const apptRes = await fetch(`${base}fhir/R4/Appointment`, {
         method: 'POST', headers: h,
@@ -182,12 +241,21 @@ export async function POST(req: NextRequest) {
       const appt = await apptRes.json();
       if (!apptRes.ok) throw new Error(appt?.issue?.[0]?.details?.text ?? `Appointment create failed (${apptRes.status})`);
 
-      results.push({ name: fullName, mrn, visitType: slot.visitType, apptStatus: slot.status, status: 'created' });
+      results.push({ name: fullName, mrn, country: p.country, visitType: slot.visitType, apptStatus: slot.status, status: 'created' });
     } catch (err) {
-      results.push({ name: fullName, mrn, visitType: slot.visitType, apptStatus: slot.status, status: 'error', error: (err as Error).message });
+      results.push({ name: fullName, mrn, country: p.country, visitType: slot.visitType, apptStatus: slot.status, status: 'error', error: (err as Error).message });
     }
   }
 
   const created = results.filter((r) => r.status === 'created').length;
-  return NextResponse.json({ message: `Seeded ${created}/${PATIENTS.length} patients with vitals and appointments`, results });
+  return NextResponse.json({
+    message: `Seeded ${created}/${PATIENTS.length} patients with vitals and appointments`,
+    breakdown: {
+      nigerian: results.filter((r) => r.country === 'NG').length,
+      chinese:  results.filter((r) => r.country === 'CN').length,
+      indian:   results.filter((r) => r.country === 'IN').length,
+      european: results.filter((r) => ['GB', 'DE', 'FR'].includes(r.country)).length,
+    },
+    results,
+  });
 }
