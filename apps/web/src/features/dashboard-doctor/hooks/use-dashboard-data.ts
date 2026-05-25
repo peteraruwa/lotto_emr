@@ -58,13 +58,13 @@ export interface DoctorDashboardData {
 // ── Mock seed data ─────────────────────────────────────────────────────────────
 
 const MOCK_NAMES = [
-  'Ama Owusu Mensah',    'Kwame Asante-Boateng', 'Abena Frimpong',
-  'Kojo Darko',          'Efua Boateng',          'Yaw Amoah',
-  'Akosua Sarpong',      'Nana Adjei',            'Adwoa Kyei',
-  'Kofi Quartey',        'Esi Poku',              'Kwesi Asamoah',
-  'Maame Serwaa Boahene','Emmanuel Ofori',        'Akua Asante-Mensah',
-  'Abigail Tetteh',      'Michael Asare',         'Grace Owusu',
-  'Patrick Mensah',      'Comfort Asante',
+  'Chukwuemeka Okafor',  'Adaeze Nwosu',         'Babatunde Adeyemi',
+  'Ngozi Eze',           'Oluwaseun Abiodun',     'Ifeoma Okonkwo',
+  'Uche Nwachukwu',      'Kemi Adeyemi',          'Chioma Obi',
+  'Tunde Fashola',       'Amaka Obiora',           'Seun Oduola',
+  'Yetunde Afolabi',     'Blessing Nwofor',        'Rotimi Amaechi',
+  'Bolanle Abiodun',     'Obinna Uzoma',           'Chiamaka Dike',
+  'Nnamdi Eze',          'Titilayo Adesanya',
 ];
 
 const VISIT_TYPES = [

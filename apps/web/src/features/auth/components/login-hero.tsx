@@ -60,11 +60,11 @@ function StatusDot({ color }: { color: string }) {
 
 function QueueMockup() {
   const rows = [
-    { name: 'Ama Owusu Mensah',    time: '09:00', status: 'In Room',  color: 'bg-emerald-400', badge: 'bg-emerald-400/20 text-emerald-300' },
-    { name: 'Kwame Asante-Boateng',time: '09:30', status: 'Waiting',  color: 'bg-amber-400',   badge: 'bg-amber-400/20 text-amber-300'   },
-    { name: 'Abena Frimpong',       time: '10:00', status: 'Waiting',  color: 'bg-amber-400',   badge: 'bg-amber-400/20 text-amber-300'   },
-    { name: 'Kojo Darko',           time: '10:30', status: 'Done',     color: 'bg-white/20',    badge: 'bg-white/10 text-white/40'        },
-    { name: 'Efua Boateng',         time: '11:00', status: 'Waiting',  color: 'bg-amber-400',   badge: 'bg-amber-400/20 text-amber-300'   },
+    { name: 'Chukwuemeka Okafor',  time: '09:00', status: 'In Room',  color: 'bg-emerald-400', badge: 'bg-emerald-400/20 text-emerald-300' },
+    { name: 'Adaeze Nwosu',        time: '09:30', status: 'Waiting',  color: 'bg-amber-400',   badge: 'bg-amber-400/20 text-amber-300'   },
+    { name: 'Babatunde Adeyemi',   time: '10:00', status: 'Waiting',  color: 'bg-amber-400',   badge: 'bg-amber-400/20 text-amber-300'   },
+    { name: 'Ngozi Eze',           time: '10:30', status: 'Done',     color: 'bg-white/20',    badge: 'bg-white/10 text-white/40'        },
+    { name: 'Ifeoma Okonkwo',      time: '11:00', status: 'Waiting',  color: 'bg-amber-400',   badge: 'bg-amber-400/20 text-amber-300'   },
   ];
   return (
     <div className="rounded-2xl bg-white/10 backdrop-blur-sm border border-white/10 overflow-hidden shadow-2xl">
