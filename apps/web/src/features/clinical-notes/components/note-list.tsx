@@ -9,8 +9,31 @@ import { RequireRole } from '@/shared/rbac';
 import { formatDateTime } from '@/shared/lib/utils';
 import { useNotes } from '../api/use-notes';
 import type { NoteListItem, NoteType } from '../types';
+import { getNoteTypeDef } from '../data/note-type-definitions';
+import { EXAM_MODULES } from '../data/exam-data';
 
-// ── SOAP section renderer ──────────────────────────────────────────────────────
+// ── Helpers ────────────────────────────────────────────────────────────────────
+
+/** Format raw exam findings as readable text (same logic as note-preview-modal) */
+function formatExamFindings(findings: Record<string, Record<string, string | string[]>>): string {
+  const lines: string[] = [];
+  for (const module of EXAM_MODULES) {
+    const moduleData = findings[module.id];
+    if (!moduleData) continue;
+    const entries = Object.entries(moduleData).filter(([, v]) =>
+      Array.isArray(v) ? v.length > 0 : typeof v === 'string' && v.trim() !== '',
+    );
+    if (entries.length === 0) continue;
+    lines.push(`${module.label}:`);
+    for (const [category, value] of entries) {
+      const display = Array.isArray(value) ? value.join(', ') : value;
+      lines.push(`  ${category}: ${display}`);
+    }
+  }
+  return lines.join('\n');
+}
+
+// ── Old-format SOAP renderer (## SUBJECTIVE … style) ──────────────────────────
 
 function parseSoapText(text: string): { section: string; lines: string[] }[] {
   const sections: { section: string; lines: string[] }[] = [];
@@ -34,16 +57,13 @@ function SoapSections({ text }: { text: string }) {
   if (!sections.length) {
     return <pre className="text-xs text-gray-700 whitespace-pre-wrap break-words bg-gray-50 rounded-xl p-3 font-sans">{text}</pre>;
   }
-
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 mt-2">
       {sections.map((sec) => {
         if (!sec.lines.length) return null;
         return (
           <div key={sec.section} className="rounded-xl border border-gray-200 bg-gray-50 p-3">
-            <p className="text-[11px] font-bold uppercase tracking-wide mb-2 text-blue-700">
-              {sec.section}
-            </p>
+            <p className="text-[11px] font-bold uppercase tracking-wide mb-2 text-blue-700">{sec.section}</p>
             <div className="space-y-1.5">
               {sec.lines.map((line, i) => {
                 const boldMatch = line.match(/^\*\*(.+?):\*\*\s*(.*)$/);
@@ -65,6 +85,114 @@ function SoapSections({ text }: { text: string }) {
   );
 }
 
+// ── Structured JSON note renderer ──────────────────────────────────────────────
+
+function NoteFieldBlock({ heading, content }: { heading: string; content: string }) {
+  if (!content?.trim()) return null;
+  return (
+    <div className="rounded-xl border border-gray-200 bg-gray-50 p-3">
+      <p className="text-[11px] font-bold uppercase tracking-wide mb-1.5 text-blue-700">{heading}</p>
+      <p className="text-xs text-gray-700 whitespace-pre-wrap break-words leading-relaxed">{content.trim()}</p>
+    </div>
+  );
+}
+
+function StructuredNoteContent({ note, parsed }: { note: NoteListItem; parsed: Record<string, any> }) {
+  const noteTypeDef = getNoteTypeDef(note.noteTypeKey);
+
+  return (
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 mt-2">
+      {noteTypeDef.sections.map((section) => {
+        const hasExamBuilder = section.fields.some((f) => f.type === 'exam-builder');
+
+        if (hasExamBuilder) {
+          const narrative: string = parsed.examinationNarrative ?? '';
+          const findings = parsed.examFindings ?? {};
+          if (narrative.trim()) {
+            return <NoteFieldBlock key={section.id} heading={section.title} content={narrative} />;
+          }
+          if (Object.keys(findings).length > 0) {
+            const text = formatExamFindings(findings);
+            if (text) return <NoteFieldBlock key={section.id} heading={section.title} content={text} />;
+          }
+          return null;
+        }
+
+        const visibleFields = section.fields.filter((f) => f.type !== 'exam-builder');
+        const nonEmpty = visibleFields.filter((f) => (parsed[f.key] ?? '').trim());
+
+        if (nonEmpty.length === 0) return null;
+
+        if (nonEmpty.length === 1) {
+          return (
+            <NoteFieldBlock
+              key={section.id}
+              heading={section.title}
+              content={parsed[nonEmpty[0].key]}
+            />
+          );
+        }
+
+        return (
+          <React.Fragment key={section.id}>
+            {nonEmpty.map((field) => (
+              <NoteFieldBlock key={field.key} heading={field.label} content={parsed[field.key]} />
+            ))}
+          </React.Fragment>
+        );
+      })}
+    </div>
+  );
+}
+
+/** Main renderer — detects format and renders appropriately */
+function NoteContentRenderer({ note }: { note: NoteListItem }) {
+  // Try JSON parse
+  let parsed: Record<string, any> | null = null;
+  if (note.contentPreview) {
+    try { parsed = JSON.parse(note.contentPreview); } catch { /* not JSON */ }
+  }
+
+  // JSON note with a known note type
+  if (parsed && note.noteTypeKey) {
+    return <StructuredNoteContent note={note} parsed={parsed} />;
+  }
+
+  // Old-format SOAP (## SUBJECTIVE markers)
+  if (note.contentPreview?.includes('## SUBJECTIVE') || note.contentPreview?.includes('## OBJECTIVE')) {
+    return <SoapSections text={note.contentPreview ?? ''} />;
+  }
+
+  // Legacy plain text
+  return (
+    <pre className="text-xs text-gray-700 whitespace-pre-wrap break-words bg-gray-50 rounded-xl p-3 font-sans mt-2">
+      {note.contentPreview ?? '(no content)'}
+    </pre>
+  );
+}
+
+/** Short summary text for collapsed card preview */
+function getCollapsedSummary(note: NoteListItem): string {
+  if (!note.contentPreview) return '';
+  let parsed: Record<string, any> | null = null;
+  try { parsed = JSON.parse(note.contentPreview); } catch { /* not JSON */ }
+  if (parsed) {
+    // Return first non-empty string field (skip noteType, examFindings, examinationNarrative meta)
+    const skipKeys = new Set(['noteType', 'examFindings', 'encounterId', 'patientId']);
+    for (const [key, val] of Object.entries(parsed)) {
+      if (skipKeys.has(key)) continue;
+      if (typeof val === 'string' && val.trim()) return val.trim();
+    }
+    // Fall back to exam narrative or formatted findings
+    if (parsed.examinationNarrative?.trim()) return parsed.examinationNarrative.trim();
+    if (parsed.examFindings && Object.keys(parsed.examFindings).length > 0) {
+      return formatExamFindings(parsed.examFindings);
+    }
+    return '';
+  }
+  return note.contentPreview;
+}
+
 // ── Note card ─────────────────────────────────────────────────────────────────
 
 function NoteCard({ note }: { note: NoteListItem }) {
@@ -78,9 +206,11 @@ function NoteCard({ note }: { note: NoteListItem }) {
   const isOwn      = !!note.authorId && note.authorId === currentUserId;
   const canEdit    = !isFinal && isOwn;
 
-  const isSoap = note.contentPreview?.includes('## SUBJECTIVE') ||
-                 note.contentPreview?.includes('## OBJECTIVE') ||
-                 note.type === 'SOAP' as NoteType;
+  // Old-format SOAP detection (## SUBJECTIVE markers) — only for badge chips in collapsed view
+  const isOldFormatSoap = !!(
+    note.contentPreview?.includes('## SUBJECTIVE') ||
+    note.contentPreview?.includes('## OBJECTIVE')
+  );
 
   const editHref = note.noteTypeKey
     ? `/patients/${note.patientId}/clinical-note/new?type=${note.noteTypeKey}&noteId=${note.id}`
@@ -150,7 +280,7 @@ function NoteCard({ note }: { note: NoteListItem }) {
       {/* Preview — collapsed */}
       {!expanded && note.contentPreview && (
         <div className="px-4 pb-3.5">
-          {isSoap ? (
+          {isOldFormatSoap ? (
             <div className="flex items-center gap-2 flex-wrap">
               {['SUBJECTIVE', 'OBJECTIVE', 'ASSESSMENT', 'PLAN'].map((s) => {
                 const hasSection = note.contentPreview?.includes(`## ${s}`);
@@ -163,7 +293,7 @@ function NoteCard({ note }: { note: NoteListItem }) {
             </div>
           ) : (
             <p className="text-xs text-gray-500 line-clamp-2 whitespace-pre-wrap">
-              {note.contentPreview}
+              {getCollapsedSummary(note)}
             </p>
           )}
         </div>
@@ -172,13 +302,7 @@ function NoteCard({ note }: { note: NoteListItem }) {
       {/* Full content — expanded */}
       {expanded && (
         <div className="px-4 pb-4 border-t border-gray-100 animate-fade-in">
-          {isSoap ? (
-            <SoapSections text={note.contentPreview ?? ''} />
-          ) : (
-            <pre className="text-xs text-gray-700 whitespace-pre-wrap break-words bg-gray-50 rounded-xl p-3 font-sans mt-3">
-              {note.contentPreview}
-            </pre>
-          )}
+          <NoteContentRenderer note={note} />
         </div>
       )}
     </div>

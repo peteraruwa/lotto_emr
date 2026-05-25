@@ -587,7 +587,7 @@ export function StructuredNoteEditor({
   }
 
   return (
-    <div className="space-y-5 pb-24">
+    <div className="max-w-4xl mx-auto space-y-5 pb-24">
       {/* ── Header ── */}
       <div className="flex items-start justify-between gap-3 flex-wrap">
         <div className="min-w-0 flex-1">
@@ -729,6 +729,7 @@ export function StructuredNoteEditor({
         sections={noteTypeDef.sections}
         formValues={previewValues}
         examinationNarrative={examinationNarrative}
+        examFindings={examFindings}
         isFemale={isFemale}
       />
     </div>
