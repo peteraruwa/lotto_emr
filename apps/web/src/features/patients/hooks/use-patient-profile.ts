@@ -305,7 +305,7 @@ export function usePatientProfile(patientId: string) {
         (a as any).reaction?.[0]?.manifestation?.[0]?.coding?.[0]?.display,
     }));
 
-    // Conditions
+    // Conditions — merge FHIR Condition resources with past encounter diagnoses
     const conditionEntries: ConditionEntry[] = conditions.map((c) => ({
       id: c.id ?? '',
       text:
@@ -313,6 +313,26 @@ export function usePatientProfile(patientId: string) {
         c.code?.coding?.[0]?.display ??
         'Unknown condition',
     }));
+
+    // Supplement with diagnoses recorded in past encounters (past medical history)
+    const seenTexts = new Set(conditionEntries.map((c) => c.text.toLowerCase()));
+    for (const enc of encounters) {
+      const diagTexts: string[] = [
+        (enc as any).reasonCode?.[0]?.text,
+        (enc as any).reasonCode?.[0]?.coding?.[0]?.display,
+        ...(((enc as any).diagnosis ?? []) as any[]).map((d: any) =>
+          d.condition?.display ?? d.condition?.reference ?? ''
+        ),
+      ].filter(Boolean);
+
+      for (const text of diagTexts) {
+        const lower = text.toLowerCase();
+        if (lower !== '—' && !seenTexts.has(lower) && text.length > 2) {
+          seenTexts.add(lower);
+          conditionEntries.push({ id: `enc-diag-${enc.id}-${text.slice(0, 8)}`, text });
+        }
+      }
+    }
 
     // Vital rows
     const vitalRows = buildVitalRows(observations);

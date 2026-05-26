@@ -136,6 +136,8 @@ export function RightPanel({ data, isLoading }: RightPanelProps) {
         title="Results & Alerts"
         count={data?.pendingResultsCount}
         viewAllHref="/results"
+        collapsible
+        defaultOpen={true}
       >
         {isLoading ? (
           <SectionSkeleton lines={2} />

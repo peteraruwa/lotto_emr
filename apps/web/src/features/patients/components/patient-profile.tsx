@@ -7,6 +7,7 @@ import {
   FileText, FlaskConical, ClipboardList, Calendar,
   Pill, Phone, MapPin, Shield, Loader2, User,
   Heart, Stethoscope, ChevronRight, BedDouble,
+  Droplets, HeartPulse, Thermometer, Wind, Scale, Ruler, Calculator,
 } from 'lucide-react';
 import { cn } from '@lotto-emr/ui';
 import { capitalize, formatDate, formatDateTime } from '@/shared/lib/utils';
@@ -45,23 +46,26 @@ const NOTE_TYPE_TABS: { label: string; value: NoteTypeFilter }[] = [
 
 // ── Vital card ────────────────────────────────────────────────────────────────
 
-const VITAL_META: { key: keyof VitalRow; label: string; icon: string; color: string; bg: string }[] = [
-  { key: 'bp',     label: 'Blood Pressure', icon: '🩸', color: 'text-red-600',     bg: 'bg-red-50' },
-  { key: 'hr',     label: 'Heart Rate',     icon: '❤️', color: 'text-pink-600',    bg: 'bg-pink-50' },
-  { key: 'temp',   label: 'Temperature',    icon: '🌡️', color: 'text-orange-600',  bg: 'bg-orange-50' },
-  { key: 'spo2',   label: 'SpO₂',           icon: '🫁', color: 'text-blue-600',    bg: 'bg-blue-50' },
-  { key: 'weight', label: 'Weight',         icon: '⚖️', color: 'text-violet-600',  bg: 'bg-violet-50' },
-  { key: 'height', label: 'Height',         icon: '📏', color: 'text-emerald-600', bg: 'bg-emerald-50' },
+const VITAL_META: { key: keyof VitalRow | 'bmi'; label: string; icon: React.ElementType; color: string; bg: string }[] = [
+  { key: 'bp',     label: 'Blood Pressure', icon: Droplets,    color: 'text-red-600',     bg: 'bg-red-50' },
+  { key: 'hr',     label: 'Heart Rate',     icon: HeartPulse,  color: 'text-pink-600',    bg: 'bg-pink-50' },
+  { key: 'temp',   label: 'Temperature',    icon: Thermometer, color: 'text-orange-600',  bg: 'bg-orange-50' },
+  { key: 'spo2',   label: 'SpO₂',           icon: Wind,        color: 'text-blue-600',    bg: 'bg-blue-50' },
+  { key: 'weight', label: 'Weight',         icon: Scale,       color: 'text-violet-600',  bg: 'bg-violet-50' },
+  { key: 'height', label: 'Height',         icon: Ruler,       color: 'text-emerald-600', bg: 'bg-emerald-50' },
+  { key: 'bmi',    label: 'BMI',            icon: Calculator,  color: 'text-teal-600',    bg: 'bg-teal-50' },
 ];
 
-function VitalCard({ meta, value }: { meta: typeof VITAL_META[number]; value?: string }) {
+function VitalCard({ meta, value, sub }: { meta: typeof VITAL_META[number]; value?: string; sub?: string }) {
+  const Icon = meta.icon;
   return (
     <div className={cn('rounded-2xl p-4 flex flex-col gap-1', meta.bg)}>
-      <span className="text-base">{meta.icon}</span>
+      <Icon className={cn('h-4 w-4', value ? meta.color : 'text-gray-300')} />
       <p className="text-[11px] font-medium text-gray-500 uppercase tracking-wide leading-tight">{meta.label}</p>
       <p className={cn('text-lg font-bold leading-tight', value ? meta.color : 'text-gray-300')}>
         {value ?? '—'}
       </p>
+      {sub && <p className="text-[10px] text-gray-400">{sub}</p>}
     </div>
   );
 }
@@ -273,10 +277,28 @@ export function PatientProfile({ patientId }: PatientProfileProps) {
                 <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2 ml-1">
                   Latest Vitals — {latestVitals.dateLabel}
                 </p>
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5">
-                  {VITAL_META.map((m) => (
-                    <VitalCard key={m.key} meta={m} value={latestVitals[m.key] as string | undefined} />
-                  ))}
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-2.5">
+                  {VITAL_META.map((m) => {
+                    let value: string | undefined;
+                    let sub: string | undefined;
+                    if (m.key === 'bmi') {
+                      // Compute BMI from raw weight/height strings
+                      const wStr = latestVitals.weight; // e.g. "70 kg"
+                      const hStr = latestVitals.height; // e.g. "170 cm"
+                      if (wStr && hStr) {
+                        const wKg = parseFloat(wStr);
+                        const hM  = parseFloat(hStr) / 100;
+                        if (!isNaN(wKg) && !isNaN(hM) && hM > 0) {
+                          const bmi = wKg / (hM * hM);
+                          value = bmi.toFixed(1);
+                          sub = bmi < 18.5 ? 'Underweight' : bmi < 25 ? 'Normal' : bmi < 30 ? 'Overweight' : 'Obese';
+                        }
+                      }
+                    } else {
+                      value = latestVitals[m.key as keyof VitalRow] as string | undefined;
+                    }
+                    return <VitalCard key={m.key} meta={m} value={value} sub={sub} />;
+                  })}
                 </div>
               </div>
             ) : (
@@ -313,13 +335,13 @@ export function PatientProfile({ patientId }: PatientProfileProps) {
 
                 <SectionCard
                   icon={Stethoscope} iconBg="bg-blue-50" iconColor="text-blue-600"
-                  title="Active Conditions"
+                  title="Chronic Conditions"
                   action={
                     <span className="text-[11px] text-gray-400">{conditions.length} total</span>
                   }
                 >
                   {conditions.length === 0 ? (
-                    <p className="text-xs text-gray-400 text-center py-2">No active conditions</p>
+                    <p className="text-xs text-gray-400 text-center py-2">No chronic conditions</p>
                   ) : (
                     <div className="flex flex-wrap gap-1.5">
                       {conditions.map((c) => (
@@ -401,10 +423,27 @@ export function PatientProfile({ patientId }: PatientProfileProps) {
                 <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide ml-1">
                   Latest — {latestVitals.dateLabel}
                 </p>
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5">
-                  {VITAL_META.map((m) => (
-                    <VitalCard key={m.key} meta={m} value={latestVitals[m.key] as string | undefined} />
-                  ))}
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-2.5">
+                  {VITAL_META.map((m) => {
+                    let value: string | undefined;
+                    let sub: string | undefined;
+                    if (m.key === 'bmi') {
+                      const wStr = latestVitals.weight;
+                      const hStr = latestVitals.height;
+                      if (wStr && hStr) {
+                        const wKg = parseFloat(wStr);
+                        const hM  = parseFloat(hStr) / 100;
+                        if (!isNaN(wKg) && !isNaN(hM) && hM > 0) {
+                          const bmi = wKg / (hM * hM);
+                          value = bmi.toFixed(1);
+                          sub = bmi < 18.5 ? 'Underweight' : bmi < 25 ? 'Normal' : bmi < 30 ? 'Overweight' : 'Obese';
+                        }
+                      }
+                    } else {
+                      value = latestVitals[m.key as keyof VitalRow] as string | undefined;
+                    }
+                    return <VitalCard key={m.key} meta={m} value={value} sub={sub} />;
+                  })}
                 </div>
               </>
             )}
