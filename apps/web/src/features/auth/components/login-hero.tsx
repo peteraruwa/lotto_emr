@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState, useCallback, useRef } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { cn } from '@lotto-emr/ui';
 
 // ── Mockup components ──────────────────────────────────────────────────────────
@@ -258,29 +258,19 @@ const SLIDES: SlideEntry[] = [
 
 // ── Carousel ───────────────────────────────────────────────────────────────────
 
-const FADE_MS = 220; // must match the CSS transition duration below
-
 export function LoginHero() {
-  const [current,  setCurrent]  = useState(0);
-  const [visible,  setVisible]  = useState(true);
-  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [current, setCurrent] = useState(0);
   const total = SLIDES.length;
 
   /**
-   * Controlled cross-fade:
-   *   1. Fade OUT the current content (opacity → 0, FADE_MS)
-   *   2. Once invisible, swap slide index + fade IN (opacity → 1, FADE_MS)
-   *
-   * Because the content is invisible when swapped, the old and new text are
-   * never simultaneously visible — eliminating the double-layer artifact.
+   * Jump to a specific slide index.
+   * Using key={current} on the content div, React will unmount the old
+   * content and mount the new content fresh — eliminating any chance of
+   * double-layer/ghost text artifacts.  The new content fades in via the
+   * CSS `animate-fade-in` class.
    */
   const goTo = useCallback((idx: number) => {
-    if (timerRef.current) clearTimeout(timerRef.current);
-    setVisible(false);
-    timerRef.current = setTimeout(() => {
-      setCurrent(idx);
-      setVisible(true);
-    }, FADE_MS);
+    setCurrent(idx);
   }, []);
 
   const next = useCallback(() => goTo((current + 1) % total), [current, goTo, total]);
@@ -290,9 +280,6 @@ export function LoginHero() {
     const t = setTimeout(next, 4500);
     return () => clearTimeout(t);
   }, [current, next]);
-
-  // Clean up on unmount
-  useEffect(() => () => { if (timerRef.current) clearTimeout(timerRef.current); }, []);
 
   const slide = SLIDES[current];
   const { Mockup } = slide;
@@ -343,20 +330,13 @@ export function LoginHero() {
         </div>
 
         {/*
-          Slide content.
-          CSS opacity transition (FADE_MS) controls visibility.
-          Content is swapped only while opacity === 0, so old and new text
-          are never both visible at the same time.
-          No `key` prop needed here — React reconciles in place; the Mockup
-          component reference change causes a clean unmount/remount of the
-          inner tree without any DOM-level overlap.
+          key={current} forces React to unmount the old content and mount
+          the new content from scratch whenever the slide changes.
+          The old DOM is gone before the new DOM appears — no double-layer
+          or ghost text is possible.  animate-fade-in provides the smooth
+          opacity+translateY entrance.
         */}
-        <div
-          style={{
-            opacity:    visible ? 1 : 0,
-            transition: `opacity ${FADE_MS}ms ease-in-out`,
-          }}
-        >
+        <div key={current} className="animate-fade-in">
           <div className="mb-5">
             <Mockup />
           </div>

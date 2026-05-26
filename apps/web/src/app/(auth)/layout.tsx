@@ -149,8 +149,8 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
             {children}
           </div>
 
-          <div className="flex items-center justify-between mt-5 px-1">
-            <p className="text-xs text-gray-400">Authorized personnel only · All access is audited</p>
+          <div className="flex flex-col items-center gap-2 mt-5 px-1 sm:flex-row sm:justify-between">
+            <p className="text-xs text-gray-400 text-center sm:text-left">Authorized personnel only · All access is audited</p>
             <AboutButton />
           </div>
           <p className="text-center text-[11px] text-gray-300 mt-2">
