@@ -110,7 +110,7 @@ function AboutButton() {
         onClick={() => setOpen(true)}
         className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-hospital-600 text-white hover:bg-hospital-700 shadow-sm shadow-hospital-600/30 transition-all hover:shadow-md hover:-translate-y-px active:translate-y-0"
       >
-        About this app
+        About app
       </button>
       {open && <AboutModal onClose={() => setOpen(false)} />}
     </>
