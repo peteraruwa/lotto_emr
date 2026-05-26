@@ -66,15 +66,17 @@ function QueueRow({
 }) {
   const d = appt.time ? new Date(appt.time) : null;
   const timeStr = d && !isNaN(d.getTime()) ? format(d, 'HH:mm') : '—';
-  const isInRoom = ['arrived', 'checkedin'].includes(appt.status);
-  const isDone   = ['fulfilled', 'cancelled', 'noshow'].includes(appt.status);
-  const cfg      = STATUS_CONFIG[appt.status] ?? { label: appt.status, className: 'bg-gray-100 text-gray-500' };
-  const ini      = initials(appt.patientName);
+  const isInRoom  = ['arrived', 'checkedin'].includes(appt.status);
+  const isDone    = ['fulfilled', 'cancelled', 'noshow'].includes(appt.status);
+  const hasId     = Boolean(appt.patientId);
+  const cfg       = STATUS_CONFIG[appt.status] ?? { label: appt.status, className: 'bg-gray-100 text-gray-500' };
+  const ini       = initials(appt.patientName);
+  const btnDisabled = isDone || (!isInRoom && !hasId);
 
   function handleClick() {
     if (isInRoom && !appt.isMock && onConsult) {
       onConsult(appt);
-    } else {
+    } else if (hasId) {
       onOpenPatient(appt);
     }
   }
@@ -94,7 +96,7 @@ function QueueRow({
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-1.5 min-w-0">
           {isInRoom && <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 flex-shrink-0" />}
-          {appt.patientId ? (
+          {hasId ? (
             <Link
               href={`/patients/${appt.patientId}`}
               onClick={(e) => e.stopPropagation()}
@@ -121,12 +123,12 @@ function QueueRow({
 
       <button
         onClick={handleClick}
-        disabled={isDone}
+        disabled={btnDisabled}
         className={cn(
           'flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all flex-shrink-0',
           isInRoom
             ? 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm shadow-emerald-600/20'
-            : isDone
+            : btnDisabled
             ? 'bg-gray-100 text-gray-400 cursor-default'
             : 'bg-hospital-50 hover:bg-hospital-600 hover:text-white text-hospital-700',
         )}
@@ -149,15 +151,17 @@ function QueueCard({
 }) {
   const d = appt.time ? new Date(appt.time) : null;
   const timeStr = d && !isNaN(d.getTime()) ? format(d, 'h:mm a') : '—';
-  const isInRoom = ['arrived', 'checkedin'].includes(appt.status);
-  const isDone   = ['fulfilled', 'cancelled', 'noshow'].includes(appt.status);
-  const cfg      = STATUS_CONFIG[appt.status] ?? { label: appt.status, className: 'bg-gray-100 text-gray-500' };
-  const ini      = initials(appt.patientName);
+  const isInRoom   = ['arrived', 'checkedin'].includes(appt.status);
+  const isDone     = ['fulfilled', 'cancelled', 'noshow'].includes(appt.status);
+  const hasId      = Boolean(appt.patientId);
+  const cfg        = STATUS_CONFIG[appt.status] ?? { label: appt.status, className: 'bg-gray-100 text-gray-500' };
+  const ini        = initials(appt.patientName);
+  const btnDisabled = isDone || (!isInRoom && !hasId);
 
   function handleClick() {
     if (isInRoom && !appt.isMock && onConsult) {
       onConsult(appt);
-    } else {
+    } else if (hasId) {
       onOpenPatient(appt);
     }
   }
@@ -172,7 +176,7 @@ function QueueCard({
         {ini}
       </div>
       <div className="flex-1 min-w-0">
-        {appt.patientId ? (
+        {hasId ? (
           <Link
             href={`/patients/${appt.patientId}`}
             onClick={(e) => e.stopPropagation()}
@@ -192,12 +196,12 @@ function QueueCard({
       </div>
       <button
         onClick={handleClick}
-        disabled={isDone}
+        disabled={btnDisabled}
         className={cn(
           'w-8 h-8 flex items-center justify-center rounded-lg flex-shrink-0 transition-colors',
           isInRoom
             ? 'bg-emerald-600 text-white'
-            : isDone
+            : btnDisabled
             ? 'bg-gray-100 text-gray-300 cursor-default'
             : 'bg-hospital-600 text-white',
         )}

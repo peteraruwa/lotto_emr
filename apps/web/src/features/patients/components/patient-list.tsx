@@ -28,10 +28,10 @@ function SkeletonCard() {
   );
 }
 
-export function PatientList() {
-  const [search, setSearch]               = useState('');
+export function PatientList({ initialSearch = '' }: { initialSearch?: string }) {
+  const [search, setSearch]               = useState(initialSearch);
   const [page, setPage]                   = useState(0);
-  const [debouncedSearch, setDebounced]   = useState('');
+  const [debouncedSearch, setDebounced]   = useState(initialSearch);
 
   function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
     if (e.key === 'Enter') { setDebounced(search); setPage(0); }

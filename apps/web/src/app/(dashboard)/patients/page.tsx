@@ -5,7 +5,14 @@ import { PageHeader } from '@/shared/components/page-header';
 
 export const metadata: Metadata = { title: 'Patients' };
 
-export default function PatientsPage() {
+interface Props {
+  searchParams?: Promise<{ name?: string }>;
+}
+
+export default async function PatientsPage({ searchParams }: Props) {
+  const params = await searchParams;
+  const initialSearch = params?.name ?? '';
+
   return (
     <div>
       <PageHeader
@@ -13,7 +20,7 @@ export default function PatientsPage() {
         description="Search and manage patient records"
         icon={Users}
       />
-      <PatientList />
+      <PatientList initialSearch={initialSearch} />
     </div>
   );
 }

@@ -56,21 +56,6 @@ function AboutModal({ onClose }: { onClose: () => void }) {
             </ul>
           </div>
 
-          {/* Tech stack */}
-          <div>
-            <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Built with</h3>
-            <div className="flex flex-wrap gap-2">
-              {[
-                'Next.js 14', 'React 18', 'TypeScript', 'Tailwind CSS',
-                'Medplum', 'FHIR R4', 'TanStack Query', 'date-fns',
-              ].map((tech) => (
-                <span key={tech} className="px-2.5 py-1 rounded-lg bg-gray-100 text-gray-700 text-xs font-medium">
-                  {tech}
-                </span>
-              ))}
-            </div>
-          </div>
-
           {/* Credits */}
           <div className="border-t border-gray-100 pt-4">
             <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Credits</h3>
