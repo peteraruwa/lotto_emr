@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { usePersistedToggle } from '@/shared/hooks/use-persisted-toggle';
 import { format, formatDistanceToNow } from 'date-fns';
 import {
   Search, Bell, Calendar,
@@ -292,8 +293,8 @@ export function DoctorDashboard() {
   const { data, isLoading } = useDoctorDashboardData();
   const startConsultation = useStartConsultation();
 
-  const [queueOpen, setQueueOpen] = useState(true);
-  const [seenOpen,  setSeenOpen]  = useState(true);
+  const [queueOpen, toggleQueue] = usePersistedToggle('dashboard:queueOpen', false);
+  const [seenOpen,  toggleSeen]  = usePersistedToggle('dashboard:seenOpen',  false);
 
   const profile   = medplum.getProfile() as any;
   const firstName = profile?.name?.[0]?.given?.[0] ?? 'Doctor';
@@ -362,7 +363,7 @@ export function DoctorDashboard() {
           <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
             <button
               type="button"
-              onClick={() => setQueueOpen((o) => !o)}
+              onClick={toggleQueue}
               className="w-full flex items-center justify-between px-5 py-4 border-b border-gray-100 hover:bg-gray-50/60 transition-colors text-left"
             >
               <div className="flex items-center gap-3 min-w-0">
@@ -425,7 +426,7 @@ export function DoctorDashboard() {
             rows={data?.seenToday ?? []}
             loading={isLoading}
             open={seenOpen}
-            onToggle={() => setSeenOpen((o) => !o)}
+            onToggle={toggleSeen}
             onOpen={(row) => {
               if (row.patientId) router.push(`/patients/${row.patientId}`);
             }}

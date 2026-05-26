@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 import Link from 'next/link';
+import { usePersistedToggle } from '@/shared/hooks/use-persisted-toggle';
 import { isToday, format, formatDistanceToNow } from 'date-fns';
 import {
   AlertCircle, CheckCircle2, ArrowRight,
@@ -42,7 +43,7 @@ function PanelSection({
   viewAllHref,
   children,
   collapsible = false,
-  defaultOpen = true,
+  storageKey,
 }: {
   icon: React.ElementType;
   iconColor: string;
@@ -52,9 +53,15 @@ function PanelSection({
   viewAllHref?: string;
   children: React.ReactNode;
   collapsible?: boolean;
-  defaultOpen?: boolean;
+  /** localStorage key — required when collapsible so state survives navigation */
+  storageKey?: string;
 }) {
-  const [open, setOpen] = useState(defaultOpen);
+  // Persisted toggle: defaults to collapsed (false). Falls back to plain false
+  // if storageKey is not provided (non-collapsible sections).
+  const [open, toggle] = usePersistedToggle(
+    storageKey ?? `rp:${title}`,
+    false,
+  );
 
   const headerContent = (
     <>
@@ -96,7 +103,7 @@ function PanelSection({
       {collapsible ? (
         <button
           type="button"
-          onClick={() => setOpen((prev) => !prev)}
+          onClick={toggle}
           className="w-full flex items-center justify-between px-4 py-3 border-b border-gray-100 text-left"
         >
           {headerContent}
@@ -137,7 +144,7 @@ export function RightPanel({ data, isLoading }: RightPanelProps) {
         count={data?.pendingResultsCount}
         viewAllHref="/results"
         collapsible
-        defaultOpen={true}
+        storageKey="rp:resultsAlerts"
       >
         {isLoading ? (
           <SectionSkeleton lines={2} />
@@ -178,7 +185,7 @@ export function RightPanel({ data, isLoading }: RightPanelProps) {
         title="Recent Patients"
         viewAllHref="/patients"
         collapsible
-        defaultOpen={true}
+        storageKey="rp:recentPatients"
       >
         {isLoading ? (
           <SectionSkeleton lines={4} />
@@ -236,7 +243,7 @@ export function RightPanel({ data, isLoading }: RightPanelProps) {
         count={data?.pendingOrdersCount}
         viewAllHref="/orders"
         collapsible
-        defaultOpen={true}
+        storageKey="rp:pendingOrders"
       >
         {isLoading ? (
           <SectionSkeleton lines={3} />
