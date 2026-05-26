@@ -1,54 +1,10 @@
 'use client';
 
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { cn } from '@lotto-emr/ui';
 
-// ── Feature slide data ─────────────────────────────────────────────────────────
-
-const SLIDES = [
-  {
-    id: 'queue',
-    label: 'Patient Queue',
-    title: 'Real-time Patient Queue',
-    description:
-      "Monitor today's appointments, track waiting status in real time, and open a consultation with one click.",
-    mockup: <QueueMockup />,
-  },
-  {
-    id: 'notes',
-    label: 'Clinical Notes',
-    title: 'AI-Assisted Documentation',
-    description:
-      'Structured SOAP notes, examination builder, and one-click AI narrative generation — fully FHIR R4 compliant.',
-    mockup: <NotesMockup />,
-  },
-  {
-    id: 'orders',
-    label: 'Lab & Imaging',
-    title: 'Seamless Order Management',
-    description:
-      'Request labs, imaging studies, and prescriptions directly linked to the patient encounter — results flow back automatically.',
-    mockup: <OrdersMockup />,
-  },
-  {
-    id: 'roster',
-    label: 'Staff Roster',
-    title: 'Smart Shift Scheduling',
-    description:
-      "Monthly roster for every department. Today's on-duty team is always visible right from the dashboard.",
-    mockup: <RosterMockup />,
-  },
-  {
-    id: 'anc',
-    label: 'Antenatal Care',
-    title: 'Comprehensive ANC Tracking',
-    description:
-      'WHO-compliant antenatal care with automated risk alerts, gestational age tracking, and visit scheduling.',
-    mockup: <AncMockup />,
-  },
-] as const;
-
 // ── Mockup components ──────────────────────────────────────────────────────────
+// Defined BEFORE SLIDES so component references are valid when the array is built.
 
 function Bar({ w, h = 'h-2', opacity = 'opacity-30' }: { w: string; h?: string; opacity?: string }) {
   return <div className={cn('rounded-full bg-white', w, h, opacity)} />;
@@ -96,7 +52,6 @@ function QueueMockup() {
 function NotesMockup() {
   return (
     <div className="rounded-2xl bg-white/10 backdrop-blur-sm border border-white/10 overflow-hidden shadow-2xl">
-      {/* Tab bar */}
       <div className="flex gap-1 px-3 py-2 border-b border-white/10 bg-white/5">
         {['Subjective', 'Objective', 'Assessment', 'Plan'].map((t, i) => (
           <div key={t} className={cn('px-2.5 py-1 rounded-lg text-[10px] font-semibold', i === 1 ? 'bg-white/20 text-white' : 'text-white/40')}>
@@ -105,7 +60,6 @@ function NotesMockup() {
         ))}
       </div>
       <div className="p-4 space-y-3">
-        {/* Section card */}
         {[
           { label: 'Examination Findings', lines: [28, 36, 20] },
           { label: 'Vital Signs',          lines: [16, 22]     },
@@ -120,7 +74,6 @@ function NotesMockup() {
             </div>
           </div>
         ))}
-        {/* AI button */}
         <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-white/20 border border-white/20">
           <div className="w-4 h-4 rounded-full bg-white/40 animate-pulse" />
           <p className="text-white/80 text-[10px] font-semibold">Generate AI narrative…</p>
@@ -138,7 +91,6 @@ function OrdersMockup() {
   ];
   return (
     <div className="rounded-2xl bg-white/10 backdrop-blur-sm border border-white/10 overflow-hidden shadow-2xl">
-      {/* Tab strip */}
       <div className="flex border-b border-white/10 bg-white/5">
         {['Lab', 'Imaging', 'Pharmacy'].map((t, i) => (
           <div key={t} className={cn('flex-1 py-2 text-center text-[10px] font-semibold', i === 0 ? 'text-white border-b-2 border-white/60' : 'text-white/40')}>
@@ -146,7 +98,6 @@ function OrdersMockup() {
           </div>
         ))}
       </div>
-      {/* Search bar */}
       <div className="px-3 py-2 border-b border-white/10">
         <div className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-white/10 border border-white/10">
           <div className="w-3 h-3 rounded-full border border-white/30" />
@@ -173,14 +124,14 @@ function OrdersMockup() {
 }
 
 function RosterMockup() {
-  const days = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
-  const cells = [
+  const days   = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+  const cells  = [
     [true,  true,  true,  true,  true,  false, false],
     [true,  true,  true,  true,  true,  true,  false],
     [true,  false, true,  true,  true,  false, false],
     [true,  true,  true,  false, true,  false, false],
   ];
-  const depts = ['Doctors', 'Nurses', 'Lab', 'Pharmacy'];
+  const depts  = ['Doctors', 'Nurses', 'Lab', 'Pharmacy'];
   const colors = ['bg-blue-400', 'bg-emerald-400', 'bg-purple-400', 'bg-orange-400'];
 
   return (
@@ -193,13 +144,11 @@ function RosterMockup() {
           ))}
         </div>
       </div>
-      {/* Day headers */}
       <div className="grid grid-cols-7 border-b border-white/10">
         {days.map((d, i) => (
           <div key={i} className={cn('py-1 text-center text-[9px] font-bold', i >= 5 ? 'text-white/30' : 'text-white/50')}>{d}</div>
         ))}
       </div>
-      {/* Dept rows */}
       <div className="p-2 space-y-1.5">
         {depts.map((dept, di) => (
           <div key={dept} className="flex items-center gap-1.5">
@@ -220,7 +169,6 @@ function RosterMockup() {
 function AncMockup() {
   return (
     <div className="rounded-2xl bg-white/10 backdrop-blur-sm border border-white/10 overflow-hidden shadow-2xl">
-      {/* Patient header */}
       <div className="px-4 py-3 border-b border-white/10 bg-white/5 flex items-center gap-3">
         <div className="w-9 h-9 rounded-xl bg-white/20 flex-shrink-0" />
         <div>
@@ -235,7 +183,6 @@ function AncMockup() {
         </div>
       </div>
       <div className="p-3 space-y-2">
-        {/* Vitals strip */}
         <div className="grid grid-cols-4 gap-1.5">
           {[['BP', '130/85'], ['HR', '92'], ['Wt', '68 kg'], ['FHR', '144']].map(([l, v]) => (
             <div key={l} className="rounded-xl bg-white/5 border border-white/10 p-2 text-center">
@@ -244,7 +191,6 @@ function AncMockup() {
             </div>
           ))}
         </div>
-        {/* Visit list */}
         {[
           { v: 'ANC 1', date: 'Jan 12', done: true  },
           { v: 'ANC 2', date: 'Mar 5',  done: true  },
@@ -263,32 +209,97 @@ function AncMockup() {
   );
 }
 
+// ── Slide data — component references, NOT pre-created JSX instances ────────────
+// Storing <QueueMockup /> (a stale element object) here causes React's reconciler
+// to reuse the same DOM node across slide changes, producing layered/ghost text.
+// Storing the function reference (QueueMockup) lets React create a fresh element
+// on every render cycle and cleanly swap the DOM.
+
+type SlideEntry = {
+  id:          string;
+  label:       string;
+  title:       string;
+  description: string;
+  Mockup:      React.ComponentType;
+};
+
+const SLIDES: SlideEntry[] = [
+  {
+    id: 'queue', label: 'Patient Queue',
+    title: 'Real-time Patient Queue',
+    description: "Monitor today's appointments, track waiting status in real time, and open a consultation with one click.",
+    Mockup: QueueMockup,
+  },
+  {
+    id: 'notes', label: 'Clinical Notes',
+    title: 'AI-Assisted Documentation',
+    description: 'Structured SOAP notes, examination builder, and one-click AI narrative generation — fully FHIR R4 compliant.',
+    Mockup: NotesMockup,
+  },
+  {
+    id: 'orders', label: 'Lab & Imaging',
+    title: 'Seamless Order Management',
+    description: 'Request labs, imaging studies, and prescriptions directly linked to the patient encounter — results flow back automatically.',
+    Mockup: OrdersMockup,
+  },
+  {
+    id: 'roster', label: 'Staff Roster',
+    title: 'Smart Shift Scheduling',
+    description: "Monthly roster for every department. Today's on-duty team is always visible right from the dashboard.",
+    Mockup: RosterMockup,
+  },
+  {
+    id: 'anc', label: 'Antenatal Care',
+    title: 'Comprehensive ANC Tracking',
+    description: 'WHO-compliant antenatal care with automated risk alerts, gestational age tracking, and visit scheduling.',
+    Mockup: AncMockup,
+  },
+];
+
 // ── Carousel ───────────────────────────────────────────────────────────────────
 
+const FADE_MS = 220; // must match the CSS transition duration below
+
 export function LoginHero() {
-  const [current, setCurrent] = useState(0);
+  const [current,  setCurrent]  = useState(0);
+  const [visible,  setVisible]  = useState(true);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const total = SLIDES.length;
 
-  // Go to a slide directly — no animating state needed.
-  // Using key={current} on the content div causes React to fully unmount/remount
-  // it on each slide change, so there is never a moment where two slides'
-  // text nodes overlap in the DOM.
+  /**
+   * Controlled cross-fade:
+   *   1. Fade OUT the current content (opacity → 0, FADE_MS)
+   *   2. Once invisible, swap slide index + fade IN (opacity → 1, FADE_MS)
+   *
+   * Because the content is invisible when swapped, the old and new text are
+   * never simultaneously visible — eliminating the double-layer artifact.
+   */
   const goTo = useCallback((idx: number) => {
-    setCurrent(idx);
+    if (timerRef.current) clearTimeout(timerRef.current);
+    setVisible(false);
+    timerRef.current = setTimeout(() => {
+      setCurrent(idx);
+      setVisible(true);
+    }, FADE_MS);
   }, []);
 
   const next = useCallback(() => goTo((current + 1) % total), [current, goTo, total]);
 
-  // Auto-advance every 4.5s
+  // Auto-advance every 4.5 s
   useEffect(() => {
     const t = setTimeout(next, 4500);
     return () => clearTimeout(t);
   }, [current, next]);
 
+  // Clean up on unmount
+  useEffect(() => () => { if (timerRef.current) clearTimeout(timerRef.current); }, []);
+
   const slide = SLIDES[current];
+  const { Mockup } = slide;
 
   return (
     <div className="relative z-10 flex flex-col h-full px-10 py-10">
+
       {/* ── Brand mark ── */}
       <div className="flex items-center gap-3 flex-shrink-0">
         <div className="w-10 h-10 rounded-2xl bg-white flex items-center justify-center shadow-lg shadow-black/20 flex-shrink-0">
@@ -312,6 +323,7 @@ export function LoginHero() {
 
       {/* ── Feature carousel ── */}
       <div className="flex-1 flex flex-col justify-center min-h-0 mt-8">
+
         {/* Slide label chips */}
         <div className="flex gap-1.5 flex-wrap mb-5 flex-shrink-0">
           {SLIDES.map((s, i) => (
@@ -330,15 +342,24 @@ export function LoginHero() {
           ))}
         </div>
 
-        {/* Slide content — key={current} ensures full unmount/remount on change,
-            preventing any overlap between the outgoing and incoming text layers. */}
-        <div key={current} className="animate-fade-in">
-          {/* Mockup */}
+        {/*
+          Slide content.
+          CSS opacity transition (FADE_MS) controls visibility.
+          Content is swapped only while opacity === 0, so old and new text
+          are never both visible at the same time.
+          No `key` prop needed here — React reconciles in place; the Mockup
+          component reference change causes a clean unmount/remount of the
+          inner tree without any DOM-level overlap.
+        */}
+        <div
+          style={{
+            opacity:    visible ? 1 : 0,
+            transition: `opacity ${FADE_MS}ms ease-in-out`,
+          }}
+        >
           <div className="mb-5">
-            {slide.mockup}
+            <Mockup />
           </div>
-
-          {/* Text */}
           <div>
             <h3 className="text-white font-bold text-lg leading-tight">{slide.title}</h3>
             <p className="text-white/55 text-sm mt-2 leading-relaxed">{slide.description}</p>
