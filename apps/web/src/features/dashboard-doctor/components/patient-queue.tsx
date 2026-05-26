@@ -66,19 +66,25 @@ function QueueRow({
 }) {
   const d = appt.time ? new Date(appt.time) : null;
   const timeStr = d && !isNaN(d.getTime()) ? format(d, 'HH:mm') : '—';
-  const isInRoom  = ['arrived', 'checkedin'].includes(appt.status);
-  const isDone    = ['fulfilled', 'cancelled', 'noshow'].includes(appt.status);
-  const hasId     = Boolean(appt.patientId);
-  const cfg       = STATUS_CONFIG[appt.status] ?? { label: appt.status, className: 'bg-gray-100 text-gray-500' };
-  const ini       = initials(appt.patientName);
-  const btnDisabled = isDone || (!isInRoom && !hasId);
+  const isInRoom = ['arrived', 'checkedin'].includes(appt.status);
+  const isDone   = ['fulfilled', 'cancelled', 'noshow'].includes(appt.status);
+  const hasId    = Boolean(appt.patientId);
+  const cfg      = STATUS_CONFIG[appt.status] ?? { label: appt.status, className: 'bg-gray-100 text-gray-500' };
+  const ini      = initials(appt.patientName);
+
+  // Only disable for completed appointments — never grey out because of missing ID.
+  // Mock / demo patients with no FHIR ID just silently no-op on click.
+  const btnDisabled = isDone;
 
   function handleClick() {
-    if (isInRoom && !appt.isMock && onConsult) {
+    if (isInRoom && hasId && onConsult) {
+      // Real in-room patient → start consultation
       onConsult(appt);
     } else if (hasId) {
+      // Real waiting patient → open chart
       onOpenPatient(appt);
     }
+    // Mock patient (no ID) → button is visible but does nothing
   }
 
   return (
@@ -126,14 +132,14 @@ function QueueRow({
         disabled={btnDisabled}
         className={cn(
           'flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all flex-shrink-0',
-          isInRoom
+          isInRoom && hasId
             ? 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm shadow-emerald-600/20'
-            : btnDisabled
+            : isDone
             ? 'bg-gray-100 text-gray-400 cursor-default'
             : 'bg-hospital-50 hover:bg-hospital-600 hover:text-white text-hospital-700',
         )}
       >
-        {isInRoom ? 'Consult' : 'Open'}
+        {isInRoom && hasId ? 'Consult' : 'Open'}
         <ChevronRight className="h-3 w-3" />
       </button>
     </div>
@@ -151,15 +157,15 @@ function QueueCard({
 }) {
   const d = appt.time ? new Date(appt.time) : null;
   const timeStr = d && !isNaN(d.getTime()) ? format(d, 'h:mm a') : '—';
-  const isInRoom   = ['arrived', 'checkedin'].includes(appt.status);
-  const isDone     = ['fulfilled', 'cancelled', 'noshow'].includes(appt.status);
-  const hasId      = Boolean(appt.patientId);
-  const cfg        = STATUS_CONFIG[appt.status] ?? { label: appt.status, className: 'bg-gray-100 text-gray-500' };
-  const ini        = initials(appt.patientName);
-  const btnDisabled = isDone || (!isInRoom && !hasId);
+  const isInRoom = ['arrived', 'checkedin'].includes(appt.status);
+  const isDone   = ['fulfilled', 'cancelled', 'noshow'].includes(appt.status);
+  const hasId    = Boolean(appt.patientId);
+  const cfg      = STATUS_CONFIG[appt.status] ?? { label: appt.status, className: 'bg-gray-100 text-gray-500' };
+  const ini      = initials(appt.patientName);
+  const btnDisabled = isDone;
 
   function handleClick() {
-    if (isInRoom && !appt.isMock && onConsult) {
+    if (isInRoom && hasId && onConsult) {
       onConsult(appt);
     } else if (hasId) {
       onOpenPatient(appt);
@@ -199,9 +205,9 @@ function QueueCard({
         disabled={btnDisabled}
         className={cn(
           'w-8 h-8 flex items-center justify-center rounded-lg flex-shrink-0 transition-colors',
-          isInRoom
+          isInRoom && hasId
             ? 'bg-emerald-600 text-white'
-            : btnDisabled
+            : isDone
             ? 'bg-gray-100 text-gray-300 cursor-default'
             : 'bg-hospital-600 text-white',
         )}

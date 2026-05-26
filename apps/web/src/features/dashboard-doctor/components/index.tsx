@@ -409,11 +409,15 @@ export function DoctorDashboard() {
                   }}
                   onConsult={async (appt) => {
                     if (!appt.patientId) return;
-                    await startConsultation.mutateAsync({
-                      patientId: appt.patientId,
-                      visitReason: appt.visitType,
-                      appointmentId: appt.isMock ? undefined : appt.id,
-                    });
+                    try {
+                      await startConsultation.mutateAsync({
+                        patientId:     appt.patientId,
+                        visitReason:   appt.visitType,
+                        appointmentId: appt.isMock ? undefined : appt.id,
+                      });
+                    } catch {
+                      // Encounter creation failed — still navigate to chart
+                    }
                     router.push(`/patients/${appt.patientId}`);
                   }}
                 />

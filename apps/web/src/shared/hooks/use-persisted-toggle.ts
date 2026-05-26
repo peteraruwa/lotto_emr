@@ -1,12 +1,14 @@
 /**
  * usePersistedToggle
  *
- * A boolean toggle whose value is persisted in localStorage under `storageKey`.
- * - On first visit the value equals `defaultValue`.
- * - Subsequent visits (including navigating away and back) restore the last
- *   value the user set.
- * - SSR-safe: localStorage is only accessed inside the lazy initialiser which
- *   runs on the client only.
+ * Boolean toggle persisted in sessionStorage (not localStorage).
+ *
+ * sessionStorage is scoped to the browser tab and is wiped when the tab
+ * closes or the user logs out and opens a fresh tab.  This gives us:
+ *   - All panels collapsed on every new login / fresh tab  ✓
+ *   - Panel state remembered while navigating within the same session  ✓
+ *   - SSR-safe: storage is only accessed inside the lazy state initialiser
+ *     which runs on the client only  ✓
  */
 
 'use client';
@@ -17,7 +19,7 @@ export function usePersistedToggle(storageKey: string, defaultValue: boolean) {
   const [value, setValue] = useState<boolean>(() => {
     if (typeof window === 'undefined') return defaultValue;
     try {
-      const stored = localStorage.getItem(storageKey);
+      const stored = sessionStorage.getItem(storageKey);
       return stored !== null ? stored === 'true' : defaultValue;
     } catch {
       return defaultValue;
@@ -27,7 +29,7 @@ export function usePersistedToggle(storageKey: string, defaultValue: boolean) {
   function toggle() {
     setValue((prev) => {
       const next = !prev;
-      try { localStorage.setItem(storageKey, String(next)); } catch { /* quota / private mode */ }
+      try { sessionStorage.setItem(storageKey, String(next)); } catch { /* private mode / quota */ }
       return next;
     });
   }
