@@ -267,17 +267,15 @@ function AncMockup() {
 
 export function LoginHero() {
   const [current, setCurrent] = useState(0);
-  const [animating, setAnimating] = useState(false);
   const total = SLIDES.length;
 
+  // Go to a slide directly — no animating state needed.
+  // Using key={current} on the content div causes React to fully unmount/remount
+  // it on each slide change, so there is never a moment where two slides'
+  // text nodes overlap in the DOM.
   const goTo = useCallback((idx: number) => {
-    if (animating) return;
-    setAnimating(true);
-    setTimeout(() => {
-      setCurrent(idx);
-      setAnimating(false);
-    }, 200);
-  }, [animating]);
+    setCurrent(idx);
+  }, []);
 
   const next = useCallback(() => goTo((current + 1) % total), [current, goTo, total]);
 
@@ -332,13 +330,9 @@ export function LoginHero() {
           ))}
         </div>
 
-        {/* Slide content */}
-        <div
-          className={cn(
-            'transition-all duration-300 ease-in-out',
-            animating ? 'opacity-0 translate-y-2' : 'opacity-100 translate-y-0',
-          )}
-        >
+        {/* Slide content — key={current} ensures full unmount/remount on change,
+            preventing any overlap between the outgoing and incoming text layers. */}
+        <div key={current} className="animate-fade-in">
           {/* Mockup */}
           <div className="mb-5">
             {slide.mockup}

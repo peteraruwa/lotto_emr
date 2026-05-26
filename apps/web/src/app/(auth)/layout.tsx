@@ -1,7 +1,7 @@
 'use client';
 import React, { useState } from 'react';
 import { LoginHero } from '@/features/auth/components/login-hero';
-import { X } from 'lucide-react';
+import { X, Phone, Mail, Stethoscope } from 'lucide-react';
 
 function AboutModal({ onClose }: { onClose: () => void }) {
   return (
@@ -56,11 +56,40 @@ function AboutModal({ onClose }: { onClose: () => void }) {
             </ul>
           </div>
 
+          {/* Creator */}
+          <div className="rounded-2xl bg-gradient-to-br from-hospital-50 to-sky-50 border border-hospital-100 p-4">
+            <div className="flex items-start gap-3">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-hospital-500 to-hospital-700 flex items-center justify-center flex-shrink-0 shadow-sm shadow-hospital-600/20">
+                <Stethoscope className="w-5 h-5 text-white" />
+              </div>
+              <div className="min-w-0">
+                <h3 className="text-sm font-bold text-gray-900 leading-tight">Dr. Peter Aruwa</h3>
+                <p className="text-xs text-hospital-600 font-semibold mt-0.5">Medical Doctor · Software Developer</p>
+                <div className="mt-2.5 space-y-1.5">
+                  <a
+                    href="tel:09067008473"
+                    className="flex items-center gap-2 text-xs text-gray-600 hover:text-hospital-700 transition-colors group"
+                  >
+                    <Phone className="w-3.5 h-3.5 text-gray-400 group-hover:text-hospital-500 flex-shrink-0" />
+                    09067008473
+                  </a>
+                  <a
+                    href="mailto:serialquest@gmail.com"
+                    className="flex items-center gap-2 text-xs text-gray-600 hover:text-hospital-700 transition-colors group"
+                  >
+                    <Mail className="w-3.5 h-3.5 text-gray-400 group-hover:text-hospital-500 flex-shrink-0" />
+                    serialquest@gmail.com
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+
           {/* Credits */}
           <div className="border-t border-gray-100 pt-4">
             <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Credits</h3>
             <p className="text-xs text-gray-500 leading-relaxed">
-              Designed and built by the SerialQuest team. Patient data shown is entirely synthetic —
+              Patient data shown is entirely synthetic —
               any resemblance to real persons is coincidental. Icons by{' '}
               <a href="https://lucide.dev" target="_blank" rel="noreferrer" className="text-hospital-600 hover:underline">Lucide</a>.
               FHIR infrastructure by{' '}
@@ -79,9 +108,9 @@ function AboutButton() {
     <>
       <button
         onClick={() => setOpen(true)}
-        className="text-xs text-gray-400 hover:text-hospital-600 transition-colors font-medium"
+        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-hospital-600 text-white hover:bg-hospital-700 shadow-sm shadow-hospital-600/30 transition-all hover:shadow-md hover:-translate-y-px active:translate-y-0"
       >
-        About
+        About this app
       </button>
       {open && <AboutModal onClose={() => setOpen(false)} />}
     </>
