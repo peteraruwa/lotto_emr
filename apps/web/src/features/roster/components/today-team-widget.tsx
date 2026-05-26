@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import {
   CalendarRange, MessageCircle, Phone, Sun, Moon,
@@ -8,10 +8,29 @@ import {
 } from 'lucide-react';
 import { cn } from '@lotto-emr/ui';
 import { format } from 'date-fns';
-import { getTodayOnDutyTeam, getCurrentShift } from '../data/roster-generator';
+import { formatDate, getCurrentShift } from '../data/roster-generator';
 import type { RosterEntry } from '../data/roster-generator';
-import { DEPT_META, WARD_META, SHIFT_META } from '../data/staff-data';
-import type { Department, Ward } from '../data/staff-data';
+import { STAFF, DEPT_META, WARD_META, SHIFT_META } from '../data/staff-data';
+import type { Department, Shift, Ward } from '../data/staff-data';
+import { useRosterData } from '../hooks/use-roster-data';
+import type { StoredRosterEntry } from '../types';
+
+// ── Converter ─────────────────────────────────────────────────────────────────
+
+function storedToRosterEntry(e: StoredRosterEntry): RosterEntry {
+  const staff = STAFF.find((s) => s.id === e.staffId);
+  return {
+    id:         `${e.staffId}-${e.date}-${e.shift}`,
+    staffId:    e.staffId,
+    name:       staff?.name       ?? e.staffId,
+    role:       staff?.role       ?? '',
+    phone:      staff?.phone      ?? '',
+    department: e.department,
+    ward:       e.ward,
+    shift:      e.shift,
+    date:       e.date,
+  };
+}
 
 // ── Avatar ────────────────────────────────────────────────────────────────────
 
@@ -59,7 +78,6 @@ function StaffRow({ entry }: { entry: RosterEntry }) {
           <MessageCircle className="h-3 w-3" />
         </Link>
       </div>
-      {/* Phone shown always on mobile */}
       <a
         href={`tel:${entry.phone.replace(/-/g, '')}`}
         className="text-[10px] text-gray-400 flex-shrink-0 sm:hidden"
@@ -73,22 +91,14 @@ function StaffRow({ entry }: { entry: RosterEntry }) {
 
 // ── Department group ──────────────────────────────────────────────────────────
 
-interface DeptGroupProps {
-  department: Department;
-  entries: RosterEntry[];
-}
-
-function DeptGroup({ department, entries }: DeptGroupProps) {
+function DeptGroup({ department, entries }: { department: Department; entries: RosterEntry[] }) {
   const meta = DEPT_META[department];
-
-  // For doctors/nurses: group by ward
   const byWard = entries.reduce<Record<string, RosterEntry[]>>((acc, e) => {
     const key = e.ward ?? '_';
     acc[key] = acc[key] ?? [];
     acc[key].push(e);
     return acc;
   }, {});
-
   const hasWards = entries.some((e) => e.ward);
 
   return (
@@ -98,7 +108,6 @@ function DeptGroup({ department, entries }: DeptGroupProps) {
           {meta.label}
         </span>
       </div>
-
       {hasWards ? (
         Object.entries(byWard).map(([wardKey, wardEntries]) => {
           const wardMeta = WARD_META[wardKey as Ward];
@@ -120,23 +129,45 @@ function DeptGroup({ department, entries }: DeptGroupProps) {
 
 // ── Widget ────────────────────────────────────────────────────────────────────
 
+const DEPT_ORDER: Department[] = ['doctors', 'nurses', 'lab', 'pharmacy', 'radiology', 'records'];
+
 export function TodayTeamWidget() {
-  const [team, setTeam] = useState<RosterEntry[] | null>(null);
-  const [shift, setShift] = useState<'morning' | 'night'>('morning');
-  const [today, setToday] = useState('');
-  const [open, setOpen] = useState(true);
+  // Avoid SSR/hydration mismatch — resolve date/shift client-side
+  const [mounted, setMounted] = useState(false);
+  const [year,    setYear]    = useState(2026);
+  const [month,   setMonth]   = useState(5);
+  const [todayStr, setTodayStr] = useState('2026-05-25');
+  const [shift,   setShift]   = useState<Shift>('morning');
+  const [today,   setToday]   = useState('');
+  const [open,    setOpen]    = useState(true);
 
   useEffect(() => {
-    setTeam(getTodayOnDutyTeam());
+    const now = new Date();
+    setMounted(true);
+    setYear(now.getFullYear());
+    setMonth(now.getMonth() + 1);
+    setTodayStr(formatDate(now));
     setShift(getCurrentShift());
-    setToday(format(new Date(), 'EEE, d MMM yyyy'));
+    setToday(format(now, 'EEE, d MMM yyyy'));
   }, []);
+
+  const { data: rosterData, isLoading } = useRosterData(year, month);
+
+  const team: RosterEntry[] | null = useMemo(() => {
+    if (!mounted || isLoading || !rosterData) return null;
+
+    // Try today first, fall back to demo date if outside loaded month
+    const candidates = rosterData.filter((e) => e.date === todayStr && e.shift === shift);
+    const source = candidates.length > 0
+      ? candidates
+      : rosterData.filter((e) => e.date === '2026-05-25' && e.shift === shift);
+
+    return source.map(storedToRosterEntry);
+  }, [mounted, isLoading, rosterData, todayStr, shift]);
 
   const shiftMeta = SHIFT_META[shift];
   const ShiftIcon = shift === 'morning' ? Sun : Moon;
 
-  // Group by department — preserve order
-  const DEPT_ORDER: Department[] = ['doctors', 'nurses', 'lab', 'pharmacy', 'radiology', 'records'];
   const byDept = DEPT_ORDER.reduce<Record<Department, RosterEntry[]>>(
     (acc, d) => ({ ...acc, [d]: [] }),
     {} as Record<Department, RosterEntry[]>,
@@ -148,7 +179,7 @@ export function TodayTeamWidget() {
 
   return (
     <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-      {/* Header — click anywhere to toggle */}
+      {/* Header */}
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
@@ -171,7 +202,6 @@ export function TodayTeamWidget() {
             <ShiftIcon className="h-2.5 w-2.5" />
             {shiftMeta.label}
           </span>
-          {/* Stop propagation so the roster link doesn't toggle */}
           <Link
             href="/roster"
             onClick={(e) => e.stopPropagation()}
@@ -179,27 +209,21 @@ export function TodayTeamWidget() {
           >
             All <ArrowRight className="h-3 w-3" />
           </Link>
-          <ChevronDown
-            className={cn(
-              'h-4 w-4 text-gray-400 transition-transform duration-200 flex-shrink-0',
-              open ? 'rotate-180' : 'rotate-0',
-            )}
-          />
+          <ChevronDown className={cn(
+            'h-4 w-4 text-gray-400 transition-transform duration-200 flex-shrink-0',
+            open ? 'rotate-180' : 'rotate-0',
+          )} />
         </div>
       </button>
 
       {/* Collapsible body */}
-      <div
-        className={cn(
-          'grid transition-all duration-200 ease-in-out',
-          open ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]',
-        )}
-      >
+      <div className={cn(
+        'grid transition-all duration-200 ease-in-out',
+        open ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]',
+      )}>
         <div className="overflow-hidden">
-          {/* Body */}
           <div className="py-2 max-h-[480px] overflow-y-auto">
             {team === null ? (
-              /* Skeleton */
               <div className="space-y-2 px-3 py-2">
                 {[1, 2, 3, 4, 5].map((i) => (
                   <div key={i} className="flex items-center gap-2">
@@ -217,10 +241,7 @@ export function TodayTeamWidget() {
                   <Users className="h-4 w-4 text-gray-400" />
                 </div>
                 <p className="text-xs font-medium text-gray-500">No roster data for today</p>
-                <Link
-                  href="/roster"
-                  className="text-xs text-hospital-600 hover:underline"
-                >
+                <Link href="/roster" className="text-xs text-hospital-600 hover:underline">
                   View full roster →
                 </Link>
               </div>
@@ -231,7 +252,6 @@ export function TodayTeamWidget() {
             )}
           </div>
 
-          {/* Footer */}
           {team !== null && activeDepts.length > 0 && (
             <div className="border-t border-gray-100 px-4 py-2.5">
               <Link

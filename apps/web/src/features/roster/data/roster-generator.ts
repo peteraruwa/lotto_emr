@@ -165,14 +165,14 @@ function generateDayRoster(date: Date): RosterEntry[] {
   return entries;
 }
 
-function formatDate(date: Date): string {
+export function formatDate(date: Date): string {
   const y = date.getFullYear();
   const m = String(date.getMonth() + 1).padStart(2, '0');
   const d = String(date.getDate()).padStart(2, '0');
   return `${y}-${m}-${d}`;
 }
 
-function generateMonthRoster(year: number, month: number): RosterEntry[] {
+export function generateMonthRoster(year: number, month: number): RosterEntry[] {
   // month is 1-based
   const daysInMonth = new Date(year, month, 0).getDate();
   const result: RosterEntry[] = [];
@@ -187,6 +187,20 @@ function generateMonthRoster(year: number, month: number): RosterEntry[] {
 
 export const APRIL_2026_ROSTER: RosterEntry[] = generateMonthRoster(2026, 4);
 export const MAY_2026_ROSTER:   RosterEntry[] = generateMonthRoster(2026, 5);
+
+/**
+ * Convert a generated month roster into the storage format (staff IDs only).
+ * Used as the fallback when no Medplum Basic resource exists for the month.
+ */
+export function generateMonthRosterAsStored(year: number, month: number) {
+  return generateMonthRoster(year, month).map((e) => ({
+    date:       e.date,
+    shift:      e.shift,
+    staffId:    e.staffId,
+    department: e.department,
+    ward:       e.ward,
+  }));
+}
 
 const ALL_ROSTER = [...APRIL_2026_ROSTER, ...MAY_2026_ROSTER];
 
