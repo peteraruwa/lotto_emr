@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useMemo, useState } from 'react';
+import { usePersistedToggle } from '@/shared/hooks/use-persisted-toggle';
 import Link from 'next/link';
 import {
   CalendarRange, MessageCircle, Phone, Sun, Moon,
@@ -139,7 +140,7 @@ export function TodayTeamWidget() {
   const [todayStr, setTodayStr] = useState('2026-05-25');
   const [shift,   setShift]   = useState<Shift>('morning');
   const [today,   setToday]   = useState('');
-  const [open,    setOpen]    = useState(true);
+  const [open,    toggle]     = usePersistedToggle('dashboard:onDuty', false);
 
   useEffect(() => {
     const now = new Date();
@@ -182,7 +183,7 @@ export function TodayTeamWidget() {
       {/* Header */}
       <button
         type="button"
-        onClick={() => setOpen((o) => !o)}
+        onClick={toggle}
         className="w-full flex items-center justify-between px-4 py-3 border-b border-gray-100 hover:bg-gray-50/60 transition-colors text-left"
       >
         <div className="flex items-center gap-2 min-w-0">
