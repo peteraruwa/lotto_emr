@@ -1,8 +1,7 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": "nextjs",
-  "installCommand": "pnpm install --frozen-lockfile",
+  "installCommand": "pnpm install",
   "buildCommand": "pnpm --filter @lotto-emr/web build",
-  "outputDirectory": "apps/web/.next",
-  "ignoreCommand": "git diff HEAD^ HEAD --quiet -- apps/web packages"
+  "outputDirectory": "apps/web/.next"
 }
