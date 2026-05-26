@@ -432,8 +432,8 @@ export function DoctorDashboard() {
           />
         </div>
 
-        {/* Right panel — slate tint sets it apart from the main column */}
-        <div className="min-w-0 bg-slate-50 rounded-2xl p-3 border border-slate-100">
+        {/* Right panel — cool blue-tinted sidebar distinct from the white centre column */}
+        <div className="min-w-0 bg-sky-50/60 rounded-2xl p-3 border border-sky-100">
           <RightPanel data={data} isLoading={isLoading} />
         </div>
 
