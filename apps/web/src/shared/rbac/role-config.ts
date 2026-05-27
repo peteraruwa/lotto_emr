@@ -162,13 +162,15 @@ export const ROLE_CONFIG: Record<Role, RoleConfig> = {
   [ROLES.RECORDS]: {
     homeRoute: '/',
     navItems: [
-      { label: 'Dashboard', href: '/',         icon: 'LayoutDashboard' },
-      { label: 'Patients',  href: '/patients', icon: 'Users'           },
-      { label: 'Records',   href: '/patients', icon: 'FolderOpen'      },
-      { label: 'Roster',    href: '/roster',   icon: 'CalendarRange'   },
+      { label: 'Dashboard',          href: '/',                    icon: 'LayoutDashboard' },
+      { label: 'Patients',           href: '/patients',            icon: 'Users'           },
+      { label: 'Register Patient',   href: '/patients/new',        icon: 'UserPlus'        },
+      { label: 'Reactivate Patient', href: '/patients/reactivate', icon: 'UserCheck'       },
+      { label: 'Records',            href: '/patients',            icon: 'FolderOpen'      },
+      { label: 'Roster',             href: '/roster',              icon: 'CalendarRange'   },
     ],
     allowedActions: [
-      'patient:read', 'patient:update',
+      'patient:create', 'patient:read', 'patient:update',
       'document:read', 'document:write',
       'encounter:read',
     ],

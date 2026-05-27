@@ -4,7 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import { format, formatDistanceToNow } from 'date-fns';
 import {
-  Users, UserPlus, FolderOpen, FileText, ArrowRight, Search,
+  Users, UserPlus, FolderOpen, FileText, ArrowRight, Search, UserCheck,
 } from 'lucide-react';
 import { Badge, Button, Card, CardContent, CardHeader, CardTitle } from '@lotto-emr/ui';
 import { useRecordsDashboardData } from '../hooks/use-dashboard-data';
@@ -69,6 +69,12 @@ export function RecordsDashboard() {
             <Link href="/patients/new">
               <UserPlus className="h-4 w-4 mr-1.5" />
               Register Patient
+            </Link>
+          </Button>
+          <Button asChild size="sm" variant="outline">
+            <Link href="/patients/reactivate">
+              <UserCheck className="h-4 w-4 mr-1.5" />
+              Reactivate Patient
             </Link>
           </Button>
           <Button asChild size="sm" variant="outline">

@@ -64,7 +64,7 @@ export function PatientList({ initialSearch = '' }: { initialSearch?: string }) 
           </div>
         </form>
 
-        <RequireRole roles={['admin']}>
+        <RequireRole roles={['admin', 'records']}>
           <Button asChild size="sm" className="h-9 rounded-xl font-semibold shadow-sm shadow-hospital-600/20 flex-shrink-0">
             <Link href="/patients/new">
               <Plus className="h-4 w-4 mr-1.5" />
