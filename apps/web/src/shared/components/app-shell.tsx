@@ -35,6 +35,8 @@ import {
   Baby,
   Sun,
   Moon,
+  UserPlus,
+  UserCheck,
 } from 'lucide-react';
 
 const ICON_MAP: Record<string, React.ElementType> = {
@@ -55,6 +57,8 @@ const ICON_MAP: Record<string, React.ElementType> = {
   DollarSign,
   Settings,
   Baby,
+  UserPlus,
+  UserCheck,
 };
 
 // ── Dark mode hook ────────────────────────────────────────────────────────────

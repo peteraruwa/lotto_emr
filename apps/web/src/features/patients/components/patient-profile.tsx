@@ -8,11 +8,13 @@ import {
   Pill, Phone, MapPin, Shield, Loader2, User,
   Heart, Stethoscope, ChevronRight, BedDouble,
   Droplets, HeartPulse, Thermometer, Wind, Scale, Ruler, Calculator,
+  BadgeCheck, Fingerprint, X,
 } from 'lucide-react';
 import { cn } from '@lotto-emr/ui';
 import { capitalize, formatDate, formatDateTime } from '@/shared/lib/utils';
 import { usePatientProfile } from '../hooks/use-patient-profile';
 import type { VitalRow } from '../hooks/use-patient-profile';
+import { useVerifyNin } from '../hooks/use-verify-nin';
 import { NoteList } from '@/features/clinical-notes';
 import { EncounterList } from '@/features/encounters';
 import { ResultsList } from '@/features/results';
@@ -111,6 +113,78 @@ function SectionCard({ icon: Icon, iconBg, iconColor, title, children, action }:
   );
 }
 
+// ── NIN Verify Modal ──────────────────────────────────────────────────────────
+
+function NinVerifyModal({
+  patientId, nin, onClose, onVerified,
+}: {
+  patientId: string; nin: string; onClose: () => void; onVerified: () => void;
+}) {
+  const [email,    setEmail]    = useState('');
+  const [password, setPassword] = useState('');
+  const [result,   setResult]   = useState<string | null>(null);
+  const { mutateAsync: verifyNin, isPending } = useVerifyNin();
+
+  async function handleVerify(e: React.FormEvent) {
+    e.preventDefault();
+    setResult(null);
+    try {
+      const res = await verifyNin({ nin, patientId, adminEmail: email, adminPassword: password });
+      if (res.verified) {
+        setResult(`✅ ${res.message}${res.name ? ` — NIMC name: ${res.name}` : ''}`);
+        setTimeout(onVerified, 1200);
+      } else {
+        setResult(`❌ ${res.message}`);
+      }
+    } catch (err) {
+      setResult(`❌ ${(err as Error).message}`);
+    }
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm" onClick={onClose}>
+      <div className="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6 space-y-4" onClick={(e) => e.stopPropagation()}>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Fingerprint className="h-5 w-5 text-blue-600" />
+            <h3 className="font-bold text-gray-900">Verify NIN with NIMC</h3>
+          </div>
+          <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400"><X className="h-4 w-4" /></button>
+        </div>
+
+        <div className="flex gap-2 p-3 rounded-xl bg-blue-50 border border-blue-200 text-xs text-blue-800">
+          <Fingerprint className="h-4 w-4 flex-shrink-0 mt-0.5 text-blue-600" />
+          <p>NIN <span className="font-mono font-bold">{nin}</span> will be checked against the NIMC database. Enter admin credentials to authorise.</p>
+        </div>
+
+        <form onSubmit={handleVerify} className="space-y-3">
+          <div>
+            <label className="block text-xs font-semibold text-gray-700 mb-1">Admin Email</label>
+            <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)}
+              className="w-full px-3 py-2 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400" />
+          </div>
+          <div>
+            <label className="block text-xs font-semibold text-gray-700 mb-1">Admin Password</label>
+            <input type="password" required value={password} onChange={(e) => setPassword(e.target.value)}
+              className="w-full px-3 py-2 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400" />
+          </div>
+
+          {result && (
+            <p className={cn('text-xs rounded-xl px-3 py-2 border', result.startsWith('✅') ? 'bg-green-50 border-green-200 text-green-800' : 'bg-red-50 border-red-200 text-red-700')}>
+              {result}
+            </p>
+          )}
+
+          <button type="submit" disabled={isPending}
+            className="w-full flex items-center justify-center gap-2 py-2.5 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white text-sm font-bold rounded-xl transition-colors">
+            {isPending ? <><Loader2 className="h-4 w-4 animate-spin" /> Verifying…</> : <><Fingerprint className="h-4 w-4" /> Verify NIN</>}
+          </button>
+        </form>
+      </div>
+    </div>
+  );
+}
+
 // ── Main component ─────────────────────────────────────────────────────────────
 
 interface PatientProfileProps {
@@ -123,6 +197,7 @@ export function PatientProfile({ patientId }: PatientProfileProps) {
   const [activeTab, setActiveTab]       = useState<Tab>('summary');
   const [noteTypeFilter, setNoteTypeFilter] = useState<NoteTypeFilter>('ALL');
   const [noteModalOpen, setNoteModalOpen]   = useState(false);
+  const [ninModalOpen,  setNinModalOpen]    = useState(false);
 
   // ── Loading ──────────────────────────────────────────────────────────────────
 
@@ -205,6 +280,11 @@ export function PatientProfile({ patientId }: PatientProfileProps) {
                 {biodata.bloodTransfusionConsent === 'refuses' && (
                   <span className="text-[11px] font-bold bg-red-600 text-white px-2 py-0.5 rounded-full animate-pulse">
                     🚫 NO BLOOD
+                  </span>
+                )}
+                {biodata.ninVerified && (
+                  <span className="inline-flex items-center gap-1 text-[11px] font-bold bg-blue-600 text-white px-2 py-0.5 rounded-full">
+                    <BadgeCheck className="h-3 w-3" /> NIN Verified
                   </span>
                 )}
               </div>
@@ -348,6 +428,41 @@ export function PatientProfile({ patientId }: PatientProfileProps) {
                   <BioField icon={Phone}    label="Phone"       value={biodata.phone} />
                   <BioField icon={MapPin}   label="Address"     value={biodata.address} />
                   <BioField icon={Shield}   label="HMO / Insurance" value={biodata.hmo !== 'N/A' ? biodata.hmo : undefined} />
+
+                  {/* NIN + verification */}
+                  {biodata.nin && (
+                    <div className="flex items-center justify-between gap-2 pt-1">
+                      <div className="flex items-start gap-2.5 min-w-0">
+                        <div className="w-7 h-7 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                          <Fingerprint className="h-3.5 w-3.5 text-gray-500" />
+                        </div>
+                        <div className="min-w-0">
+                          <p className="text-[11px] text-gray-400 uppercase tracking-wide font-medium">NIN</p>
+                          <div className="flex items-center gap-1.5 flex-wrap">
+                            <p className="text-sm text-gray-800 font-mono font-medium">{biodata.nin}</p>
+                            {biodata.ninVerified ? (
+                              <span className="inline-flex items-center gap-1 text-[10px] font-bold bg-blue-100 text-blue-700 border border-blue-200 px-1.5 py-0.5 rounded-full">
+                                <BadgeCheck className="h-2.5 w-2.5" /> Verified
+                              </span>
+                            ) : (
+                              <button
+                                onClick={() => setNinModalOpen(true)}
+                                className="inline-flex items-center gap-1 text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-300 px-1.5 py-0.5 rounded-full hover:bg-amber-100 transition-colors"
+                              >
+                                <Fingerprint className="h-2.5 w-2.5" /> Verify NIN
+                              </button>
+                            )}
+                          </div>
+                          {biodata.ninVerifiedAt && (
+                            <p className="text-[10px] text-gray-400 mt-0.5">
+                              Verified {formatDate(biodata.ninVerifiedAt.slice(0, 10))}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
                   <div className="grid grid-cols-2 gap-3 pt-1">
                     <div>
                       <p className="text-[11px] text-gray-400 uppercase tracking-wide font-medium">Tribe</p>
@@ -613,6 +728,16 @@ export function PatientProfile({ patientId }: PatientProfileProps) {
         onClose={() => setNoteModalOpen(false)}
         patientId={patientId}
       />
+
+      {/* ── NIN verification modal ──────────────────────────────────────── */}
+      {ninModalOpen && biodata.nin && (
+        <NinVerifyModal
+          patientId={patientId}
+          nin={biodata.nin}
+          onClose={() => setNinModalOpen(false)}
+          onVerified={() => setNinModalOpen(false)}
+        />
+      )}
     </div>
   );
 }

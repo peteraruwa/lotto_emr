@@ -4,15 +4,16 @@ import React, { useState, useEffect, useRef } from 'react';
 import {
   X, Phone, Mail, Stethoscope,
   Users, FlaskConical, CalendarDays, Heart, Activity, Shield,
+  UserPlus, RefreshCw, Fingerprint, Lock,
 } from 'lucide-react';
 
-// ── About modal (unchanged) ───────────────────────────────────────────────────
+// ── About modal ───────────────────────────────────────────────────────────────
 
 function AboutModal({ onClose }: { onClose: () => void }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm" onClick={onClose}>
       <div
-        className="bg-white rounded-3xl shadow-2xl max-w-lg w-full max-h-[80vh] overflow-y-auto"
+        className="bg-white rounded-3xl shadow-2xl max-w-lg w-full max-h-[85vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between px-6 py-5 border-b border-gray-100">
@@ -42,12 +43,29 @@ function AboutModal({ onClose }: { onClose: () => void }) {
           </div>
 
           <div>
+            <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Key Features</h3>
+            <ul className="space-y-2 text-sm text-gray-700">
+              {[
+                { t: '7-Step Patient Registration',     d: 'HIPAA, FHIR R4, and NDPR 2019 compliant onboarding with NIN verification, blood transfusion consent, and clinical safety flags.' },
+                { t: 'Patient Reactivation',            d: 'Returning patients can be searched by NIN, MRN, name, or phone and reactivated in seconds with updated contact details.' },
+                { t: 'NIN Identity Verification',       d: 'Government-grade identity verification via the NIMC API — verified patients display a trusted badge on their chart.' },
+                { t: 'Clinical Safety Always Visible',  d: 'Blood transfusion consent, risk flags, and allergies appear on every clinical view — consultation, ward, surgery, and emergency.' },
+              ].map(({ t, d }) => (
+                <li key={t} className="flex gap-2.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-hospital-500 flex-shrink-0 mt-1.5" />
+                  <span><strong className="text-gray-800">{t}.</strong> {d}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div>
             <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Philosophy</h3>
             <ul className="space-y-2 text-sm text-gray-700">
               {[
-                { t: 'Clinician-first', d: 'Every screen is designed around what a doctor or nurse actually needs at the point of care — not what looks good in a procurement brochure.' },
+                { t: 'Clinician-first',    d: 'Every screen is designed around what a doctor or nurse actually needs at the point of care — not what looks good in a procurement brochure.' },
                 { t: 'FHIR as the backbone', d: 'All clinical data is stored as HL7 FHIR R4 resources, making the system interoperable with any standards-compliant external system.' },
-                { t: 'Built for Nigeria', d: 'Patient names, genotype fields, Nigerian phone formats, local ward structures, and multi-user concurrency reflect real hospital workflows in Nigeria.' },
+                { t: 'Built for Nigeria',  d: 'NIN verification, genotype fields, Nigerian phone formats, local ward structures, and NDPR compliance reflect real hospital workflows.' },
                 { t: 'Honest about limits', d: 'Demo data is clearly marked. The system shows real uncertainty rather than hiding it behind false confidence.' },
               ].map(({ t, d }) => (
                 <li key={t} className="flex gap-2.5">
@@ -58,6 +76,7 @@ function AboutModal({ onClose }: { onClose: () => void }) {
             </ul>
           </div>
 
+          {/* Author card */}
           <div className="rounded-2xl bg-gradient-to-br from-hospital-50 to-sky-50 border border-hospital-100 p-4">
             <div className="flex items-start gap-3">
               <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-hospital-500 to-hospital-700 flex items-center justify-center flex-shrink-0 shadow-sm shadow-hospital-600/20">
@@ -65,7 +84,13 @@ function AboutModal({ onClose }: { onClose: () => void }) {
               </div>
               <div className="min-w-0">
                 <h3 className="text-sm font-bold text-gray-900 leading-tight">Dr. Peter Aruwa</h3>
-                <p className="text-xs text-hospital-600 font-semibold mt-0.5">Medical Doctor · Software Developer</p>
+                <p className="text-xs text-hospital-600 font-semibold mt-0.5">
+                  Medical Doctor · Software Developer · Tech Educator
+                </p>
+                <p className="text-xs text-gray-500 mt-1.5 leading-relaxed">
+                  Bridging the gap between clinical medicine and software engineering — designing
+                  technology that works for clinicians, not against them.
+                </p>
                 <div className="mt-2.5 space-y-1.5">
                   <a href="tel:09067008473" className="flex items-center gap-2 text-xs text-gray-600 hover:text-hospital-700 transition-colors group">
                     <Phone className="w-3.5 h-3.5 text-gray-400 group-hover:text-hospital-500 flex-shrink-0" />
@@ -87,6 +112,7 @@ function AboutModal({ onClose }: { onClose: () => void }) {
               <a href="https://lucide.dev" target="_blank" rel="noreferrer" className="text-hospital-600 hover:underline">Lucide</a>.
               FHIR infrastructure by{' '}
               <a href="https://medplum.com" target="_blank" rel="noreferrer" className="text-hospital-600 hover:underline">Medplum</a>.
+              NIN verification powered by NIMC / Prembly IdentityPass.
             </p>
           </div>
         </div>
@@ -114,81 +140,67 @@ function AboutButton() {
 
 const SLIDES = [
   {
-    icon: Users,
-    label: 'Patient Management',
-    headline: 'Every patient, one chart.',
-    body: 'Registration, vitals, notes, orders, and discharge — all in a single FHIR-native record accessible from any device.',
+    icon: UserPlus,
+    label: 'Patient Registration',
+    headline: 'Register in 7 steps.',
+    body: 'HIPAA, FHIR R4 & NDPR-compliant onboarding — identity, NIN, blood transfusion consent, clinical flags, and insurance in a single guided wizard.',
   },
   {
-    icon: Stethoscope,
-    label: 'AI Clinical Notes',
-    headline: 'Documentation in seconds.',
-    body: 'AI-assisted SOAP notes using de-identified Gemini AI — spend more time with patients and less on paperwork.',
+    icon: RefreshCw,
+    label: 'Patient Reactivation',
+    headline: 'Returning patients, instantly.',
+    body: 'Search by NIN, MRN, name, or phone. Review existing record, update contact details, and reactivate with one click.',
   },
   {
-    icon: FlaskConical,
-    label: 'Lab & Pharmacy',
-    headline: 'Results, not just requests.',
-    body: 'Drug interaction checks, critical value alerts, and full order-to-result traceability built into every workflow.',
+    icon: Fingerprint,
+    label: 'NIN Verification',
+    headline: 'Government-grade identity.',
+    body: 'NIN verified against the NIMC database. Verified patients display a trusted badge on every clinical view — chart, ward, and emergency.',
   },
   {
     icon: Heart,
-    label: 'Antenatal Care',
-    headline: 'Every pregnancy tracked.',
-    body: 'ANC visits, fundal height charts, foetal presentation, and delivery notes — purpose-built for Nigerian hospitals.',
+    label: 'Clinical Safety',
+    headline: 'Consent visible everywhere.',
+    body: 'Blood transfusion refusal shown as a pulsing red banner on consultation, surgery, and emergency views — never missed when it matters most.',
   },
   {
-    icon: CalendarDays,
-    label: 'Team & Roster',
-    headline: 'Your team, always in sync.',
-    body: 'Shift rosters, on-duty panels, and direct staff contact — right from your dashboard every working day.',
+    icon: Lock,
+    label: 'NDPR · HIPAA · FHIR',
+    headline: 'Compliance built in.',
+    body: 'Every registration captures a mandatory NDPR data-processing consent. All data stored as HL7 FHIR R4 — interoperable by design.',
   },
 ] as const;
 
-// Slide interval and CSS transition duration (ms).
-// FADE_MS must match the `transition` duration on the content div.
 const INTERVAL = 4800;
 const FADE_MS  = 260;
 
 const STAT_CHIPS = [
-  { icon: Shield,   text: 'FHIR R4' },
-  { icon: Users,    text: '10 Staff Roles' },
-  { icon: Activity, text: 'AI-Powered Notes' },
+  { icon: Shield,      text: 'FHIR R4'          },
+  { icon: Fingerprint, text: 'NIN Verified'      },
+  { icon: Users,       text: '10 Staff Roles'    },
+  { icon: Activity,    text: 'AI-Assisted Notes' },
 ] as const;
 
 function LoginHero() {
-  // nextRef tracks what the next slide index will be — avoids stale closures.
   const nextRef = useRef(1);
-
-  // `current` drives the dot/progress indicator — updates immediately.
   const [current, setCurrent] = useState(0);
-
-  // `shown` determines which slide's text is in the DOM — only changes AFTER
-  // the fade-out CSS transition completes, preventing ghost/double text.
-  const [shown, setShown] = useState(0);
-
-  // `visible` drives the opacity/transform transition.
+  const [shown,   setShown]   = useState(0);
   const [visible, setVisible] = useState(true);
 
   useEffect(() => {
     const tick = setInterval(() => {
-      // Step 1 — fade out current content
       setVisible(false);
-
-      // Step 2 — after transition completes, swap content and fade back in
       setTimeout(() => {
         const next = nextRef.current;
         setShown(next);
         setCurrent(next);
         nextRef.current = (next + 1) % SLIDES.length;
         setVisible(true);
-      }, FADE_MS + 40); // 40 ms buffer beyond the CSS transition
+      }, FADE_MS + 40);
     }, INTERVAL);
-
     return () => clearInterval(tick);
-  }, []); // setters are stable; empty deps is correct
+  }, []);
 
-  // Jump to a specific slide when the user clicks a dot
   function jumpTo(i: number) {
     if (i === current) return;
     setVisible(false);
@@ -200,14 +212,14 @@ function LoginHero() {
     }, FADE_MS + 40);
   }
 
-  const slide = SLIDES[shown];
+  const slide    = SLIDES[shown];
   const SlideIcon = slide.icon;
 
   return (
     <div className="hidden lg:flex flex-col h-full relative overflow-hidden"
          style={{ background: 'linear-gradient(145deg, #0c2d6b 0%, #1453e0 55%, #3188fd 100%)' }}>
 
-      {/* ── Decorative blobs ──────────────────────────────────────────────── */}
+      {/* Decorative blobs */}
       <div className="pointer-events-none absolute -top-24 -right-24 w-80 h-80 rounded-full blur-3xl"
            style={{ background: 'rgba(255,255,255,0.07)' }} />
       <div className="pointer-events-none absolute -bottom-28 -left-20 w-96 h-96 rounded-full blur-3xl"
@@ -215,55 +227,52 @@ function LoginHero() {
       <div className="pointer-events-none absolute top-2/5 right-[-4rem] w-60 h-60 rounded-full blur-2xl"
            style={{ background: 'rgba(255,255,255,0.05)' }} />
 
-      {/* ── Dot-grid texture ─────────────────────────────────────────────── */}
+      {/* Dot-grid texture */}
       <div className="pointer-events-none absolute inset-0 opacity-[0.07]"
            style={{ backgroundImage: 'radial-gradient(circle, white 1px, transparent 1px)', backgroundSize: '26px 26px' }} />
 
-      {/* ── Main content ─────────────────────────────────────────────────── */}
-      <div className="relative z-10 flex flex-col h-full px-10 py-10 select-none">
+      {/* Main content */}
+      <div className="relative z-10 flex flex-col h-full px-8 py-8 select-none">
 
         {/* Logo */}
         <div className="flex items-center gap-3 flex-shrink-0">
-          <div className="w-11 h-11 rounded-xl flex items-center justify-center text-white text-sm font-extrabold shadow-lg flex-shrink-0"
+          <div className="w-10 h-10 rounded-xl flex items-center justify-center text-white text-sm font-extrabold shadow-lg flex-shrink-0"
                style={{ background: 'rgba(255,255,255,0.18)', backdropFilter: 'blur(8px)', border: '1px solid rgba(255,255,255,0.2)' }}>
             SQ
           </div>
           <div>
-            <p className="text-white font-bold text-[15px] leading-tight">SerialQuest EMR</p>
-            <p className="text-white/55 text-[11px]">Electronic Medical Records</p>
+            <p className="text-white font-bold text-[14px] leading-tight">SerialQuest EMR</p>
+            <p className="text-white/55 text-[10px]">Electronic Medical Records</p>
           </div>
         </div>
 
-        {/* Centre section — stretches to fill available space */}
-        <div className="flex-1 flex flex-col justify-center min-h-0 py-8">
+        {/* Centre section */}
+        <div className="flex-1 flex flex-col justify-center min-h-0 py-6">
 
           {/* Static headline */}
-          <div className="mb-7">
-            <h1 className="text-[2.1rem] font-extrabold text-white leading-[1.18] tracking-tight">
+          <div className="mb-6">
+            <h1 className="text-[1.75rem] font-extrabold text-white leading-[1.2] tracking-tight">
               Modern EMR for<br />
               <span style={{ color: 'rgba(255,255,255,0.75)' }}>Nigerian hospitals.</span>
             </h1>
-            <p className="mt-2.5 text-white/55 text-sm leading-relaxed max-w-xs">
-              Clinician-first · FHIR R4 · AI-assisted · Purpose-built
+            <p className="mt-2 text-white/55 text-xs leading-relaxed">
+              Clinician-first · FHIR R4 · NIN Verified · NDPR 2019
             </p>
           </div>
 
           {/* Animated feature card */}
           <div
-            className="rounded-2xl p-5 relative overflow-hidden"
+            className="rounded-2xl p-4 relative overflow-hidden"
             style={{
-              background:    'rgba(255,255,255,0.09)',
+              background:     'rgba(255,255,255,0.09)',
               backdropFilter: 'blur(12px)',
               border:         '1px solid rgba(255,255,255,0.14)',
             }}
           >
-            {/* Large background icon — purely decorative */}
             <SlideIcon
-              className="absolute right-4 top-3 h-20 w-20 pointer-events-none"
+              className="absolute right-3 top-3 h-16 w-16 pointer-events-none"
               style={{ color: 'rgba(255,255,255,0.06)' }}
             />
-
-            {/* Animated content — opacity + slight translateY */}
             <div
               style={{
                 opacity:    visible ? 1 : 0,
@@ -271,55 +280,47 @@ function LoginHero() {
                 transition: `opacity ${FADE_MS}ms ease, transform ${FADE_MS}ms ease`,
               }}
             >
-              {/* Feature label */}
-              <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full mb-3"
+              <div className="inline-flex items-center gap-1.5 px-2 py-1 rounded-full mb-2.5"
                    style={{ background: 'rgba(255,255,255,0.14)', border: '1px solid rgba(255,255,255,0.18)' }}>
-                <SlideIcon className="h-3 w-3 text-white/75 flex-shrink-0" />
-                <span className="text-[10px] font-bold text-white/85 uppercase tracking-widest">{slide.label}</span>
+                <SlideIcon className="h-2.5 w-2.5 text-white/75 flex-shrink-0" />
+                <span className="text-[9px] font-bold text-white/85 uppercase tracking-widest">{slide.label}</span>
               </div>
-
-              {/* Headline */}
-              <h2 className="text-xl font-extrabold text-white leading-snug mb-2">
+              <h2 className="text-lg font-extrabold text-white leading-snug mb-1.5">
                 {slide.headline}
               </h2>
-
-              {/* Body */}
-              <p className="text-white/65 text-[13px] leading-relaxed max-w-[22rem]">
+              <p className="text-white/65 text-[12px] leading-relaxed">
                 {slide.body}
               </p>
             </div>
           </div>
 
           {/* Stat chips */}
-          <div className="flex flex-wrap gap-2 mt-5">
+          <div className="flex flex-wrap gap-1.5 mt-4">
             {STAT_CHIPS.map(({ icon: Icon, text }) => (
               <span
                 key={text}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-semibold text-white/80"
+                className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-semibold text-white/80"
                 style={{ background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.12)' }}
               >
-                <Icon className="h-3 w-3 text-white/60 flex-shrink-0" />
+                <Icon className="h-2.5 w-2.5 text-white/60 flex-shrink-0" />
                 {text}
               </span>
             ))}
           </div>
 
           {/* Progress bar + dots */}
-          <div className="mt-7">
-            {/* Progress track */}
+          <div className="mt-6">
             <div className="w-full h-0.5 rounded-full mb-3 overflow-hidden"
                  style={{ background: 'rgba(255,255,255,0.15)' }}>
               <div
-                key={current}                      /* re-mount resets the CSS animation */
+                key={current}
                 className="h-full rounded-full animate-progress-bar"
                 style={{
-                  background: 'rgba(255,255,255,0.75)',
-                  animationDuration: `${INTERVAL}ms`,
+                  background:         'rgba(255,255,255,0.75)',
+                  animationDuration:  `${INTERVAL}ms`,
                 }}
               />
             </div>
-
-            {/* Dot indicators */}
             <div className="flex items-center gap-2">
               {SLIDES.map((_, i) => (
                 <button
@@ -328,8 +329,8 @@ function LoginHero() {
                   onClick={() => jumpTo(i)}
                   className="rounded-full transition-all duration-300 focus:outline-none"
                   style={{
-                    width:      i === current ? 24 : 8,
-                    height:     8,
+                    width:      i === current ? 22 : 7,
+                    height:     7,
                     background: i === current ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.28)',
                   }}
                 />
@@ -339,9 +340,9 @@ function LoginHero() {
         </div>
 
         {/* Bottom tagline */}
-        <div className="flex-shrink-0 border-t pt-5" style={{ borderColor: 'rgba(255,255,255,0.1)' }}>
-          <p className="text-white/40 text-[11px]">
-            Designed by Dr. Peter Aruwa · serialquest@gmail.com
+        <div className="flex-shrink-0 border-t pt-4" style={{ borderColor: 'rgba(255,255,255,0.1)' }}>
+          <p className="text-white/40 text-[10px]">
+            Designed by Dr. Peter Aruwa · Medical Doctor · Tech Educator
           </p>
         </div>
       </div>
@@ -353,15 +354,14 @@ function LoginHero() {
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
-    /* h-screen + overflow-hidden prevents the hero from pushing the page taller */
     <div className="h-screen flex overflow-hidden">
 
-      {/* Left — animated hero (desktop only) */}
-      <div className="hidden lg:block w-[52%] xl:w-[58%] flex-shrink-0 h-full">
+      {/* Left — animated hero (desktop only, 1/3 width) */}
+      <div className="hidden lg:block w-1/3 flex-shrink-0 h-full">
         <LoginHero />
       </div>
 
-      {/* Right — login form (always visible, scrollable if needed) */}
+      {/* Right — login form */}
       <div className="flex-1 flex flex-col items-center justify-center bg-gray-50 overflow-y-auto">
         <div className="w-full max-w-sm px-6 py-8">
 

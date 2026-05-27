@@ -13,6 +13,11 @@ const EXT_GENOTYPE     = 'https://lotto-hospital.local/fhir/StructureDefinition/
 const EXT_TRIBE        = 'https://lotto-hospital.local/fhir/StructureDefinition/tribe';
 const EXT_RELIGION     = 'https://lotto-hospital.local/fhir/StructureDefinition/religion';
 const EXT_BT_CONSENT   = 'https://lotto-hospital.local/fhir/StructureDefinition/blood-transfusion-consent';
+const EXT_NIN_VERIFIED = 'https://lotto-hospital.local/fhir/StructureDefinition/nin-verified';
+const EXT_NIN_VERIFIED_AT = 'https://lotto-hospital.local/fhir/StructureDefinition/nin-verified-at';
+
+// ── Identifier systems ──────────────────────────────────────────────────────────
+const NIN_SYSTEM = 'https://lotto-hospital.local/fhir/identifier/nin';
 
 
 // ── Helper to extract extension value ──────────────────────────────────────────
@@ -53,6 +58,12 @@ export interface PatientBiodata {
   gender: string;
   /** Blood transfusion consent value from patient extension — always show in clinical views */
   bloodTransfusionConsent?: BloodTransfusionConsentValue;
+  /** Raw NIN string from Patient.identifier */
+  nin?: string;
+  /** Whether NIN has been verified against NIMC */
+  ninVerified: boolean;
+  /** ISO datetime of last NIN verification */
+  ninVerifiedAt?: string;
 }
 
 export interface AllergyEntry {
@@ -297,6 +308,9 @@ export function usePatientProfile(patientId: string) {
       religion: getExtension(patient, EXT_RELIGION) ?? 'N/A',
       gender: patient.gender ?? 'unknown',
       bloodTransfusionConsent: getExtension(patient, EXT_BT_CONSENT) as BloodTransfusionConsentValue | undefined,
+      nin: patient.identifier?.find((id) => id.system === NIN_SYSTEM)?.value,
+      ninVerified: patient.extension?.find((e) => e.url === EXT_NIN_VERIFIED)?.valueBoolean === true,
+      ninVerifiedAt: patient.extension?.find((e) => e.url === EXT_NIN_VERIFIED_AT)?.valueDateTime,
     };
 
     // Allergies
