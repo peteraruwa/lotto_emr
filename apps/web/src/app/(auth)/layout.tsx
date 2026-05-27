@@ -1,6 +1,5 @@
 'use client';
 import React, { useState } from 'react';
-import { LoginHero } from '@/features/auth/components/login-hero';
 import { X, Phone, Mail, Stethoscope } from 'lucide-react';
 
 function AboutModal({ onClose }: { onClose: () => void }) {
@@ -119,44 +118,29 @@ function AboutButton() {
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="h-screen overflow-hidden grid lg:grid-cols-[480px_1fr]">
-      {/* Left panel — animated feature carousel */}
-      <div
-        className="hidden lg:flex flex-col relative overflow-hidden"
-        style={{ background: 'linear-gradient(160deg, #1a69f3 0%, #1453e0 40%, #132656 100%)' }}
-      >
-        {/* Decorative circles */}
-        <div className="absolute -top-20 -left-20 w-80 h-80 rounded-full bg-white/5 pointer-events-none" />
-        <div className="absolute top-40 -right-16 w-56 h-56 rounded-full bg-white/5 pointer-events-none" />
-        <div className="absolute bottom-20 left-10 w-40 h-40 rounded-full bg-white/5 pointer-events-none" />
-        <LoginHero />
-      </div>
-
-      {/* Right panel — form (isolated from left panel height changes) */}
-      <div className="h-screen overflow-auto flex flex-col items-center justify-center bg-gray-50 p-6">
-        <div className="w-full max-w-sm">
-          {/* Mobile logo */}
-          <div className="lg:hidden text-center mb-8">
-            <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-hospital-500 to-hospital-700 text-white text-xl font-bold mb-3 shadow-lg shadow-hospital-600/30">
-              SQ
-            </div>
-            <h1 className="text-xl font-bold text-gray-900">SerialQuest EMR</h1>
-            <p className="text-gray-400 text-sm mt-0.5">Electronic Medical Records</p>
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 p-6">
+      <div className="w-full max-w-sm">
+        {/* Brand mark */}
+        <div className="text-center mb-8">
+          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-hospital-500 to-hospital-700 text-white text-xl font-bold mb-3 shadow-lg shadow-hospital-600/30">
+            SQ
           </div>
-
-          {/* Card */}
-          <div className="bg-white rounded-3xl shadow-xl shadow-gray-200/60 border border-gray-100 p-8">
-            {children}
-          </div>
-
-          <div className="flex flex-col items-center gap-2 mt-5 px-1 sm:flex-row sm:justify-between">
-            <p className="text-xs text-gray-400 text-center sm:text-left">Authorized personnel only · All access is audited</p>
-            <AboutButton />
-          </div>
-          <p className="text-center text-[11px] text-gray-300 mt-2">
-            Powered by <span className="font-semibold text-gray-400">SerialQuest</span>
-          </p>
+          <h1 className="text-xl font-bold text-gray-900">SerialQuest EMR</h1>
+          <p className="text-gray-400 text-sm mt-0.5">Electronic Medical Records</p>
         </div>
+
+        {/* Form card */}
+        <div className="bg-white rounded-3xl shadow-xl shadow-gray-200/60 border border-gray-100 p-8">
+          {children}
+        </div>
+
+        <div className="flex flex-col items-center gap-2 mt-5 px-1 sm:flex-row sm:justify-between">
+          <p className="text-xs text-gray-400 text-center sm:text-left">Authorized personnel only · All access is audited</p>
+          <AboutButton />
+        </div>
+        <p className="text-center text-[11px] text-gray-300 mt-2">
+          Powered by <span className="font-semibold text-gray-400">SerialQuest</span>
+        </p>
       </div>
     </div>
   );
