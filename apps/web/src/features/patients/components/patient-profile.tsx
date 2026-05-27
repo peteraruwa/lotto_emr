@@ -202,6 +202,11 @@ export function PatientProfile({ patientId }: PatientProfileProps) {
                     {biodata.genotype}
                   </span>
                 )}
+                {biodata.bloodTransfusionConsent === 'refuses' && (
+                  <span className="text-[11px] font-bold bg-red-600 text-white px-2 py-0.5 rounded-full animate-pulse">
+                    🚫 NO BLOOD
+                  </span>
+                )}
               </div>
               <h1 className="text-xl font-bold text-gray-900 leading-tight truncate">{biodata.fullName}</h1>
               <p className="text-xs text-gray-400 mt-0.5">
@@ -238,6 +243,32 @@ export function PatientProfile({ patientId }: PatientProfileProps) {
                 <span className="text-xs font-bold text-red-700 uppercase tracking-wide mr-2">Allergies:</span>
                 <span className="text-xs text-red-600">
                   {allergies.map((a) => `${a.substance}${a.reaction ? ` (${a.reaction})` : ''}`).join(' · ')}
+                </span>
+              </div>
+            </div>
+          )}
+
+          {/* Blood Transfusion Consent — always visible in clinical header */}
+          {biodata.bloodTransfusionConsent && (
+            <div className={cn(
+              'flex items-center gap-3 px-3 py-2.5 rounded-xl border',
+              biodata.bloodTransfusionConsent === 'refuses'     ? 'bg-red-100 border-red-400 text-red-800' :
+              biodata.bloodTransfusionConsent === 'consents'    ? 'bg-green-50 border-green-300 text-green-800' :
+              biodata.bloodTransfusionConsent === 'conditional' ? 'bg-amber-50 border-amber-300 text-amber-800' :
+                                                                  'bg-gray-50 border-gray-200 text-gray-700',
+            )}>
+              <span className="text-base flex-shrink-0">
+                {biodata.bloodTransfusionConsent === 'refuses'     ? '🚫' :
+                 biodata.bloodTransfusionConsent === 'consents'    ? '✅' :
+                 biodata.bloodTransfusionConsent === 'conditional' ? '⚠️' : '🕐'}
+              </span>
+              <div className="min-w-0">
+                <span className="text-xs font-bold uppercase tracking-wide mr-2">Blood Transfusion:</span>
+                <span className="text-xs font-semibold">
+                  {biodata.bloodTransfusionConsent === 'refuses'     ? 'PATIENT REFUSES — Do not transfuse without reassessment' :
+                   biodata.bloodTransfusionConsent === 'consents'    ? 'Patient consents to transfusion' :
+                   biodata.bloodTransfusionConsent === 'conditional' ? 'Conditional consent — verify conditions before transfusing' :
+                                                                       'Decision deferred — obtain consent before transfusion'}
                 </span>
               </div>
             </div>

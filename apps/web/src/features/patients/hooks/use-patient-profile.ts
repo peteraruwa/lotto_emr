@@ -8,10 +8,11 @@ import { format, parseISO, isValid, isToday } from 'date-fns';
 import { LOINC_VITALS, FHIR_SYSTEMS } from '@/shared/constants/loinc';
 
 // ── Extension URLs ──────────────────────────────────────────────────────────────
-const EXT_BLOOD_GROUP = 'https://lotto-hospital.local/fhir/StructureDefinition/blood-group';
-const EXT_GENOTYPE = 'https://lotto-hospital.local/fhir/StructureDefinition/genotype';
-const EXT_TRIBE = 'https://lotto-hospital.local/fhir/StructureDefinition/tribe';
-const EXT_RELIGION = 'https://lotto-hospital.local/fhir/StructureDefinition/religion';
+const EXT_BLOOD_GROUP  = 'https://lotto-hospital.local/fhir/StructureDefinition/blood-group';
+const EXT_GENOTYPE     = 'https://lotto-hospital.local/fhir/StructureDefinition/genotype';
+const EXT_TRIBE        = 'https://lotto-hospital.local/fhir/StructureDefinition/tribe';
+const EXT_RELIGION     = 'https://lotto-hospital.local/fhir/StructureDefinition/religion';
+const EXT_BT_CONSENT   = 'https://lotto-hospital.local/fhir/StructureDefinition/blood-transfusion-consent';
 
 
 // ── Helper to extract extension value ──────────────────────────────────────────
@@ -33,6 +34,8 @@ export interface VitalRow {
 }
 
 // ── Profile biodata ────────────────────────────────────────────────────────────
+export type BloodTransfusionConsentValue = 'consents' | 'refuses' | 'conditional' | 'deferred';
+
 export interface PatientBiodata {
   id: string;
   mrn: string;
@@ -48,6 +51,8 @@ export interface PatientBiodata {
   tribe?: string;
   religion?: string;
   gender: string;
+  /** Blood transfusion consent value from patient extension — always show in clinical views */
+  bloodTransfusionConsent?: BloodTransfusionConsentValue;
 }
 
 export interface AllergyEntry {
@@ -291,6 +296,7 @@ export function usePatientProfile(patientId: string) {
       tribe: getExtension(patient, EXT_TRIBE) ?? 'N/A',
       religion: getExtension(patient, EXT_RELIGION) ?? 'N/A',
       gender: patient.gender ?? 'unknown',
+      bloodTransfusionConsent: getExtension(patient, EXT_BT_CONSENT) as BloodTransfusionConsentValue | undefined,
     };
 
     // Allergies
