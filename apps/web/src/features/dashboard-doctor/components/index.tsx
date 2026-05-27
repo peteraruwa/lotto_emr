@@ -148,11 +148,8 @@ function SeenRow({ row, onOpen }: { row: SeenPatientRow; onOpen: (r: SeenPatient
 
   return (
     <div
-      className={cn(
-        'flex items-center gap-3 px-5 py-3 border-b border-gray-50 last:border-0 transition-colors',
-        row.patientId ? 'hover:bg-gray-50/80 cursor-pointer' : '',
-      )}
-      onClick={() => { if (row.patientId) onOpen(row); }}
+      className="flex items-center gap-3 px-5 py-3 border-b border-gray-50 last:border-0 transition-colors hover:bg-gray-50/80 cursor-pointer"
+      onClick={() => onOpen(row)}
     >
       {/* Avatar */}
       <div className="w-9 h-9 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center text-xs font-bold flex-shrink-0">
@@ -161,17 +158,13 @@ function SeenRow({ row, onOpen }: { row: SeenPatientRow; onOpen: (r: SeenPatient
 
       {/* Name + reason */}
       <div className="flex-1 min-w-0">
-        {row.patientId ? (
-          <Link
-            href={`/patients/${row.patientId}`}
-            onClick={(e) => e.stopPropagation()}
-            className="text-sm font-semibold text-gray-800 truncate leading-tight hover:text-hospital-700 hover:underline transition-colors block"
-          >
-            {row.patientName}
-          </Link>
-        ) : (
-          <p className="text-sm font-semibold text-gray-800 truncate leading-tight">{row.patientName}</p>
-        )}
+        <Link
+          href={`/patients/${row.patientId}`}
+          onClick={(e) => e.stopPropagation()}
+          className="text-sm font-semibold text-gray-800 truncate leading-tight hover:text-hospital-700 hover:underline transition-colors block"
+        >
+          {row.patientName}
+        </Link>
         <div className="flex items-center gap-2 mt-0.5 flex-wrap">
           <span className="flex items-center gap-1 text-xs text-gray-400 flex-shrink-0">
             <Clock className="h-3 w-3" />{timeFormatted}
@@ -194,17 +187,13 @@ function SeenRow({ row, onOpen }: { row: SeenPatientRow; onOpen: (r: SeenPatient
         </span>
       )}
 
-      {/* Open button (only for real patients with an ID) */}
-      {row.patientId ? (
-        <button
-          onClick={(e) => { e.stopPropagation(); onOpen(row); }}
-          className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold bg-gray-100 hover:bg-hospital-50 hover:text-hospital-700 text-gray-500 transition-all flex-shrink-0"
-        >
-          View <ChevronRight className="h-3 w-3" />
-        </button>
-      ) : (
-        <div className="w-[60px] flex-shrink-0" />
-      )}
+      {/* View button */}
+      <button
+        onClick={(e) => { e.stopPropagation(); onOpen(row); }}
+        className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold bg-gray-100 hover:bg-hospital-50 hover:text-hospital-700 text-gray-500 transition-all flex-shrink-0"
+      >
+        View <ChevronRight className="h-3 w-3" />
+      </button>
     </div>
   );
 }
@@ -405,10 +394,9 @@ export function DoctorDashboard() {
                   rows={data?.schedule ?? []}
                   loading={isLoading}
                   onOpenPatient={(appt) => {
-                    if (appt.patientId) router.push(`/patients/${appt.patientId}`);
+                    router.push(`/patients/${appt.patientId}`);
                   }}
                   onConsult={async (appt) => {
-                    if (!appt.patientId) return;
                     try {
                       await startConsultation.mutateAsync({
                         patientId:     appt.patientId,
@@ -432,7 +420,7 @@ export function DoctorDashboard() {
             open={seenOpen}
             onToggle={toggleSeen}
             onOpen={(row) => {
-              if (row.patientId) router.push(`/patients/${row.patientId}`);
+              router.push(`/patients/${row.patientId}`);
             }}
           />
         </div>

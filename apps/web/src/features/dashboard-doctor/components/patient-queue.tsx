@@ -68,14 +68,13 @@ function QueueRow({
   const timeStr = d && !isNaN(d.getTime()) ? format(d, 'HH:mm') : '—';
   const isInRoom = ['arrived', 'checkedin'].includes(appt.status);
   const isDone   = ['fulfilled', 'cancelled', 'noshow'].includes(appt.status);
-  const hasId    = Boolean(appt.patientId);
   const cfg      = STATUS_CONFIG[appt.status] ?? { label: appt.status, className: 'bg-gray-100 text-gray-500' };
   const ini      = initials(appt.patientName);
 
   function handleClick() {
-    if (isInRoom && hasId && onConsult) {
+    if (isInRoom && onConsult) {
       onConsult(appt);
-    } else if (hasId) {
+    } else {
       onOpenPatient(appt);
     }
   }
@@ -95,17 +94,13 @@ function QueueRow({
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-1.5 min-w-0">
           {isInRoom && <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 flex-shrink-0" />}
-          {hasId ? (
-            <Link
-              href={`/patients/${appt.patientId}`}
-              onClick={(e) => e.stopPropagation()}
-              className="text-sm font-semibold text-gray-800 truncate leading-tight hover:text-hospital-700 hover:underline transition-colors"
-            >
-              {appt.patientName}
-            </Link>
-          ) : (
-            <p className="text-sm font-semibold text-gray-800 truncate leading-tight">{appt.patientName}</p>
-          )}
+          <Link
+            href={`/patients/${appt.patientId}`}
+            onClick={(e) => e.stopPropagation()}
+            className="text-sm font-semibold text-gray-800 truncate leading-tight hover:text-hospital-700 hover:underline transition-colors"
+          >
+            {appt.patientName}
+          </Link>
         </div>
         <div className="flex items-center gap-2 mt-0.5 min-w-0">
           <span className="flex items-center gap-1 text-xs text-gray-400 flex-shrink-0">
@@ -120,28 +115,21 @@ function QueueRow({
         {cfg.label}
       </span>
 
-      {/* Button only renders for real patients (hasId).
-          Mock/demo rows have no detail page — showing an active button
-          that silently no-ops is confusing, so we omit it entirely. */}
-      {hasId ? (
-        <button
-          onClick={handleClick}
-          disabled={isDone}
-          className={cn(
-            'flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all flex-shrink-0',
-            isInRoom
-              ? 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm shadow-emerald-600/20'
-              : isDone
-              ? 'bg-gray-100 text-gray-400 cursor-default'
-              : 'bg-hospital-50 hover:bg-hospital-600 hover:text-white text-hospital-700',
-          )}
-        >
-          {isInRoom ? 'Consult' : 'Open'}
-          <ChevronRight className="h-3 w-3" />
-        </button>
-      ) : (
-        <div className="w-[66px] flex-shrink-0" />
-      )}
+      <button
+        onClick={handleClick}
+        disabled={isDone}
+        className={cn(
+          'flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all flex-shrink-0',
+          isInRoom
+            ? 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm shadow-emerald-600/20'
+            : isDone
+            ? 'bg-gray-100 text-gray-400 cursor-default'
+            : 'bg-hospital-50 hover:bg-hospital-600 hover:text-white text-hospital-700',
+        )}
+      >
+        {isInRoom ? 'Consult' : 'Open'}
+        <ChevronRight className="h-3 w-3" />
+      </button>
     </div>
   );
 }
@@ -159,13 +147,12 @@ function QueueCard({
   const timeStr = d && !isNaN(d.getTime()) ? format(d, 'h:mm a') : '—';
   const isInRoom = ['arrived', 'checkedin'].includes(appt.status);
   const isDone   = ['fulfilled', 'cancelled', 'noshow'].includes(appt.status);
-  const hasId    = Boolean(appt.patientId);
   const cfg      = STATUS_CONFIG[appt.status] ?? { label: appt.status, className: 'bg-gray-100 text-gray-500' };
   const ini      = initials(appt.patientName);
   function handleClick() {
-    if (isInRoom && hasId && onConsult) {
+    if (isInRoom && onConsult) {
       onConsult(appt);
-    } else if (hasId) {
+    } else {
       onOpenPatient(appt);
     }
   }
@@ -180,17 +167,13 @@ function QueueCard({
         {ini}
       </div>
       <div className="flex-1 min-w-0">
-        {hasId ? (
-          <Link
-            href={`/patients/${appt.patientId}`}
-            onClick={(e) => e.stopPropagation()}
-            className="text-sm font-semibold text-gray-800 truncate leading-tight hover:text-hospital-700 hover:underline transition-colors block"
-          >
-            {appt.patientName}
-          </Link>
-        ) : (
-          <p className="text-sm font-semibold text-gray-800 truncate leading-tight">{appt.patientName}</p>
-        )}
+        <Link
+          href={`/patients/${appt.patientId}`}
+          onClick={(e) => e.stopPropagation()}
+          className="text-sm font-semibold text-gray-800 truncate leading-tight hover:text-hospital-700 hover:underline transition-colors block"
+        >
+          {appt.patientName}
+        </Link>
         <div className="flex items-center gap-2 mt-0.5 flex-wrap">
           <span className="text-xs text-gray-400 flex-shrink-0">{timeStr}</span>
           <span className={cn('inline-flex px-2 py-0.5 rounded-full text-[11px] font-semibold flex-shrink-0', cfg.className)}>
@@ -198,24 +181,20 @@ function QueueCard({
           </span>
         </div>
       </div>
-      {hasId ? (
-        <button
-          onClick={handleClick}
-          disabled={isDone}
-          className={cn(
-            'w-8 h-8 flex items-center justify-center rounded-lg flex-shrink-0 transition-colors',
-            isInRoom
-              ? 'bg-emerald-600 text-white'
-              : isDone
-              ? 'bg-gray-100 text-gray-300 cursor-default'
-              : 'bg-hospital-600 text-white',
-          )}
-        >
-          <ChevronRight className="h-4 w-4" />
-        </button>
-      ) : (
-        <div className="w-8 flex-shrink-0" />
-      )}
+      <button
+        onClick={handleClick}
+        disabled={isDone}
+        className={cn(
+          'w-8 h-8 flex items-center justify-center rounded-lg flex-shrink-0 transition-colors',
+          isInRoom
+            ? 'bg-emerald-600 text-white'
+            : isDone
+            ? 'bg-gray-100 text-gray-300 cursor-default'
+            : 'bg-hospital-600 text-white',
+        )}
+      >
+        <ChevronRight className="h-4 w-4" />
+      </button>
     </div>
   );
 }

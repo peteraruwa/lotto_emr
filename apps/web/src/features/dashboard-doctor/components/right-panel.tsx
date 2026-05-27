@@ -156,7 +156,7 @@ export function RightPanel({ data, isLoading }: RightPanelProps) {
         ) : (
           <div className="divide-y divide-gray-50">
             {data!.pendingResults.slice(0, 5).map((r) => {
-              const href = r.patientId ? `/patients/${r.patientId}` : '/results';
+              const href = `/patients/${r.patientId}`;
               return (
                 <Link
                   key={r.id}
@@ -194,7 +194,7 @@ export function RightPanel({ data, isLoading }: RightPanelProps) {
         ) : (
           <div className="divide-y divide-gray-50">
             {data!.recentEncounters.slice(0, 5).map((enc) => {
-              const href  = enc.patientId ? `/patients/${enc.patientId}` : '/patients';
+              const href  = `/patients/${enc.patientId}`;
               const start = enc.start ? new Date(enc.start) : null;
               const timeDisplay = start && !isNaN(start.getTime())
                 ? isToday(start) ? format(start, 'HH:mm') : formatDistanceToNow(start, { addSuffix: true })
@@ -263,7 +263,7 @@ export function RightPanel({ data, isLoading }: RightPanelProps) {
                 ? 'bg-orange-100 text-orange-700'
                 : 'bg-gray-100 text-gray-500';
               const priorityLabel = o.priority === 'routine' ? 'RTN' : o.priority.toUpperCase().slice(0, 4);
-              const href = o.patientId ? `/patients/${o.patientId}` : '/orders';
+              const href = `/patients/${o.patientId}`;
 
               return (
                 <Link

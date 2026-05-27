@@ -140,9 +140,9 @@ function padQueue(existing: AppointmentRow[], target: number): AppointmentRow[] 
 
     extras.push({
       id:          `mock-appt-${i}`,
-      patientId:   '',
+      patientId:   `mock-patient-${String(i + 1).padStart(3, '0')}`,
       patientName: name,
-      patientRef:  '',
+      patientRef:  `Patient/mock-patient-${String(i + 1).padStart(3, '0')}`,
       time:        slotTime.toISOString(),
       visitType,
       status,
@@ -177,7 +177,7 @@ function padSeenToday(existing: SeenPatientRow[], target: number): SeenPatientRo
 
     extras.push({
       id:          `mock-seen-${i}`,
-      patientId:   '',
+      patientId:   `mock-seen-patient-${String(i + 1).padStart(3, '0')}`,
       patientName: name,
       timeSeen:    seenTime.toISOString(),
       reason,
