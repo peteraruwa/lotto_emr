@@ -8,7 +8,7 @@ import {
   Pill, Phone, MapPin, Shield, Loader2, User,
   Heart, Stethoscope, ChevronRight, BedDouble,
   Droplets, HeartPulse, Thermometer, Wind, Scale, Ruler, Calculator,
-  BadgeCheck, Fingerprint, X,
+  BadgeCheck, Fingerprint, X, DollarSign,
 } from 'lucide-react';
 import { cn } from '@lotto-emr/ui';
 import { capitalize, formatDate, formatDateTime } from '@/shared/lib/utils';
@@ -21,10 +21,11 @@ import { ResultsList } from '@/features/results';
 import { OrderList } from '@/features/orders';
 import { NoteTypeSelectorModal } from '@/features/clinical-notes/components/note-type-selector-modal';
 import { NoteType } from '@/features/clinical-notes/types';
+import { PatientBillingView } from '@/features/billing-hmo';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
-type Tab = 'summary' | 'encounters' | 'vitals' | 'notes' | 'results' | 'orders' | 'anc';
+type Tab = 'summary' | 'encounters' | 'vitals' | 'notes' | 'results' | 'orders' | 'billing' | 'anc';
 type NoteTypeFilter = 'ALL' | NoteType;
 
 // ── Tab config ────────────────────────────────────────────────────────────────
@@ -36,6 +37,7 @@ const MAIN_TABS: { id: Tab; label: string; icon: React.ElementType }[] = [
   { id: 'notes',      label: 'Notes',      icon: FileText },
   { id: 'results',    label: 'Results',    icon: FlaskConical },
   { id: 'orders',     label: 'Orders',     icon: ClipboardList },
+  { id: 'billing',    label: 'Billing',    icon: DollarSign },
 ];
 
 const NOTE_TYPE_TABS: { label: string; value: NoteTypeFilter }[] = [
@@ -704,6 +706,11 @@ export function PatientProfile({ patientId }: PatientProfileProps) {
             </div>
             <OrderList patientId={patientId} />
           </div>
+        )}
+
+        {/* ── BILLING ─────────────────────────────────────────────────────── */}
+        {activeTab === 'billing' && (
+          <PatientBillingView patientId={patientId} />
         )}
 
         {/* ── ANC ─────────────────────────────────────────────────────────── */}
