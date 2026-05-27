@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { cn } from '@lotto-emr/ui';
 
 // ── Mockup components ──────────────────────────────────────────────────────────
@@ -258,30 +258,54 @@ const SLIDES: SlideEntry[] = [
 
 // ── Carousel ───────────────────────────────────────────────────────────────────
 
+// Fade-out duration (CSS).  The content swap fires after SWAP_DELAY which is
+// intentionally longer than FADE_MS so the CSS transition fully completes
+// before the DOM text changes — preventing any double/ghost text flash.
+const FADE_MS   = 200;
+const SWAP_DELAY = 270; // FADE_MS + 70 ms buffer
+
 export function LoginHero() {
-  const [current, setCurrent] = useState(0);
+  const [current, setCurrent] = useState(0); // active chip index (updates immediately)
+  const [shown,   setShown]   = useState(0); // rendered content index (updates after fade)
+  const [visible, setVisible] = useState(true);
+  const swapTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const total = SLIDES.length;
 
   /**
-   * Jump to a specific slide index.
-   * Using key={current} on the content div, React will unmount the old
-   * content and mount the new content fresh — eliminating any chance of
-   * double-layer/ghost text artifacts.  The new content fades in via the
-   * CSS `animate-fade-in` class.
+   * Two-index controlled cross-fade — the only approach that guarantees
+   * zero simultaneous old+new text in the DOM:
+   *
+   *  1. setVisible(false)  → CSS opacity 1→0 over FADE_MS
+   *  2. setCurrent(idx)    → chip highlight updates immediately (good UX)
+   *  3. After SWAP_DELAY   → setShown(idx)   ← DOM content changes while invisible
+   *                          setVisible(true) → CSS opacity 0→1 over FADE_MS
+   *
+   * Because `shown` (what's in the DOM) never changes while opacity > 0,
+   * the old and new text can never be simultaneously visible at any level.
+   * No `key` changes means React updates in-place — no reconciler race.
    */
   const goTo = useCallback((idx: number) => {
+    if (swapTimer.current) clearTimeout(swapTimer.current);
+    setVisible(false);
     setCurrent(idx);
+    swapTimer.current = setTimeout(() => {
+      setShown(idx);
+      setVisible(true);
+    }, SWAP_DELAY);
   }, []);
 
   const next = useCallback(() => goTo((current + 1) % total), [current, goTo, total]);
 
-  // Auto-advance every 4.5 s
+  // Auto-advance every 4.5 s — timer resets each time current changes
   useEffect(() => {
     const t = setTimeout(next, 4500);
     return () => clearTimeout(t);
   }, [current, next]);
 
-  const slide = SLIDES[current];
+  // Cleanup pending swap on unmount
+  useEffect(() => () => { if (swapTimer.current) clearTimeout(swapTimer.current); }, []);
+
+  const slide = SLIDES[shown]; // content from shown (not current)
   const { Mockup } = slide;
 
   return (
@@ -330,13 +354,11 @@ export function LoginHero() {
         </div>
 
         {/*
-          key={current} forces React to unmount the old content and mount
-          the new content from scratch whenever the slide changes.
-          The old DOM is gone before the new DOM appears — no double-layer
-          or ghost text is possible.  animate-fade-in provides the smooth
-          opacity+translateY entrance.
+          Controlled opacity fade — no key changes, no DOM thrashing.
+          `shown` only updates while opacity === 0, so old and new text
+          are never both visible at any opacity level.
         */}
-        <div key={current} className="animate-fade-in">
+        <div style={{ opacity: visible ? 1 : 0, transition: `opacity ${FADE_MS}ms ease-in-out` }}>
           <div className="mb-5">
             <Mockup />
           </div>
