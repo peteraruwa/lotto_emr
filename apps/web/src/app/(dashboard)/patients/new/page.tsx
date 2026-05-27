@@ -6,7 +6,7 @@ export const metadata: Metadata = { title: 'Register New Patient | Lotto Communi
 
 export default function NewPatientPage() {
   return (
-    <PageRoleGuard roles={['admin', 'records']} redirectTo="/patients">
+    <PageRoleGuard roles={['records']} redirectTo="/patients">
       <div className="max-w-3xl mx-auto">
         {/* Page header */}
         <div className="mb-6">
