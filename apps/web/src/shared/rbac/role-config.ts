@@ -70,6 +70,7 @@ export const ROLE_CONFIG: Record<Role, RoleConfig> = {
       { label: 'Antenatal',    href: '/anc',      icon: 'Baby' },
       { label: 'Schedule',     href: '/schedule', icon: 'Calendar' },
       { label: 'Ward',         href: '/ward',     icon: 'BedDouble' },
+      { label: 'Nursing',      href: '/nursing',  icon: 'Stethoscope' },
       { label: 'Vitals',       href: '/results',  icon: 'Activity' },
       { label: 'Roster',       href: '/roster',   icon: 'CalendarRange' },
     ],
