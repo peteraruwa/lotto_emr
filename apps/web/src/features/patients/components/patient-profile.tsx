@@ -8,8 +8,10 @@ import {
   Pill, Phone, MapPin, Shield, Loader2, User,
   Heart, Stethoscope, ChevronRight, BedDouble,
   Droplets, HeartPulse, Thermometer, Wind, Scale, Ruler, Calculator,
-  BadgeCheck, Fingerprint, X, DollarSign,
+  BadgeCheck, Fingerprint, X, DollarSign, Syringe,
 } from 'lucide-react';
+import { ImmunizationHistoryView } from '@/features/nursing/components/immunization-tab';
+import { FamilyPlanningHistoryView } from '@/features/nursing/components/family-planning-tab';
 import { cn } from '@lotto-emr/ui';
 import { capitalize, formatDate, formatDateTime } from '@/shared/lib/utils';
 import { usePatientProfile } from '../hooks/use-patient-profile';
@@ -25,19 +27,21 @@ import { PatientBillingView } from '@/features/billing-hmo';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
-type Tab = 'summary' | 'encounters' | 'vitals' | 'notes' | 'results' | 'orders' | 'billing' | 'anc';
+type Tab = 'summary' | 'encounters' | 'vitals' | 'notes' | 'results' | 'orders' | 'billing' | 'anc' | 'immunization' | 'family-planning';
 type NoteTypeFilter = 'ALL' | NoteType;
 
 // ── Tab config ────────────────────────────────────────────────────────────────
 
 const MAIN_TABS: { id: Tab; label: string; icon: React.ElementType }[] = [
-  { id: 'summary',    label: 'Summary',    icon: User },
-  { id: 'encounters', label: 'Encounters', icon: Calendar },
-  { id: 'vitals',     label: 'Vitals',     icon: Activity },
-  { id: 'notes',      label: 'Notes',      icon: FileText },
-  { id: 'results',    label: 'Results',    icon: FlaskConical },
-  { id: 'orders',     label: 'Orders',     icon: ClipboardList },
-  { id: 'billing',    label: 'Billing',    icon: DollarSign },
+  { id: 'summary',         label: 'Summary',         icon: User },
+  { id: 'encounters',      label: 'Encounters',      icon: Calendar },
+  { id: 'vitals',          label: 'Vitals',          icon: Activity },
+  { id: 'notes',           label: 'Notes',           icon: FileText },
+  { id: 'results',         label: 'Results',         icon: FlaskConical },
+  { id: 'orders',          label: 'Orders',          icon: ClipboardList },
+  { id: 'billing',         label: 'Billing',         icon: DollarSign },
+  { id: 'immunization',    label: 'Immunization',    icon: Syringe },
+  { id: 'family-planning', label: 'Family Planning', icon: Heart },
 ];
 
 const NOTE_TYPE_TABS: { label: string; value: NoteTypeFilter }[] = [
@@ -711,6 +715,40 @@ export function PatientProfile({ patientId }: PatientProfileProps) {
         {/* ── BILLING ─────────────────────────────────────────────────────── */}
         {activeTab === 'billing' && (
           <PatientBillingView patientId={patientId} />
+        )}
+
+        {/* ── IMMUNIZATION ────────────────────────────────────────────────── */}
+        {activeTab === 'immunization' && (
+          <div className="space-y-4">
+            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+              <div className="px-4 py-3 border-b border-gray-100 flex items-center gap-2.5">
+                <div className="w-7 h-7 rounded-lg bg-blue-50 flex items-center justify-center">
+                  <Syringe className="h-3.5 w-3.5 text-blue-600" />
+                </div>
+                <h3 className="text-sm font-semibold text-gray-800">Immunization History</h3>
+              </div>
+              <div className="p-4">
+                <ImmunizationHistoryView patientId={patientId} />
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ── FAMILY PLANNING ──────────────────────────────────────────────── */}
+        {activeTab === 'family-planning' && (
+          <div className="space-y-4">
+            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+              <div className="px-4 py-3 border-b border-gray-100 flex items-center gap-2.5">
+                <div className="w-7 h-7 rounded-lg bg-pink-50 flex items-center justify-center">
+                  <Heart className="h-3.5 w-3.5 text-pink-600" />
+                </div>
+                <h3 className="text-sm font-semibold text-gray-800">Family Planning Records</h3>
+              </div>
+              <div className="p-4">
+                <FamilyPlanningHistoryView patientId={patientId} />
+              </div>
+            </div>
+          </div>
         )}
 
         {/* ── ANC ─────────────────────────────────────────────────────────── */}

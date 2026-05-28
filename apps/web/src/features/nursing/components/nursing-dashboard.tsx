@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import {
   Users, Pill, Activity, Droplets, ClipboardList, Bell,
-  RefreshCw, User, Stethoscope,
+  RefreshCw, User, Stethoscope, Syringe, Heart,
 } from 'lucide-react';
 import { cn } from '@lotto-emr/ui';
 import { useNursingPatients } from '../hooks/use-nursing-patients';
@@ -14,9 +14,11 @@ import { VitalsQuickEntry } from './vitals-quick-entry';
 import { IOChart } from './io-chart';
 import { TasksTab } from './tasks-tab';
 import { AlertsTab } from './alerts-tab';
+import { ImmunizationTab } from './immunization-tab';
+import { FamilyPlanningTab } from './family-planning-tab';
 import type { NursingPatient } from '../types';
 
-type TabId = 'patients' | 'medications' | 'vitals' | 'io' | 'tasks' | 'alerts';
+type TabId = 'patients' | 'medications' | 'vitals' | 'io' | 'tasks' | 'alerts' | 'immunization' | 'family-planning';
 
 interface Tab {
   id: TabId;
@@ -33,15 +35,14 @@ interface TabCounts {
 }
 
 const TABS: Tab[] = [
-  { id: 'patients',    label: 'Patients',    icon: Users },
-  { id: 'medications', label: 'Medications', icon: Pill,
-    badgeFn: c => c.dueMeds },
-  { id: 'vitals',      label: 'Vitals',      icon: Activity },
-  { id: 'io',          label: 'I/O',         icon: Droplets },
-  { id: 'tasks',       label: 'Tasks',       icon: ClipboardList,
-    badgeFn: c => c.tasks },
-  { id: 'alerts',      label: 'Alerts',      icon: Bell,
-    badgeFn: c => c.alerts },
+  { id: 'patients',        label: 'Patients',        icon: Users },
+  { id: 'medications',     label: 'Medications',     icon: Pill,         badgeFn: c => c.dueMeds },
+  { id: 'vitals',          label: 'Vitals',           icon: Activity },
+  { id: 'io',              label: 'I/O',              icon: Droplets },
+  { id: 'tasks',           label: 'Tasks',            icon: ClipboardList, badgeFn: c => c.tasks },
+  { id: 'alerts',          label: 'Alerts',           icon: Bell,         badgeFn: c => c.alerts },
+  { id: 'immunization',    label: 'Immunization',     icon: Syringe },
+  { id: 'family-planning', label: 'Family Planning',  icon: Heart },
 ];
 
 const STATUS_DOT: Record<NursingPatient['status'], string> = {
@@ -223,6 +224,20 @@ export function NursingDashboard() {
         {activeTab === 'tasks' && <TasksTab />}
 
         {activeTab === 'alerts' && <AlertsTab alerts={alerts} />}
+
+        {activeTab === 'immunization' && (
+          <ImmunizationTab
+            patients={patients}
+            selectedPatientId={selectedPatient?.patientId}
+          />
+        )}
+
+        {activeTab === 'family-planning' && (
+          <FamilyPlanningTab
+            patients={patients}
+            selectedPatientId={selectedPatient?.patientId}
+          />
+        )}
       </div>
     </div>
   );

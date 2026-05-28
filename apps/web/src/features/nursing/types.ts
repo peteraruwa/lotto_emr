@@ -122,3 +122,62 @@ export interface NursingAlert {
   at: string;
   minutesOverdue?: number;
 }
+
+// ── Immunization ──────────────────────────────────────────────────────────────
+
+export interface ImmunizationRecord {
+  id: string;
+  patientId: string;
+  patientName: string;
+  vaccineCode: string;           // CVX code
+  vaccineName: string;
+  doseNumber: number;
+  seriesName?: string;
+  lotNumber?: string;
+  expirationDate?: string;
+  site?: string;                 // LA, RA, LT, RT
+  route?: string;                // IM, SC, intradermal
+  dose?: string;                 // e.g. "0.5 mL"
+  performer?: string;
+  occurrenceDateTime: string;
+  encounterId?: string;
+  status: 'completed' | 'not-done' | 'entered-in-error';
+  statusReason?: string;
+  notes?: string;
+  nextDoseDate?: string;
+}
+
+// ── Family Planning ───────────────────────────────────────────────────────────
+
+export type FPVisitType = 'new-acceptor' | 'continuing' | 'counseling' | 'discontinuation' | 'complication' | 'follow-up';
+export type FPMethod =
+  | 'OCP' | 'POP' | 'EC'
+  | 'DMPA-IM' | 'DMPA-SC' | 'Noristerat'
+  | 'Cu-T-IUD' | 'LNG-IUD'
+  | 'Implant-Jadelle' | 'Implant-Implanon'
+  | 'Male-Condom' | 'Female-Condom'
+  | 'Tubal-Ligation' | 'Vasectomy'
+  | 'LAM' | 'NFP' | 'Abstinence'
+  | 'None';
+
+export interface FamilyPlanningRecord {
+  id: string;
+  patientId: string;
+  patientName: string;
+  visitType: FPVisitType;
+  currentMethod: FPMethod;
+  previousMethod?: FPMethod;
+  counselingTopics?: string[];
+  lmp?: string;                  // Last menstrual period date
+  parity?: number;               // Number of deliveries
+  gravida?: number;
+  bloodPressure?: string;
+  weight?: string;
+  contraindications?: string;
+  complications?: string;
+  nextVisitDate?: string;
+  performer?: string;
+  encounterId?: string;
+  performedAt: string;
+  notes?: string;
+}

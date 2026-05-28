@@ -6,5 +6,7 @@ export { VitalsQuickEntry } from './components/vitals-quick-entry';
 export { IOChart } from './components/io-chart';
 export { TasksTab } from './components/tasks-tab';
 export { AlertsTab } from './components/alerts-tab';
-export type { NursingPatient, MedScheduleEntry, MedStatus, VitalEntryForm, IOEntry, IOSummary, NursingTask, NursingAlert } from './types';
+export { ImmunizationTab, ImmunizationHistoryView } from './components/immunization-tab';
+export { FamilyPlanningTab, FamilyPlanningHistoryView } from './components/family-planning-tab';
+export type { NursingPatient, MedScheduleEntry, MedStatus, VitalEntryForm, IOEntry, IOSummary, NursingTask, NursingAlert, ImmunizationRecord, FamilyPlanningRecord } from './types';
 export { MED_TIMING_HOURS, DUE_WINDOW_MINUTES, UPCOMING_HOURS, OVERDUE_THRESHOLDS } from './constants';
