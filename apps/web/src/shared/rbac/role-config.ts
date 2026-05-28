@@ -45,6 +45,7 @@ export const ROLE_CONFIG: Record<Role, RoleConfig> = {
           { label: 'Imaging',     href: '/results?category=imaging', icon: 'Scan' },
         ],
       },
+      { label: 'Clinical Tools', href: '/clinical-tools', icon: 'Calculator' },
       { label: 'Billing',      href: '/billing',   icon: 'DollarSign' },
       { label: 'Analytics',    href: '/analytics', icon: 'BarChart2' },
     ],
@@ -72,6 +73,7 @@ export const ROLE_CONFIG: Record<Role, RoleConfig> = {
       { label: 'Ward',         href: '/ward',     icon: 'BedDouble' },
       { label: 'Nursing',      href: '/nursing',  icon: 'Stethoscope' },
       { label: 'Vitals',       href: '/results',  icon: 'Activity' },
+      { label: 'Clinical Tools', href: '/clinical-tools', icon: 'Calculator' },
       { label: 'Roster',       href: '/roster',   icon: 'CalendarRange' },
     ],
     allowedActions: [
@@ -89,6 +91,7 @@ export const ROLE_CONFIG: Record<Role, RoleConfig> = {
     navItems: [
       { label: 'Pharmacy',     href: '/pharmacy', icon: 'FlaskConical' },
       { label: 'Dashboard',    href: '/',         icon: 'LayoutDashboard' },
+      { label: 'Clinical Tools', href: '/clinical-tools', icon: 'Calculator' },
       { label: 'Roster',       href: '/roster',   icon: 'CalendarRange' },
     ],
     allowedActions: [
@@ -104,6 +107,7 @@ export const ROLE_CONFIG: Record<Role, RoleConfig> = {
     navItems: [
       { label: 'Lab Dashboard', href: '/lab',     icon: 'Microscope'     },
       { label: 'Dashboard',     href: '/',         icon: 'LayoutDashboard' },
+      { label: 'Clinical Tools', href: '/clinical-tools', icon: 'Calculator' },
       { label: 'Roster',        href: '/roster',   icon: 'CalendarRange'  },
     ],
     allowedActions: [
@@ -120,6 +124,7 @@ export const ROLE_CONFIG: Record<Role, RoleConfig> = {
     navItems: [
       { label: 'Radiology',  href: '/radiology', icon: 'Scan'            },
       { label: 'Dashboard',  href: '/',           icon: 'LayoutDashboard' },
+      { label: 'Clinical Tools', href: '/clinical-tools', icon: 'Calculator' },
       { label: 'Roster',     href: '/roster',     icon: 'CalendarRange'   },
     ],
     allowedActions: [
@@ -198,6 +203,7 @@ export const ROLE_CONFIG: Record<Role, RoleConfig> = {
       { label: 'Patients',   href: '/patients',    icon: 'Users'           },
       { label: 'Schedule',   href: '/schedule',    icon: 'Calendar'        },
       { label: 'Ward',       href: '/ward',        icon: 'BedDouble'       },
+      { label: 'Clinical Tools', href: '/clinical-tools', icon: 'Calculator' },
       { label: 'Roster',     href: '/roster',      icon: 'CalendarRange'   },
       { label: 'Analytics',  href: '/analytics',   icon: 'BarChart2'       },
     ],

@@ -24,10 +24,13 @@ import { OrderList } from '@/features/orders';
 import { NoteTypeSelectorModal } from '@/features/clinical-notes/components/note-type-selector-modal';
 import { NoteType } from '@/features/clinical-notes/types';
 import { PatientBillingView } from '@/features/billing-hmo';
+import { ClinicalToolsPanel } from '@/features/clinical-tools';
+import { isClinicalRole } from '@/shared/rbac/roles';
+import { useRole } from '@/shared/rbac/use-role';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
-type Tab = 'summary' | 'encounters' | 'vitals' | 'notes' | 'results' | 'orders' | 'billing' | 'anc' | 'immunization' | 'family-planning';
+type Tab = 'summary' | 'encounters' | 'vitals' | 'notes' | 'results' | 'orders' | 'billing' | 'tools' | 'anc' | 'immunization' | 'family-planning';
 type NoteTypeFilter = 'ALL' | NoteType;
 
 // ── Tab config ────────────────────────────────────────────────────────────────
@@ -40,9 +43,12 @@ const MAIN_TABS: { id: Tab; label: string; icon: React.ElementType }[] = [
   { id: 'results',         label: 'Results',         icon: FlaskConical },
   { id: 'orders',          label: 'Orders',          icon: ClipboardList },
   { id: 'billing',         label: 'Billing',         icon: DollarSign },
+  { id: 'tools',           label: 'Clinical Tools',  icon: Calculator },
   { id: 'immunization',    label: 'Immunization',    icon: Syringe },
   { id: 'family-planning', label: 'Family Planning', icon: Heart },
 ];
+
+const CLINICAL_ONLY_TABS: Tab[] = ['tools'];
 
 const NOTE_TYPE_TABS: { label: string; value: NoteTypeFilter }[] = [
   { label: 'All',       value: 'ALL' },
@@ -199,6 +205,8 @@ interface PatientProfileProps {
 
 export function PatientProfile({ patientId }: PatientProfileProps) {
   const { profileData, isLoading, error } = usePatientProfile(patientId);
+  const role = useRole();
+  const showClinicalTabs = role ? isClinicalRole(role) : false;
 
   const [activeTab, setActiveTab]       = useState<Tab>('summary');
   const [noteTypeFilter, setNoteTypeFilter] = useState<NoteTypeFilter>('ALL');
@@ -237,9 +245,10 @@ export function PatientProfile({ patientId }: PatientProfileProps) {
   const { biodata, hasActiveEncounter, allergies, conditions, vitalRows, latestVitals, medications } = profileData;
   const isFemale = biodata.gender === 'female';
   const initials = biodata.fullName.split(' ').map((w) => w[0]).join('').toUpperCase().slice(0, 2);
+  const baseTabs = MAIN_TABS.filter((t) => showClinicalTabs || !CLINICAL_ONLY_TABS.includes(t.id));
   const tabs = isFemale
-    ? [...MAIN_TABS, { id: 'anc' as Tab, label: 'ANC', icon: Baby }]
-    : MAIN_TABS;
+    ? [...baseTabs, { id: 'anc' as Tab, label: 'ANC', icon: Baby }]
+    : baseTabs;
 
   return (
     <div className="min-h-screen bg-gray-50/50 pb-12">
@@ -715,6 +724,15 @@ export function PatientProfile({ patientId }: PatientProfileProps) {
         {/* ── BILLING ─────────────────────────────────────────────────────── */}
         {activeTab === 'billing' && (
           <PatientBillingView patientId={patientId} />
+        )}
+
+        {/* ── CLINICAL TOOLS ──────────────────────────────────────────────── */}
+        {activeTab === 'tools' && showClinicalTabs && (
+          <ClinicalToolsPanel
+            patientId={patientId}
+            patientName={biodata.fullName}
+            role={role}
+          />
         )}
 
         {/* ── IMMUNIZATION ────────────────────────────────────────────────── */}

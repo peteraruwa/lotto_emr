@@ -8,6 +8,7 @@ import { useRole } from '@/shared/rbac/use-role';
 import { getRoleConfig, NavItem } from '@/shared/rbac/role-config';
 import { cn } from '@lotto-emr/ui';
 import { MessagingPanel } from '@/features/messaging';
+import { ClinicalToolsTrigger } from '@/features/clinical-tools';
 import { AnnouncementBanner } from './announcement-banner';
 import {
   LayoutDashboard,
@@ -38,6 +39,8 @@ import {
   UserPlus,
   UserCheck,
   Stethoscope,
+  Calculator,
+  Microscope,
 } from 'lucide-react';
 
 const ICON_MAP: Record<string, React.ElementType> = {
@@ -61,6 +64,8 @@ const ICON_MAP: Record<string, React.ElementType> = {
   UserPlus,
   UserCheck,
   Stethoscope,
+  Calculator,
+  Microscope,
 };
 
 // ── Dark mode hook ────────────────────────────────────────────────────────────
@@ -446,6 +451,9 @@ export function AppShell({ children }: AppShellProps) {
             <span className="text-xs font-medium text-gray-400 capitalize bg-gray-100 px-2.5 py-1 rounded-full">
               {role ?? ''}
             </span>
+
+            {/* Clinical Tools quick calculator (clinical roles only) */}
+            <ClinicalToolsTrigger role={role} />
 
             {/* Messaging */}
             <MessagingPanel userId={userId} userName={userName} userRole={role ?? 'admin'} />
