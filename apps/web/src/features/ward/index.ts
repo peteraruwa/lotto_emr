@@ -1,3 +1,10 @@
-export { WardDashboard } from './components/ward-dashboard';
+export { WardModuleDashboard as WardDashboard } from './components/ward-module-dashboard';
+export { WardModuleDashboard } from './components/ward-module-dashboard';
 export { AdmitPatientModal } from './components/admit-patient-modal';
 export { useWardData, useAdmitPatient } from './hooks/use-ward-data';
+export { useWardTasks, useCreateWardTask, useCompleteWardTask } from './hooks/use-ward-tasks';
+export { useWardBeds } from './hooks/use-ward-beds';
+export { useWardAlerts } from './hooks/use-ward-alerts';
+export { useWardHandover } from './hooks/use-ward-handover';
+export { useUpdateDischargeStatus } from './hooks/use-ward-discharge';
+export type { WardPatient, WardBed, WardTask, WardAlert, HandoverEntry, DischargeStatus } from './types';

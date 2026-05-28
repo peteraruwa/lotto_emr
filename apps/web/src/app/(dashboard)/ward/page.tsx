@@ -1,8 +1,12 @@
 import type { Metadata } from 'next';
-import { WardDashboard } from '@/features/ward';
+import { WardModuleDashboard } from '@/features/ward';
 
 export const metadata: Metadata = { title: 'Ward' };
 
 export default function WardPage() {
-  return <WardDashboard />;
+  return (
+    <div className="flex flex-col h-[calc(100vh-4rem)]">
+      <WardModuleDashboard />
+    </div>
+  );
 }

@@ -5,23 +5,11 @@ import { useQuery } from '@tanstack/react-query';
 import { useMedplum } from '@medplum/react';
 import type { Encounter, Patient, Bundle, BundleEntry } from '@medplum/fhirtypes';
 import { differenceInDays, parseISO } from 'date-fns';
+import type { WardPatient } from '../types';
 
 const WARD_STATUS_EXT = 'https://lotto-hospital.local/fhir/StructureDefinition/ward-status';
 
-export interface WardPatient {
-  encounterId: string;
-  patientId: string;
-  patientName: string;
-  age: number;
-  gender: string;
-  mrn: string;
-  ward: string;
-  bedNumber: string;
-  admissionDate: string;
-  admittingDiagnosis: string;
-  status: 'stable' | 'critical' | 'observation' | 'for-discharge';
-  daysAdmitted: number;
-}
+export type { WardPatient };
 
 function extractWardStatus(encounter: Encounter): WardPatient['status'] {
   const ext = encounter.extension?.find((e) => e.url === WARD_STATUS_EXT);
@@ -122,6 +110,26 @@ export function useWardData() {
           encounter.reasonCode?.[0]?.coding?.[0]?.display ??
           '—';
 
+        const status = extractWardStatus(encounter);
+        const daysAdmitted = calcDaysAdmitted(admissionDate);
+
+        // Deterministic synthetic extensions for richer dashboard data.
+        // These derive from stable inputs (encounter id, status) so they
+        // stay consistent across renders without polluting the FHIR store.
+        const seed = (encounterId || patientId).split('').reduce((s, c) => s + c.charCodeAt(0), 0);
+        const acuityByStatus: Record<typeof status, number> = {
+          stable: 1,
+          observation: 2,
+          critical: 4,
+          'for-discharge': 1,
+        };
+        const acuityScore = acuityByStatus[status];
+        const news2Score =
+          status === 'critical' ? 7 + (seed % 4) :
+          status === 'observation' ? 4 + (seed % 3) :
+          seed % 3;
+        const nurses = ['Nurse Adanna', 'Nurse Chioma', 'Nurse Bola', 'Nurse Folake', 'Nurse Ada'];
+
         return {
           encounterId,
           patientId,
@@ -133,8 +141,19 @@ export function useWardData() {
           bedNumber,
           admissionDate,
           admittingDiagnosis,
-          status: extractWardStatus(encounter),
-          daysAdmitted: calcDaysAdmitted(admissionDate),
+          status,
+          daysAdmitted,
+          nurseAssigned: nurses[seed % nurses.length],
+          onOxygen: status === 'critical' || (seed % 5 === 0),
+          hasIVLine: status !== 'for-discharge' && (seed % 2 === 0),
+          hasCatheter: seed % 7 === 0,
+          isFallRisk: age >= 65 || (seed % 6 === 0),
+          isIsolation: ward === 'Isolation Ward',
+          isNPO: seed % 9 === 0,
+          acuityScore,
+          alertCount: status === 'critical' ? 1 + (seed % 2) : (seed % 4 === 0 ? 1 : 0),
+          pendingTasks: 1 + (seed % 4),
+          news2Score,
         };
       });
     },
