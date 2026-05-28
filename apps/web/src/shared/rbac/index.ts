@@ -1,4 +1,4 @@
-export { ROLES } from './roles';
+export { ROLES, CLINICAL_ROLES, NON_CLINICAL_ROLES, isClinicalRole } from './roles';
 export type { Role } from './roles';
 export { ROLE_CONFIG, getRoleConfig } from './role-config';
 export type { RoleConfig, NavItem } from './role-config';
