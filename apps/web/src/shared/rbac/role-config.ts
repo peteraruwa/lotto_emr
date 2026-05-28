@@ -100,12 +100,11 @@ export const ROLE_CONFIG: Record<Role, RoleConfig> = {
   },
 
   [ROLES.LAB]: {
-    homeRoute: '/',
+    homeRoute: '/lab',
     navItems: [
-      { label: 'Dashboard', href: '/',        icon: 'LayoutDashboard' },
-      { label: 'Lab Orders', href: '/orders', icon: 'FlaskConical'    },
-      { label: 'Results',    href: '/results', icon: 'BarChart2'      },
-      { label: 'Roster',     href: '/roster',  icon: 'CalendarRange'  },
+      { label: 'Lab Dashboard', href: '/lab',     icon: 'Microscope'     },
+      { label: 'Dashboard',     href: '/',         icon: 'LayoutDashboard' },
+      { label: 'Roster',        href: '/roster',   icon: 'CalendarRange'  },
     ],
     allowedActions: [
       'patient:read',
@@ -117,12 +116,11 @@ export const ROLE_CONFIG: Record<Role, RoleConfig> = {
   },
 
   [ROLES.RADIOLOGIST]: {
-    homeRoute: '/',
+    homeRoute: '/radiology',
     navItems: [
-      { label: 'Dashboard',     href: '/',        icon: 'LayoutDashboard' },
-      { label: 'Imaging Orders',href: '/orders',  icon: 'Scan'            },
-      { label: 'Reports',       href: '/results', icon: 'FileText'        },
-      { label: 'Roster',        href: '/roster',  icon: 'CalendarRange'   },
+      { label: 'Radiology',  href: '/radiology', icon: 'Scan'            },
+      { label: 'Dashboard',  href: '/',           icon: 'LayoutDashboard' },
+      { label: 'Roster',     href: '/roster',     icon: 'CalendarRange'   },
     ],
     allowedActions: [
       'patient:read',
