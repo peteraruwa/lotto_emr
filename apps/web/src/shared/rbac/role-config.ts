@@ -85,11 +85,11 @@ export const ROLE_CONFIG: Record<Role, RoleConfig> = {
   },
 
   [ROLES.PHARMACIST]: {
-    homeRoute: '/',
+    homeRoute: '/pharmacy',
     navItems: [
-      { label: 'Dashboard',    href: '/',        icon: 'LayoutDashboard' },
-      { label: 'Prescriptions',href: '/orders',  icon: 'Pill' },
-      { label: 'Roster',       href: '/roster',  icon: 'CalendarRange' },
+      { label: 'Pharmacy',     href: '/pharmacy', icon: 'FlaskConical' },
+      { label: 'Dashboard',    href: '/',         icon: 'LayoutDashboard' },
+      { label: 'Roster',       href: '/roster',   icon: 'CalendarRange' },
     ],
     allowedActions: [
       'patient:read',

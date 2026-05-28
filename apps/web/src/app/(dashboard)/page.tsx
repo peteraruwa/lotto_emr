@@ -6,7 +6,7 @@ import { useRoleState } from '@/shared/rbac/use-role';
 import { ROLES } from '@/shared/rbac/roles';
 import { DoctorDashboard } from '@/features/dashboard-doctor';
 import { NurseDashboard } from '@/features/dashboard-nurse';
-import { PharmacistDashboard } from '@/features/pharmacy';
+import { PharmacyDashboard as PharmacistDashboard } from '@/features/pharmacy';
 import { LabDashboard } from '@/features/lab';
 import { RadiologistDashboard } from '@/features/radiology';
 import { AdminDashboard } from '@/features/dashboard-admin';
